@@ -1,10 +1,9 @@
 name: Build example app
 on:
-  push:
-    pull_request:
-      branches:
-        - main
-        - development
+  pull_request:
+    branches:
+      - main
+      - development
 
 jobs:
   build-android:
