@@ -22,7 +22,7 @@ jobs:
       - name: Run flutter test
         run: flutter test
       - name: Run Android unit test
-        run: dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --android --no-integration --disable-analytics --packages=splitio
+        run: cd ./script/tool && dart pub get && cd ../../; dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --android --no-integration --disable-analytics --packages=splitio
       - name: Build APK
         run: flutter build apk
       - name: Build App Bundle
