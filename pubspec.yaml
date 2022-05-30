@@ -1,7 +1,7 @@
 name: splitio
 description: split.io official Flutter plugin.
 version: 0.0.1
-homepage:
+homepage: https://split.io/
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
