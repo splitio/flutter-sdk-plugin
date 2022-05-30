@@ -1,1 +1,1 @@
-# flutter-sdk-plugin
+# split.io Flutter plugin
