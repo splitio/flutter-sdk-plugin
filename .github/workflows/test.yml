@@ -21,8 +21,6 @@ jobs:
         run: flutter pub get
       - name: Run flutter test
         run: flutter test
-      - name: Run Android unit test
-        run: cd ./script/tool && dart pub get && cd ../../; dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --android --no-integration --disable-analytics --packages=splitio
       - name: Build APK
         run: flutter build apk
       - name: Build App Bundle
@@ -41,7 +39,5 @@ jobs:
         run: flutter pub get
       - name: Run flutter test
         run: flutter test
-      - name: Run iOS unit test
-        run: dart run ./script/tool/bin/flutter_plugin_tools.dart native-test --ios --no-integration --disable-analytics --packages=splitio
       - name: Build iOS
         run: flutter build ios --release --no-codesign
