@@ -22,7 +22,7 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
-        Key key = buildKey(matchingKey, bucketingKey);
+        Key key = Helper.buildKey(matchingKey, bucketingKey);
         mUsedKeys.add(key);
 
         return mSplitFactory.client(key);
@@ -36,14 +36,5 @@ class SplitWrapperImpl implements SplitWrapper {
                 client.destroy();
             }
         }
-    }
-
-    @NonNull
-    private static Key buildKey(String matchingKey, @Nullable String bucketingKey) {
-        if (bucketingKey != null && !bucketingKey.isEmpty()) {
-            return new Key(matchingKey, bucketingKey);
-        }
-
-        return new Key(matchingKey);
     }
 }

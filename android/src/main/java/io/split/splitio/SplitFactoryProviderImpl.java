@@ -30,7 +30,7 @@ class SplitFactoryProviderImpl implements SplitFactoryProvider {
                                     @NonNull SplitClientConfig splitClientConfig) {
         mContext = context;
         mApiKey = apiKey;
-        mKey = buildKey(matchingKey, bucketingKey);
+        mKey = Helper.buildKey(matchingKey, bucketingKey);
         mSplitClientConfig = splitClientConfig;
     }
 
@@ -53,14 +53,5 @@ class SplitFactoryProviderImpl implements SplitFactoryProvider {
         }
 
         return mSplitFactory;
-    }
-
-    @NonNull
-    private static Key buildKey(String matchingKey, @Nullable String bucketingKey) {
-        if (bucketingKey != null && !bucketingKey.isEmpty()) {
-            return new Key(matchingKey, bucketingKey);
-        }
-
-        return new Key(matchingKey);
     }
 }
