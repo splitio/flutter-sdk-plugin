@@ -19,8 +19,8 @@ import io.split.android.client.utils.ConcurrentSet;
 
 class SplitWrapperImpl implements SplitWrapper {
 
-    private final SplitFactory splitFactory;
-    private final Set<Key> usedKeys;
+    private final SplitFactory mSplitFactory;
+    private final Set<Key> mUsedKeys;
 
     SplitWrapperImpl(@NonNull Context context,
                      @NonNull String apikey,
@@ -28,12 +28,12 @@ class SplitWrapperImpl implements SplitWrapper {
                      @Nullable String bucketingKey,
                      @NonNull SplitClientConfig splitClientConfig) throws SplitInitializationException {
         try {
-            splitFactory = SplitFactoryBuilder.build(apikey,
+            mSplitFactory = SplitFactoryBuilder.build(apikey,
                     buildKey(matchingKey, bucketingKey),
                     splitClientConfig,
                     context);
 
-            usedKeys = new ConcurrentSet<>();
+            mUsedKeys = new ConcurrentSet<>();
         } catch (IOException | InterruptedException | TimeoutException | URISyntaxException e) {
             throw new SplitInitializationException(e.getMessage());
         }
@@ -42,17 +42,15 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
         Key key = buildKey(matchingKey, bucketingKey);
-        if (!usedKeys.contains(key)) {
-            usedKeys.add(key);
-        }
+        mUsedKeys.add(key);
 
-        return splitFactory.client(key);
+        return mSplitFactory.client(key);
     }
 
     @Override
     public void destroy() {
-        for (Key key : usedKeys) {
-            SplitClient client = splitFactory.client(key);
+        for (Key key : mUsedKeys) {
+            SplitClient client = mSplitFactory.client(key);
             if (client != null) {
                 client.destroy();
             }
