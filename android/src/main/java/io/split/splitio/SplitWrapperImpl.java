@@ -1,19 +1,12 @@
 package io.split.splitio;
 
-import android.content.Context;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Set;
-import java.util.concurrent.TimeoutException;
 
 import io.split.android.client.SplitClient;
-import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFactory;
-import io.split.android.client.SplitFactoryBuilder;
 import io.split.android.client.api.Key;
 import io.split.android.client.utils.ConcurrentSet;
 
@@ -22,21 +15,9 @@ class SplitWrapperImpl implements SplitWrapper {
     private final SplitFactory mSplitFactory;
     private final Set<Key> mUsedKeys;
 
-    SplitWrapperImpl(@NonNull Context context,
-                     @NonNull String apikey,
-                     @NonNull String matchingKey,
-                     @Nullable String bucketingKey,
-                     @NonNull SplitClientConfig splitClientConfig) throws SplitInitializationException {
-        try {
-            mSplitFactory = SplitFactoryBuilder.build(apikey,
-                    buildKey(matchingKey, bucketingKey),
-                    splitClientConfig,
-                    context);
-
-            mUsedKeys = new ConcurrentSet<>();
-        } catch (IOException | InterruptedException | TimeoutException | URISyntaxException e) {
-            throw new SplitInitializationException(e.getMessage());
-        }
+    SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider) {
+        mSplitFactory = splitFactoryProvider.getSplitFactory();
+        mUsedKeys = new ConcurrentSet<>();
     }
 
     @Override
@@ -58,7 +39,7 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @NonNull
-    private Key buildKey(String matchingKey, @Nullable String bucketingKey) {
+    private static Key buildKey(String matchingKey, @Nullable String bucketingKey) {
         if (bucketingKey != null && !bucketingKey.isEmpty()) {
             return new Key(matchingKey, bucketingKey);
         }
