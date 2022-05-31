@@ -46,7 +46,7 @@ class SplitFactoryProviderImpl implements SplitFactoryProvider {
                     try {
                         mSplitFactory = SplitFactoryBuilder.build(mApiKey, mKey, mSplitClientConfig, mContext);
                     } catch (IOException | InterruptedException | TimeoutException | URISyntaxException e) {
-                        Logger.e("Failed to create SplitFactory", e);
+                        Logger.e("Failed to create SplitFactory", e.getLocalizedMessage());
                     }
                 }
             }
