@@ -55,8 +55,8 @@ class SplitClientConfigHelper {
 
         if (configurationMap.containsKey(TELEMETRY_REFRESH_RATE)) {
             Object telemetryRefreshRate = configurationMap.get(TELEMETRY_REFRESH_RATE);
-            if (telemetryRefreshRate != null && telemetryRefreshRate.getClass().isAssignableFrom(Long.class)) {
-                builder.telemetryRefreshRate((Long) telemetryRefreshRate);
+            if (telemetryRefreshRate != null && telemetryRefreshRate.getClass().isAssignableFrom(Integer.class)) {
+                builder.telemetryRefreshRate((Integer) telemetryRefreshRate);
             }
         }
 
@@ -77,7 +77,7 @@ class SplitClientConfigHelper {
         if (configurationMap.containsKey(EVENT_FLUSH_INTERVAL)) {
             Object eventFlushInterval = configurationMap.get(EVENT_FLUSH_INTERVAL);
             if (eventFlushInterval != null && eventFlushInterval.getClass().isAssignableFrom(Integer.class)) {
-                builder.eventFlushInterval((Long) eventFlushInterval);
+                builder.eventFlushInterval((Integer) eventFlushInterval);
             }
         }
 
