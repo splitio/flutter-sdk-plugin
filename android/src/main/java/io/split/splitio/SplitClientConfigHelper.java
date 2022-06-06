@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import java.util.Map;
 
+import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
 
 class SplitClientConfigHelper {
@@ -23,6 +24,11 @@ class SplitClientConfigHelper {
     private static final String READY = "ready";
     private static final String STREAMING_ENABLED = "streamingEnabled";
     private static final String PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled";
+    private static final String API_ENDPOINT = "apiEndpoint";
+    private static final String EVENTS_ENDPOINT = "eventsEndpoint";
+    private static final String SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint";
+    private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
+    private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -31,9 +37,10 @@ class SplitClientConfigHelper {
      */
     static SplitClientConfig fromMap(Map<String, Object> configurationMap) {
         SplitClientConfig.Builder builder = SplitClientConfig.builder();
+        ServiceEndpoints.Builder serviceEndpoints = ServiceEndpoints.builder();
 
         if (configurationMap.containsKey(FEATURES_REFRESH_RATE)) {
-            Object featuresRefreshRate = configurationMap.get("featuresRefreshRate");
+            Object featuresRefreshRate = configurationMap.get(FEATURES_REFRESH_RATE);
             if (featuresRefreshRate != null && featuresRefreshRate.getClass().isAssignableFrom(Integer.class)) {
                 builder.featuresRefreshRate((Integer) featuresRefreshRate);
             }
@@ -155,6 +162,41 @@ class SplitClientConfigHelper {
             }
         }
 
-        return builder.build();
+        if (configurationMap.containsKey(API_ENDPOINT)) {
+            Object apiEndpoint = configurationMap.get(API_ENDPOINT);
+            if (apiEndpoint != null && apiEndpoint.getClass().isAssignableFrom(String.class)) {
+                serviceEndpoints.apiEndpoint((String) apiEndpoint);
+            }
+        }
+
+        if (configurationMap.containsKey(EVENTS_ENDPOINT)) {
+            Object eventsEndpoint = configurationMap.get(EVENTS_ENDPOINT);
+            if (eventsEndpoint != null && eventsEndpoint.getClass().isAssignableFrom(String.class)) {
+                serviceEndpoints.eventsEndpoint((String) eventsEndpoint);
+            }
+        }
+
+        if (configurationMap.containsKey(SSE_AUTH_SERVICE_ENDPOINT)) {
+            Object sseAuthServiceEndpoint = configurationMap.get(SSE_AUTH_SERVICE_ENDPOINT);
+            if (sseAuthServiceEndpoint != null && sseAuthServiceEndpoint.getClass().isAssignableFrom(String.class)) {
+                serviceEndpoints.sseAuthServiceEndpoint((String) sseAuthServiceEndpoint);
+            }
+        }
+
+        if (configurationMap.containsKey(STREAMING_SERVICE_ENDPOINT)) {
+            Object streamingServiceEndpoint = configurationMap.get(STREAMING_SERVICE_ENDPOINT);
+            if (streamingServiceEndpoint != null && streamingServiceEndpoint.getClass().isAssignableFrom(String.class)) {
+                serviceEndpoints.streamingServiceEndpoint((String) streamingServiceEndpoint);
+            }
+        }
+
+        if (configurationMap.containsKey(TELEMETRY_SERVICE_ENDPOINT)) {
+            Object telemetryEndpointService = configurationMap.get(TELEMETRY_SERVICE_ENDPOINT);
+            if (telemetryEndpointService != null && telemetryEndpointService.getClass().isAssignableFrom(String.class)) {
+                serviceEndpoints.telemetryServiceEndpoint((String) telemetryEndpointService);
+            }
+        }
+
+        return builder.serviceEndpoints(serviceEndpoints.build()).build();
     }
 }
