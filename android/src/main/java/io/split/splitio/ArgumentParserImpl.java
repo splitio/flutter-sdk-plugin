@@ -6,8 +6,6 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-import io.split.android.client.utils.Logger;
-
 class ArgumentParserImpl implements ArgumentParser {
 
     @Nullable
