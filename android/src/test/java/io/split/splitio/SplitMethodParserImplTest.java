@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -82,5 +83,15 @@ public class SplitMethodParserImplTest {
 
         verify(mResult).error("SDK_NOT_INITIALIZED", "Split SDK has not been initialized", null);
         verifyNoInteractions(mSplitWrapper);
+    }
+
+    @Test
+    public void destroy() {
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser);
+
+        mMethodParser.onMethodCall("destroy", Collections.emptyMap(), mResult);
+
+        verify(mSplitWrapper).destroy();
+        verify(mResult).success(null);
     }
 }

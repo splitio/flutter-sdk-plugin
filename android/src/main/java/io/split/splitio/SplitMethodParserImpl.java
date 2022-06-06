@@ -7,6 +7,7 @@ import static io.split.splitio.Constants.ARG_MATCHING_KEY;
 import static io.split.splitio.Constants.ARG_WAIT_FOR_READY;
 import static io.split.splitio.Constants.ERROR_SDK_NOT_INITIALIZED;
 import static io.split.splitio.Constants.ERROR_SDK_NOT_INITIALIZED_MESSAGE;
+import static io.split.splitio.Constants.METHOD_DESTROY;
 import static io.split.splitio.Constants.METHOD_GET_CLIENT;
 import static io.split.splitio.Constants.METHOD_INIT;
 
@@ -55,6 +56,9 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getBooleanArgument(ARG_WAIT_FOR_READY, arguments),
                         result);
                 break;
+            case METHOD_DESTROY:
+                mSplitWrapper.destroy();
+                result.success(null);
             default:
                 result.notImplemented();
                 break;
