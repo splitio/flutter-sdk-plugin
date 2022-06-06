@@ -4,7 +4,7 @@ import androidx.annotation.NonNull;
 
 import java.util.Map;
 
-public interface ArgumentParser {
+interface ArgumentParser {
 
     String getStringArgument(@NonNull String argumentName, @NonNull Object arguments);
 

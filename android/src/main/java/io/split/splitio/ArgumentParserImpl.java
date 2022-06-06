@@ -6,7 +6,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ArgumentParserImpl implements ArgumentParser {
+class ArgumentParserImpl implements ArgumentParser {
 
     @Nullable
     @Override
