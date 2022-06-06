@@ -32,24 +32,6 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
-    public void testInit() {
-        Map<String, Object> map = new HashMap<>();
-        map.put("apiKey", "api-key");
-        map.put("matchingKey", "user-key");
-        map.put("bucketingKey", "bucketing-key");
-        map.put("waitForReady", true);
-
-        when(mArgumentParser.getStringArgument("apiKey", map)).thenReturn("api-key");
-        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("bucketing-key");
-        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
-        when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
-
-        mMethodParser.onMethodCall("init", map, mResult);
-
-        verify(mSplitWrapper).getClient("user-key", "bucketing-key", true);
-    }
-
-    @Test
     public void successfulGetClient() {
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
