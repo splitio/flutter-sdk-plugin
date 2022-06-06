@@ -29,7 +29,7 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @Override
-    public synchronized void destroy() {
+    public void destroy() {
         for (Key key : mUsedKeys) {
             SplitClient client = mSplitFactory.client(key);
             if (client != null) {

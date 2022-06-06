@@ -35,10 +35,10 @@ class DefaultSplitWrapper : SplitWrapper {
     }
 }
 
-func buildKey(matchingKey: String, bucketingKey: String?) -> Key {
-    if (bucketingKey != nil && bucketingKey != "") {
+func buildKey(matchingKey: String, bucketingKey: String? = nil) -> Key {
+    if (bucketingKey != "") {
         return Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
     }
-    
+
     return Key(matchingKey: matchingKey)
 }
