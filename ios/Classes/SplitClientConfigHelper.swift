@@ -25,7 +25,7 @@ class SplitClientConfigHelper {
     private let SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint";
     private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
-    
+
     static func fromMap(configurationMap: [String: Any?]) -> SplitClientConfig {
         return SplitClientConfig()
     }
