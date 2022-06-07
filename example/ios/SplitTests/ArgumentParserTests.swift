@@ -30,6 +30,21 @@ class ArgumentParserTests: XCTestCase {
         XCTAssert(stringArgument == nil)
     }
 
+    func testGetMapArgument() throws {
+        let dictArgument: [String: Any?] = ["key": "value", "key2": true]
+        let arguments: [String: Any?] = ["apiKey": "api-key", "mapValue": dictArgument]
+        let mapArgument: [String: Any?] = argumentParser?.getMapArgument(argumentName: "mapValue", arguments: arguments) ?? [:]
+
+        XCTAssert(NSDictionary(dictionary: mapArgument).isEqual(to: dictArgument))
+    }
+
+    func testGetMapArgumentFailure() throws {
+        let arguments: [String: Any?] = ["apiKey": "api-key", "mapValue": false]
+        let mapArgument = argumentParser?.getMapArgument(argumentName: "mapValue", arguments: arguments) ?? [:]
+
+        XCTAssert(NSDictionary(dictionary: mapArgument).isEqual(to: [:]))
+    }
+
     func testGetBooleanArgument() throws {
         let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": true]
 
