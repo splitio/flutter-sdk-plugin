@@ -16,6 +16,7 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		C51277632847F3D800B7D1A2 /* SplitTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C51277622847F3D800B7D1A2 /* SplitTests.swift */; };
+		C5EAE748284FCC610025614D /* ArgumentParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C5EAE747284FCC610025614D /* ArgumentParserTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		97C147021CF9000F007C117D /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C51277602847F3D800B7D1A2 /* SplitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SplitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		C51277622847F3D800B7D1A2 /* SplitTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplitTests.swift; sourceTree = "<group>"; };
+		C5EAE747284FCC610025614D /* ArgumentParserTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArgumentParserTests.swift; sourceTree = "<group>"; };
 		CDE81357140D4D18CD672621 /* Pods_SplitTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_SplitTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		F5DF347A782571EC3639305B /* Pods-SplitTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SplitTests.debug.xcconfig"; path = "Target Support Files/Pods-SplitTests/Pods-SplitTests.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -159,6 +161,7 @@
 		C51277612847F3D800B7D1A2 /* SplitTests */ = {
 			isa = PBXGroup;
 			children = (
+				C5EAE747284FCC610025614D /* ArgumentParserTests.swift */,
 				C51277622847F3D800B7D1A2 /* SplitTests.swift */,
 			);
 			path = SplitTests;
@@ -393,6 +396,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C51277632847F3D800B7D1A2 /* SplitTests.swift in Sources */,
+				C5EAE748284FCC610025614D /* ArgumentParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
