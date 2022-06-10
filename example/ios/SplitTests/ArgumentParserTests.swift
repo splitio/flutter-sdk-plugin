@@ -1,10 +1,3 @@
-//
-//  ArgumentParserTests.swift
-//  ArgumentParserTests
-//
-//  Created by Gaston Thea on 07/06/2022.
-//
-
 import XCTest
 @testable import splitio
 

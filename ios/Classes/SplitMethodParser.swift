@@ -1,4 +1,5 @@
 import Foundation
+import Split
 
 protocol SplitMethodParser {
     
@@ -19,8 +20,6 @@ class DefaultSplitMethodParser : SplitMethodParser {
     private let ARG_BUCKETING_KEY = "bucketingKey";
     private let ARG_CONFIG = "sdkConfiguration";
     private let ARG_WAIT_FOR_READY = "waitForReady";
-    private let ERROR_SDK_NOT_INITIALIZED = "SDK_NOT_INITIALIZED";
-    private let ERROR_SDK_NOT_INITIALIZED_MESSAGE = "Split SDK has not been initialized";
     
     init() {
         argumentParser = DefaultArgumentParser()
@@ -31,7 +30,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
         self.argumentParser = argumentParser
     }
 
-    func onMethodCall(methodName: String, arguments: Any, result: (Any?) -> Void) {
+    func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
         switch (methodName) {
             case METHOD_INIT:
                 initializeSplit(
@@ -42,14 +41,35 @@ class DefaultSplitMethodParser : SplitMethodParser {
                     result: result
                 )
                 break
-            else:
+            case METHOD_GET_CLIENT:
+                getClient(
+                    matchingKey: argumentParser.getStringArgument(argumentName: ARG_MATCHING_KEY, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: ARG_BUCKETING_KEY, arguments: arguments),
+                    waitForReady: argumentParser.getBooleanArgument(argumentName: ARG_WAIT_FOR_READY, arguments: arguments),
+                    result: result);
+                break;
+            case METHOD_DESTROY:
+                splitWrapper?.destroy();
+                result(nil);
+            default:
+                result(FlutterMethodNotImplemented)
                 break
         }
     }
-    
-    private func initializeSplit(apiKey: String, matchingKey: String, bucketingKey: String?, configurationMap [String, Any?]?, result: FlutterResult) {
-        splitWrapper = SplitWrapper(SplitFactoryProvider:
-            SplitFactoryProvider(apiKey, matchingKey, bucketingKey, SplitClientConfigHelper.fromMap(mapArgument))
-        )
+
+    private func initializeSplit(apiKey: String, matchingKey: String, bucketingKey: String?, configurationMap: [String: Any?], result: FlutterResult) {
+        let factoryProvider = DefaultSplitFactoryProvider(
+            apiKey: apiKey,
+            matchingKey: matchingKey,
+            bucketingKey: bucketingKey,
+            splitClientConfig: SplitClientConfigHelper.fromMap(configurationMap: configurationMap))
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+
+        result(nil)
+    }
+
+    private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
+        splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
+        result(nil)
     }
 }

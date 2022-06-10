@@ -26,7 +26,7 @@ class SplitClientConfigHelper {
     private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
     
-    func fromMap(configurationMap: [String: Any?]) {
+    static func fromMap(configurationMap: [String: Any?]) -> SplitClientConfig {
         return SplitClientConfig()
     }
 }
