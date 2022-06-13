@@ -12,19 +12,9 @@ class SplitClientConfigHelper {
     static private let EVENT_FLUSH_INTERVAL = "eventFlushInterval"
     static private let EVENTS_PER_PUSH = "eventsPerPush"
     static private let TRAFFIC_TYPE = "trafficType"
-    static private let CONNECTION_TIME_OUT = "connectionTimeOut"
-    static private let READ_TIMEOUT = "readTimeout"
-    static private let DISABLE_LABELS = "disableLabels"
     static private let ENABLE_DEBUG = "enableDebug"
-    static private let PROXY_HOST = "proxyHost"
-    static private let READY = "ready"
     static private let STREAMING_ENABLED = "streamingEnabled"
     static private let PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled"
-    static private let API_ENDPOINT = "apiEndpoint"
-    static private let EVENTS_ENDPOINT = "eventsEndpoint"
-    static private let SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint"
-    static private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint"
-    static private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint"
 
     static func fromMap(configurationMap: [String: Any?]) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -54,8 +44,8 @@ class SplitClientConfigHelper {
         }
 
         if (configurationMap[EVENTS_QUEUE_SIZE] != nil) {
-            if let eventsQueueSize = configurationMap[EVENTS_QUEUE_SIZE] as? Int64 {
-                config.eventsQueueSize = eventsQueueSize
+            if let eventsQueueSize = configurationMap[EVENTS_QUEUE_SIZE] as? Int {
+                config.eventsQueueSize = Int64(eventsQueueSize)
             }
         }
 
@@ -83,41 +73,11 @@ class SplitClientConfigHelper {
             }
         }
 
-        if (configurationMap[CONNECTION_TIME_OUT] != nil) {
-            if let connectionTimeout = configurationMap[CONNECTION_TIME_OUT] as? Int {
-                config.connectionTimeout = connectionTimeout
-            }
-        }
-
-        if (configurationMap[READ_TIMEOUT] != nil) {
-            if let readTimeout = configurationMap[READ_TIMEOUT] as? Int {
-                config.sdkReadyTimeOut = readTimeout
-            }
-        }
-
-        if (configurationMap[DISABLE_LABELS] != nil) {
-            if let disableLabels = configurationMap[DISABLE_LABELS] as? Bool {
-                config.isLabelsEnabled = !disableLabels
-            }
-        }
-
         if (configurationMap[ENABLE_DEBUG] != nil) {
             if let enableDebug = configurationMap[ENABLE_DEBUG] as? Bool {
                 config.isDebugModeEnabled = enableDebug
             }
         }
-
-//        if (configurationMap[PROXY_HOST] != nil) {
-//            if let proxyHost = configurationMap[PROXY_HOST] as? String {
-//                config.proxyHost = proxyHost
-//            }
-//        }
-
-//        if (configurationMap[READY] != nil) {
-//            if let ready = configurationMap[READY] as? Int {
-//                config.sdkReadyTimeOut = ready
-//            }
-//        }
 
         if (configurationMap[STREAMING_ENABLED] != nil) {
             if let streamingEnabled = configurationMap[STREAMING_ENABLED] as? Bool {
@@ -131,40 +91,6 @@ class SplitClientConfigHelper {
             }
         }
 
-        var serviceEndpoints: ServiceEndpoints.Builder = ServiceEndpoints.builder()
-        
-        if (configurationMap[API_ENDPOINT] != nil) {
-            if let apiEndpoint = configurationMap[API_ENDPOINT] as? String {
-                serviceEndpoints = serviceEndpoints.set(sdkEndpoint: apiEndpoint)
-            }
-        }
-
-        if (configurationMap[EVENTS_ENDPOINT] != nil) {
-            if let eventsEndpoint = configurationMap[EVENTS_ENDPOINT] as? String {
-                serviceEndpoints = serviceEndpoints.set(eventsEndpoint: eventsEndpoint)
-            }
-        }
-
-        if (configurationMap[SSE_AUTH_SERVICE_ENDPOINT] != nil) {
-            if let authServiceEndpoint = configurationMap[SSE_AUTH_SERVICE_ENDPOINT] as? String {
-                serviceEndpoints = serviceEndpoints.set(authServiceEndpoint: authServiceEndpoint)
-            }
-        }
-
-        if (configurationMap[STREAMING_SERVICE_ENDPOINT] != nil) {
-            if let streamingServiceEndpoint = configurationMap[STREAMING_SERVICE_ENDPOINT] as? String {
-                serviceEndpoints = serviceEndpoints.set(streamingServiceEndpoint: streamingServiceEndpoint)
-            }
-        }
-
-        if (configurationMap[TELEMETRY_SERVICE_ENDPOINT] != nil) {
-            if let telemetryServiceEndpoint = configurationMap[TELEMETRY_SERVICE_ENDPOINT] as? String {
-                serviceEndpoints = serviceEndpoints.set(telemetryServiceEndpoint: telemetryServiceEndpoint)
-            }
-        }
-        
-        config.serviceEndpoints = serviceEndpoints.build()
-        
         return config
     }
 }
