@@ -71,4 +71,14 @@ class Splitio {
       return []; //TODO
     });
   }
+
+  Future<void> initializeSplit(String apiKey, String matchingKey,
+      [String? bucketingKey, SplitConfiguration? configuration]) async {
+    await _channel.invokeMethod('init', {
+      'apiKey': apiKey,
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+      'sdkConfiguration': configuration?.configurationMap ?? {},
+    });
+  }
 }
