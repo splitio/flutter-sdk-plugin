@@ -2,6 +2,9 @@ import Flutter
 import UIKit
 
 public class SwiftSplitioPlugin: NSObject, FlutterPlugin {
+    
+  private var methodParser: SplitMethodParser = DefaultSplitMethodParser()
+    
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "splitio", binaryMessenger: registrar.messenger())
     let instance = SwiftSplitioPlugin()
@@ -9,6 +12,6 @@ public class SwiftSplitioPlugin: NSObject, FlutterPlugin {
   }
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
-    result("iOS " + UIDevice.current.systemVersion)
+      methodParser.onMethodCall(methodName: call.method, arguments: call.arguments, result: result)
   }
 }
