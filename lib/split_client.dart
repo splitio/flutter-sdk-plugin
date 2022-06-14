@@ -57,7 +57,7 @@ class SplitClient {
     return false;
   }
 
-  Object? getAttribute(String attributeName) async {
+  dynamic getAttribute(String attributeName) async {
     // TODO implement
     return null;
   }
