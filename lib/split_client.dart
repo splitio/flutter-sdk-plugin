@@ -15,12 +15,15 @@ class SplitClient {
 
   Future<String> getTreatment(String treatment,
       [Map<String, dynamic> attributes = const {}]) async {
-    return ''; //TODO implement
+    return await _channel
+            .invokeMethod('getTreatment', {'attributes': attributes}) ??
+        _controlTreatment;
   }
 
   Future<SplitResult> getTreatmentWithConfig(String treatment,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _controlResult; //TODO implement
+    return await _channel
+        .invokeMethod('getTreatmentWithConfig', {'attributes': attributes});
   }
 
   Future<Map<String, String>> getTreatments(List<String> treatments,
