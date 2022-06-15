@@ -32,7 +32,7 @@ class _MyAppState extends State<MyApp> {
     await _split.init('qer622vvc3ka6arore2qgibqgtqakip5bh76', 'key1',
         configuration: SplitConfiguration(enableDebug: true));
 
-    _client = await _split.client('key1', waitForReady: true);
+    _client = await _split.client(matchingKey: 'key1', waitForReady: true);
     print("initSplit-end");
 
     if (!mounted) return;
