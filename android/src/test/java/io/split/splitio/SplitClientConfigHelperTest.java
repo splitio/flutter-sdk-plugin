@@ -26,12 +26,7 @@ public class SplitClientConfigHelperTest {
         configValues.put("eventFlushInterval", 40000);
         configValues.put("eventsPerPush", 5000);
         configValues.put("trafficType", "none");
-        configValues.put("connectionTimeOut", 10);
-        configValues.put("readTimeout", 25);
-        configValues.put("disableLabels", true);
         configValues.put("enableDebug", true);
-        configValues.put("proxyHost", "https://proxy");
-        configValues.put("ready", 25);
         configValues.put("streamingEnabled", true);
         configValues.put("persistentAttributesEnabled", true);
 
@@ -46,12 +41,7 @@ public class SplitClientConfigHelperTest {
         assertEquals(40000, splitClientConfig.eventFlushInterval());
         assertEquals(5000, splitClientConfig.eventsPerPush());
         assertEquals("none", splitClientConfig.trafficType());
-        assertEquals(10, splitClientConfig.connectionTimeout());
-        assertEquals(25, splitClientConfig.readTimeout());
-        assertFalse(splitClientConfig.labelsEnabled());
         assertTrue(splitClientConfig.debugEnabled());
-        assertEquals("proxy", splitClientConfig.proxy().getHost());
-        assertEquals(25, splitClientConfig.readTimeout());
         assertTrue(splitClientConfig.streamingEnabled());
         assertTrue(splitClientConfig.persistentAttributesEnabled());
     }

@@ -18,19 +18,9 @@ class SplitClientConfigHelper {
     private static final String EVENT_FLUSH_INTERVAL = "eventFlushInterval";
     private static final String EVENTS_PER_PUSH = "eventsPerPush";
     private static final String TRAFFIC_TYPE = "trafficType";
-    private static final String CONNECTION_TIME_OUT = "connectionTimeOut";
-    private static final String READ_TIMEOUT = "readTimeout";
-    private static final String DISABLE_LABELS = "disableLabels";
     private static final String ENABLE_DEBUG = "enableDebug";
-    private static final String PROXY_HOST = "proxyHost";
-    private static final String READY = "ready";
     private static final String STREAMING_ENABLED = "streamingEnabled";
     private static final String PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled";
-    private static final String API_ENDPOINT = "apiEndpoint";
-    private static final String EVENTS_ENDPOINT = "eventsEndpoint";
-    private static final String SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint";
-    private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
-    private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -82,28 +72,9 @@ class SplitClientConfigHelper {
             builder.eventsPerPush(eventsPerPush);
         }
 
-        if (configurationMap.containsKey(TRAFFIC_TYPE)) {
-            Object trafficType = configurationMap.get(TRAFFIC_TYPE);
-            if (trafficType != null && trafficType.getClass().isAssignableFrom(String.class)) {
-                builder.trafficType((String) trafficType);
-            }
-        }
-
-        Integer connectionTimeout = getInteger(configurationMap, CONNECTION_TIME_OUT);
-        if (connectionTimeout != null) {
-            builder.connectionTimeout(connectionTimeout);
-        }
-
-        if (configurationMap.containsKey(READ_TIMEOUT)) {
-            Object readTimeout = configurationMap.get(READ_TIMEOUT);
-            if (readTimeout != null && readTimeout.getClass().isAssignableFrom(Integer.class)) {
-                builder.readTimeout((Integer) readTimeout);
-            }
-        }
-
-        Boolean disableLabels = getBoolean(configurationMap, DISABLE_LABELS);
-        if (disableLabels) {
-            builder.disableLabels();
+        String trafficType = getString(configurationMap, TRAFFIC_TYPE);
+        if (trafficType != null) {
+            builder.trafficType(trafficType);
         }
 
         Boolean enableDebug = getBoolean(configurationMap, ENABLE_DEBUG);
@@ -111,19 +82,10 @@ class SplitClientConfigHelper {
             builder.enableDebug();
         }
 
-        String proxyHost = getString(configurationMap, PROXY_HOST);
-        if (proxyHost != null) {
-            builder.proxyHost(proxyHost);
-        }
-
-        Integer ready = getInteger(configurationMap, READY);
-        if (ready != null) {
-            builder.ready(ready);
-        }
-
         Boolean streamingEnabled = getBoolean(configurationMap, STREAMING_ENABLED);
         if (streamingEnabled != null) {
             builder.streamingEnabled(streamingEnabled);
+
         }
 
         Boolean persistentAttributesEnabled = getBoolean(configurationMap, PERSISTENT_ATTRIBUTES_ENABLED);
