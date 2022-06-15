@@ -69,5 +69,25 @@ void main() {
         'attributes': {'attr1': true}
       });
     });
+
+    test('getTreatmentWithConfig without attributes', () async {
+      SplitClient client = SplitClient('matching-key', 'bucketing-key');
+
+      client.getTreatmentWithConfig('treatment');
+
+      expect(methodName, 'getTreatmentWithConfig');
+      expect(methodArguments, {'attributes': {}});
+    });
+
+    test('getTreatmentWithConfig with attributes', () async {
+      SplitClient client = SplitClient('matching-key', 'bucketing-key');
+
+      client.getTreatment('treatment', {'attr1': true});
+
+      expect(methodName, 'getTreatmentWithConfig');
+      expect(methodArguments, {
+        'attributes': {'attr1': true}
+      });
+    });
   });
 }
