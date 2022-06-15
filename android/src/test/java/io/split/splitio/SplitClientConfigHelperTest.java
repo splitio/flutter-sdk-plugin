@@ -34,11 +34,6 @@ public class SplitClientConfigHelperTest {
         configValues.put("ready", 25);
         configValues.put("streamingEnabled", true);
         configValues.put("persistentAttributesEnabled", true);
-        configValues.put("apiEndpoint", "https://apiEndpoint");
-        configValues.put("eventsEndpoint", "https://eventsEndpoint");
-        configValues.put("sseAuthServiceEndpoint", "https://sseAuthServiceEndpoint");
-        configValues.put("streamingServiceEndpoint", "https://streamingServiceEndpoint");
-        configValues.put("telemetryServiceEndpoint", "https://telemetryServiceEndpoint");
 
         SplitClientConfig splitClientConfig = SplitClientConfigHelper.fromMap(configValues);
 
@@ -59,10 +54,5 @@ public class SplitClientConfigHelperTest {
         assertEquals(25, splitClientConfig.readTimeout());
         assertTrue(splitClientConfig.streamingEnabled());
         assertTrue(splitClientConfig.persistentAttributesEnabled());
-        assertEquals("https://sseAuthServiceEndpoint", splitClientConfig.authServiceUrl());
-        assertEquals("https://streamingServiceEndpoint", splitClientConfig.streamingServiceUrl());
-        assertEquals("https://telemetryServiceEndpoint", splitClientConfig.telemetryEndpoint());
-        assertEquals("https://apiEndpoint", splitClientConfig.endpoint());
-        assertEquals("https://eventsEndpoint", splitClientConfig.eventsEndpoint());
     }
 }

@@ -63,7 +63,7 @@ class SplitWrapperImpl implements SplitWrapper {
         try {
             latch.await(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-
+            Thread.currentThread().interrupt();
         }
     }
 }
