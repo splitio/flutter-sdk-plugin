@@ -37,7 +37,7 @@ public class SplitWrapperImplTest {
     public void testGetClient() {
         SplitClient clientMock = mock(SplitClient.class);
         when(mSplitFactory.client(any(Key.class))).thenReturn(clientMock);
-        SplitClient client = mSplitWrapper.getClient("key", "bucketing");
+        SplitClient client = mSplitWrapper.getClient("key", "bucketing", false);
 
         assertEquals(clientMock, client);
     }
@@ -52,8 +52,8 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client(key)).thenReturn(clientMock);
         when(mSplitFactory.client(key2)).thenReturn(clientMock2);
 
-        mSplitWrapper.getClient("key", "bucketing");
-        mSplitWrapper.getClient("key", null);
+        mSplitWrapper.getClient("key", "bucketing", false);
+        mSplitWrapper.getClient("key", null, false);
         mSplitWrapper.destroy();
 
         verify(clientMock, times(1)).destroy();
