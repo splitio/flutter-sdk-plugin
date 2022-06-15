@@ -8,8 +8,12 @@ import 'package:splitio/split_view.dart';
 class Splitio {
   static const MethodChannel _channel = MethodChannel('splitio');
 
+  String? _defaultMatchingKey;
+
   Future<void> init(String apiKey, String matchingKey,
       {String? bucketingKey, SplitConfiguration? configuration}) async {
+    _defaultMatchingKey = matchingKey;
+
     var arguments = {
       'apiKey': apiKey,
       'matchingKey': matchingKey,
@@ -22,10 +26,17 @@ class Splitio {
     await _channel.invokeMethod('init', arguments);
   }
 
-  Future<SplitClient?> client(String matchingKey,
-      {String? bucketingKey, bool waitForReady = false}) async {
+  Future<SplitClient?> client(
+      {String? matchingKey,
+      String? bucketingKey,
+      bool waitForReady = false}) async {
+    String? key = matchingKey ?? _defaultMatchingKey;
+    if (key == null) {
+      return null;
+    }
+
     var arguments = {
-      'matchingKey': matchingKey,
+      'matchingKey': key,
       'waitForReady': waitForReady,
     };
 
@@ -39,23 +50,13 @@ class Splitio {
       return null;
     }
 
-    return SplitClient(matchingKey, bucketingKey);
+    return SplitClient(key, bucketingKey);
   }
 
   Future<List<SplitView>> splits() async {
     List<SplitView> list = [];
-    await _channel.invokeMethod('splits').then((value) {
-      // for (Map<String, dynamic> map in value) {
-      //   list.add(SplitView(
-      //       name: map['name'],
-      //       trafficType: map['trafficType'],
-      //       killed: map['killed'],
-      //       treatments: map['treatments'],
-      //       changeNumber: map['changeNumber'],
-      //       configs: map['configs']));
-      // }
-    });
-    return list;
+    await _channel.invokeMethod('splits').then((value) {});
+    return list; //TODO
   }
 
   Future<SplitView?> split(String featureName) async {

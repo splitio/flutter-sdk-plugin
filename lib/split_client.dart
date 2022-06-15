@@ -3,19 +3,45 @@ import 'package:splitio/split_result.dart';
 
 class SplitClient {
   static const MethodChannel _channel = MethodChannel('splitio');
+
+  static const String _controlTreatment = 'control';
+  static const SplitResult _controlResult =
+      SplitResult(_controlTreatment, null);
+
   String matchingKey;
   String? bucketingKey;
 
   SplitClient(this.matchingKey, this.bucketingKey);
 
-  Future<String?> getTreatment(String treatment,
+  Future<String> getTreatment(String treatment,
       [Map<String, dynamic> attributes = const {}]) async {
-    //TODO implement
+    return ''; //TODO implement
   }
 
-  Future<SplitResult?> getTreatmentWithConfig(String treatment,
+  Future<SplitResult> getTreatmentWithConfig(String treatment,
       [Map<String, dynamic> attributes = const {}]) async {
-    // TODO implement
+    return _controlResult; //TODO implement
+  }
+
+  Future<Map<String, String>> getTreatments(List<String> treatments,
+      [Map<String, dynamic> attributes = const {}]) async {
+    Map<String, String> result = {};
+    for (String treatment in treatments) {
+      result.addAll({treatment: _controlTreatment});
+    }
+
+    return Future.value(result); //TODO implement
+  }
+
+  Future<Map<String, SplitResult>> getTreatmentsWithConfig(
+      List<String> treatments,
+      [Map<String, dynamic> attributes = const {}]) async {
+    Map<String, SplitResult> result = {};
+    for (String treatment in treatments) {
+      result.addAll({treatment: _controlResult});
+    }
+
+    return Future.value(result); //TODO implement
   }
 
   Future<bool> track(String eventType,
@@ -31,7 +57,7 @@ class SplitClient {
     return false;
   }
 
-  dynamic getAttribute(String attributeName) async {
+  Object? getAttribute(String attributeName) async {
     // TODO implement
     return null;
   }

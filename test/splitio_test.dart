@@ -88,4 +88,56 @@ void main() {
       //TODO
     });
   });
+
+  group('client', () {
+    test('get client with no keys', () {
+      var splitio = Splitio();
+      splitio.init('api-key', 'matching-key');
+
+      splitio.client();
+
+      expect(methodName, 'getClient');
+      expect(methodArguments,
+          {'matchingKey': 'matching-key', 'waitForReady': false});
+    });
+
+    test('get client with no keys waiting for ready', () {
+      var splitio = Splitio();
+      splitio.init('api-key', 'matching-key');
+
+      splitio.client(waitForReady: true);
+
+      expect(methodName, 'getClient');
+      expect(methodArguments,
+          {'matchingKey': 'matching-key', 'waitForReady': true});
+    });
+
+    test('get client with new matching key', () {
+      var splitio = Splitio();
+      splitio.init('api-key', 'matching-key');
+
+      splitio.client(matchingKey: 'new-matching-key', waitForReady: true);
+
+      expect(methodName, 'getClient');
+      expect(methodArguments,
+          {'matchingKey': 'new-matching-key', 'waitForReady': true});
+    });
+
+    test('get client with new matching key and bucketing key', () {
+      var splitio = Splitio();
+      splitio.init('api-key', 'matching-key');
+
+      splitio.client(
+          matchingKey: 'new-matching-key',
+          bucketingKey: 'bucketing-key',
+          waitForReady: true);
+
+      expect(methodName, 'getClient');
+      expect(methodArguments, {
+        'matchingKey': 'new-matching-key',
+        'bucketingKey': 'bucketing-key',
+        'waitForReady': true
+      });
+    });
+  });
 }

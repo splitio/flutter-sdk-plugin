@@ -1,6 +1,6 @@
 class SplitResult {
-  String treatment;
-  String? config;
+  final String treatment;
+  final String? config;
 
-  SplitResult(this.treatment, this.config);
+  const SplitResult(this.treatment, this.config);
 }
