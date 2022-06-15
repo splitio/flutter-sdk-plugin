@@ -11,15 +11,15 @@ class SplitTests: XCTestCase {
     }
 
     func testGetClient() throws {
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing")
+        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false)
         XCTAssert(client != nil)
     }
 
     func testDestroy() throws {
-        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing") as? SplitClientStub
-        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil) as? SplitClientStub
+        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false) as? SplitClientStub
+        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true) as? SplitClientStub
         splitWrapper?.destroy()
-        
+
         XCTAssertTrue(client1?.destroyCalled.expectedFulfillmentCount == 1)
         XCTAssertTrue(client2?.destroyCalled.expectedFulfillmentCount == 1)
     }
