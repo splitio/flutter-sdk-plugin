@@ -55,6 +55,10 @@ class SplitWrapperImpl implements SplitWrapper {
         };
 
         if (waitForReady) {
+            if (client.isReady()) {
+                return;
+            }
+
             client.on(SplitEvent.SDK_READY, returnTask);
         } else {
             client.on(SplitEvent.SDK_READY_FROM_CACHE, returnTask);
