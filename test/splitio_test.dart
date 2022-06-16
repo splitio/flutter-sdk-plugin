@@ -30,7 +30,7 @@ void main() {
 
   group('initialization', () {
     test('init with matching key only', () {
-      Splitio().init('api-key', 'matching-key');
+      Splitio('api-key', 'matching-key').init();
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
@@ -40,7 +40,7 @@ void main() {
     });
 
     test('init with bucketing key', () {
-      Splitio().init('api-key', 'matching-key', bucketingKey: 'bucketing-key');
+      Splitio('api-key', 'matching-key', bucketingKey: 'bucketing-key').init();
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
@@ -51,10 +51,11 @@ void main() {
     });
 
     test('init with config', () {
-      Splitio().init('api-key', 'matching-key',
-          bucketingKey: 'bucketing-key',
-          configuration:
-              SplitConfiguration(enableDebug: true, streamingEnabled: false));
+      Splitio('api-key', 'matching-key',
+              bucketingKey: 'bucketing-key',
+              configuration: SplitConfiguration(
+                  enableDebug: true, streamingEnabled: false))
+          .init();
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
@@ -67,7 +68,7 @@ void main() {
 
   group('manager', () {
     test('get split', () {
-      Splitio().split('feature');
+      Splitio('api-key', 'matching-key').split('feature');
 
       expect(methodName, 'split');
       expect(methodArguments, {'featureName': 'feature'});
@@ -78,10 +79,7 @@ void main() {
     });
 
     test('get split names', () {
-      Splitio().splitNames();
-
-      expect(methodName, 'splitNames');
-      expect(methodArguments, null);
+      //TODO
     });
 
     test('get split names returns list of strings', () {
@@ -91,8 +89,8 @@ void main() {
 
   group('client', () {
     test('get client with no keys', () {
-      var splitio = Splitio();
-      splitio.init('api-key', 'matching-key');
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.init();
 
       splitio.client();
 
@@ -102,8 +100,8 @@ void main() {
     });
 
     test('get client with no keys waiting for ready', () {
-      var splitio = Splitio();
-      splitio.init('api-key', 'matching-key');
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.init();
 
       splitio.client(waitForReady: true);
 
@@ -113,8 +111,8 @@ void main() {
     });
 
     test('get client with new matching key', () {
-      var splitio = Splitio();
-      splitio.init('api-key', 'matching-key');
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.init();
 
       splitio.client(matchingKey: 'new-matching-key', waitForReady: true);
 
@@ -124,8 +122,8 @@ void main() {
     });
 
     test('get client with new matching key and bucketing key', () {
-      var splitio = Splitio();
-      splitio.init('api-key', 'matching-key');
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.init();
 
       splitio.client(
           matchingKey: 'new-matching-key',
