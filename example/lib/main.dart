@@ -18,7 +18,8 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _matchingKey = 'Unknown';
-  Splitio _split = Splitio();
+  final Splitio _split = Splitio('api-key', 'key1',
+      configuration: SplitConfiguration(enableDebug: true));
   SplitClient? _client;
 
   @override
@@ -29,8 +30,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> initSplit() async {
     print("initSplit-start");
-    await _split.init('qer622vvc3ka6arore2qgibqgtqakip5bh76', 'key1',
-        configuration: SplitConfiguration(enableDebug: true));
+    await _split.init();
 
     _client = await _split.client(matchingKey: 'key1', waitForReady: true);
     print("initSplit-end");
@@ -50,9 +50,24 @@ class _MyAppState extends State<MyApp> {
           title: const Text('Plugin example app'),
         ),
         body: Center(
-          child: Text('Running with key: $_matchingKey\n'),
-        ),
+            child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text('Running with key: $_matchingKey\n'),
+            ElevatedButton(
+                onPressed: performEvaluation,
+                child: const Text('Evaluate android_test_2'))
+          ],
+        )),
       ),
     );
+  }
+
+  void performEvaluation() async {
+    String? treatment = await _client?.getTreatment('android_test_2');
+    if (treatment != null) {
+      print('Treatment is: ' + treatment);
+    }
   }
 }

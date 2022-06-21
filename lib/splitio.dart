@@ -8,32 +8,35 @@ import 'package:splitio/split_view.dart';
 class Splitio {
   static const MethodChannel _channel = MethodChannel('splitio');
 
-  String? _defaultMatchingKey;
+  final String _apiKey;
+  final String _defaultMatchingKey;
+  String? _defaultBucketingKey;
+  SplitConfiguration? _splitConfiguration;
 
-  Future<void> init(String apiKey, String matchingKey,
-      {String? bucketingKey, SplitConfiguration? configuration}) async {
-    _defaultMatchingKey = matchingKey;
+  Splitio(this._apiKey, this._defaultMatchingKey,
+      {String? bucketingKey, SplitConfiguration? configuration}) {
+    _defaultBucketingKey = bucketingKey;
+    _splitConfiguration = configuration;
+  }
 
-    var arguments = {
-      'apiKey': apiKey,
-      'matchingKey': matchingKey,
-      'sdkConfiguration': configuration?.configurationMap ?? {},
+  Future<void> init() async {
+    Map<String, Object?> arguments = {
+      'apiKey': _apiKey,
+      'matchingKey': _defaultMatchingKey,
+      'sdkConfiguration': _splitConfiguration?.configurationMap ?? {},
     };
 
-    if (bucketingKey != null) {
-      arguments.addAll({'bucketingKey': bucketingKey});
+    if (_defaultBucketingKey != null) {
+      arguments.addAll({'bucketingKey': _defaultBucketingKey});
     }
     await _channel.invokeMethod('init', arguments);
   }
 
-  Future<SplitClient?> client(
+  Future<SplitClient> client(
       {String? matchingKey,
       String? bucketingKey,
       bool waitForReady = false}) async {
     String? key = matchingKey ?? _defaultMatchingKey;
-    if (key == null) {
-      return null;
-    }
 
     var arguments = {
       'matchingKey': key,
@@ -46,9 +49,6 @@ class Splitio {
 
     final Map<String, dynamic>? result =
         await _channel.invokeMethod('getClient', arguments);
-    if (result == null) {
-      return null;
-    }
 
     return SplitClient(key, bucketingKey);
   }
