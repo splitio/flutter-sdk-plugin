@@ -25,17 +25,21 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private Context mContext;
     private SplitWrapper mSplitWrapper;
     private final ArgumentParser mArgumentParser;
+    private final MethodChannel mMethodChannel;
 
-    public SplitMethodParserImpl(@NonNull Context context) {
+    public SplitMethodParserImpl(@NonNull Context context, MethodChannel channel) {
         mContext = context;
         mArgumentParser = new ArgumentParserImpl();
+        mMethodChannel = channel;
     }
 
     @VisibleForTesting
     public SplitMethodParserImpl(@NonNull SplitWrapper splitWrapper,
-                                 @NonNull ArgumentParser argumentParser) {
+                                 @NonNull ArgumentParser argumentParser,
+                                 @NonNull MethodChannel channel) {
         mSplitWrapper = splitWrapper;
         mArgumentParser = argumentParser;
+        mMethodChannel = channel;
     }
 
     @Override
@@ -69,12 +73,14 @@ class SplitMethodParserImpl implements SplitMethodParser {
         mSplitWrapper = new SplitWrapperImpl(new SplitFactoryProviderImpl(
                 mContext, apiKey, matchingKey, bucketingKey, SplitClientConfigHelper.fromMap(mapArgument)
         ));
+
         result.success(null);
     }
 
     private void getClient(String matchingKey, String bucketingKey, boolean waitForReady, MethodChannel.Result result) {
         if (mSplitWrapper != null) {
-            mSplitWrapper.getClient(matchingKey, bucketingKey, waitForReady);
+            mSplitWrapper.getClient(matchingKey, bucketingKey, waitForReady, mMethodChannel);
+
             result.success(null);
         } else {
             result.error(ERROR_SDK_NOT_INITIALIZED, ERROR_SDK_NOT_INITIALIZED_MESSAGE, null);

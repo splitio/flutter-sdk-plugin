@@ -8,10 +8,10 @@ class SplitClient {
   static const SplitResult _controlResult =
       SplitResult(_controlTreatment, null);
 
-  String matchingKey;
-  String? bucketingKey;
+  final String matchingKey;
+  final String? bucketingKey;
 
-  SplitClient(this.matchingKey, this.bucketingKey);
+  const SplitClient(this.matchingKey, this.bucketingKey);
 
   Future<String> getTreatment(String treatment,
       [Map<String, dynamic> attributes = const {}]) async {

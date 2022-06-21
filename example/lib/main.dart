@@ -25,20 +25,36 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    setupState();
     initSplit();
   }
 
-  Future<void> initSplit() async {
-    print("initSplit-start");
-    await _split.init();
-
-    _client = await _split.client(matchingKey: 'key1', waitForReady: true);
-    print("initSplit-end");
-
+  void setupState() {
     if (!mounted) return;
 
     setState(() {
       _matchingKey = _client?.matchingKey ?? 'Unknown';
+    });
+  }
+
+  Future<void> initSplit() async {
+    print("initSplit-start");
+    _split.init().then((value) => {_initClients()});
+  }
+
+  void _initClients() {
+    _split
+        .client((client) => {_client = client},
+            matchingKey: 'key1', waitForReady: true)
+        .then((value) {
+      print("initSplit-clientRequested_for_key1");
+    });
+
+    _split
+        .client((client) => {print('initSplit-end_forClient_key2')},
+            matchingKey: 'key2', waitForReady: true)
+        .then((value) {
+      print("initSplit-secondClientRequested_for_key2");
     });
   }
 
