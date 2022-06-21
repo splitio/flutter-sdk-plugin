@@ -24,11 +24,13 @@ public class SplitMethodParserImplTest {
     private ArgumentParser mArgumentParser;
     @Mock
     private MethodChannel.Result mResult;
+    @Mock
+    private MethodChannel mMethodChannel;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser);
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
     }
 
     @Test
@@ -45,12 +47,12 @@ public class SplitMethodParserImplTest {
         mMethodParser.onMethodCall("getClient", map, mResult);
 
         verify(mResult).success(null);
-        verify(mSplitWrapper).getClient("user-key", "bucketing-key", true);
+        verify(mSplitWrapper).getClient("user-key", "bucketing-key", true, mMethodChannel);
     }
 
     @Test
     public void failingGetClient() {
-        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser);
+        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel);
 
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
@@ -69,7 +71,7 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void destroy() {
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser);
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
 
         mMethodParser.onMethodCall("destroy", Collections.emptyMap(), mResult);
 

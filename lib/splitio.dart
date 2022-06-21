@@ -13,8 +13,8 @@ class Splitio {
 
   final String _apiKey;
   final String _defaultMatchingKey;
-  String? _defaultBucketingKey;
-  SplitConfiguration? _splitConfiguration;
+  late final String? _defaultBucketingKey;
+  late final SplitConfiguration? _splitConfiguration;
   final Map<String, ClientReadinessCallback?> _clientReadyCallbacks = {};
 
   Splitio(this._apiKey, this._defaultMatchingKey,
@@ -42,23 +42,15 @@ class Splitio {
       {String? matchingKey,
       String? bucketingKey,
       bool waitForReady = false}) async {
-    String? key = matchingKey ?? _defaultMatchingKey;
-
     Completer<SplitClient> completer = Completer();
+
+    String? key = matchingKey ?? _defaultMatchingKey;
 
     _clientReadyCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
         (client) => {completer.complete(client)};
 
-    var arguments = {
-      'matchingKey': key,
-      'waitForReady': waitForReady,
-    };
-
-    if (bucketingKey != null) {
-      arguments.addAll({'bucketingKey': bucketingKey});
-    }
-
-    _channel.invokeMethod('getClient', arguments);
+    _channel.invokeMethod(
+        'getClient', _buildGetClientArguments(key, bucketingKey, waitForReady));
 
     return completer.future;
   }
@@ -93,11 +85,27 @@ class Splitio {
             ?.call(SplitClient(matchingKey, bucketingKey));
 
         _clientReadyCallbacks.remove(key);
+
+        _channel.invokeMethod('removeClientCallback', {'key': key});
       }
     }
   }
 
-  _buildKeyForCallbackMap(String matchingKey, String? bucketingKey) {
+  String _buildKeyForCallbackMap(String matchingKey, String? bucketingKey) {
     return matchingKey + '_' + (bucketingKey ?? 'null');
+  }
+
+  Map<String, Object> _buildGetClientArguments(
+      String key, String? bucketingKey, bool waitForReady) {
+    var arguments = {
+      'matchingKey': key,
+      'waitForReady': waitForReady,
+    };
+
+    if (bucketingKey != null) {
+      arguments.addAll({'bucketingKey': bucketingKey});
+    }
+
+    return arguments;
   }
 }
