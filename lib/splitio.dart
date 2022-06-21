@@ -73,6 +73,7 @@ class Splitio {
     });
   }
 
+  /// Call handler for calls coming from the native side
   Future<void> _methodCallHandler(MethodCall call) async {
     if (call.method == 'clientReady') {
       var matchingKey = call.arguments['matchingKey'];
@@ -84,8 +85,6 @@ class Splitio {
             ?.call(SplitClient(matchingKey, bucketingKey));
 
         _clientReadyCallbacks.remove(key);
-
-        _channel.invokeMethod('removeClientCallback', {'key': key});
       }
     }
   }
