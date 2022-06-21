@@ -6,7 +6,6 @@ import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
-typedef CancelListening = void Function();
 
 class Splitio {
   static const MethodChannel _channel = MethodChannel('splitio');
