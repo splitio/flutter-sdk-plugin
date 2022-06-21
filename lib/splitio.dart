@@ -25,19 +25,6 @@ class Splitio {
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
-  Future<void> _methodCallHandler(MethodCall call) async {
-    if (call.method == 'clientReady') {
-      var matchingKey = call.arguments['matchingKey'];
-      var bucketingKey = call.arguments['bucketingKey'] ?? 'null';
-      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey);
-
-      if (_clientReadyCallbacks.containsKey(key)) {
-        _clientReadyCallbacks[key]
-            ?.call(SplitClient(matchingKey, bucketingKey));
-      }
-    }
-  }
-
   Future<void> init() async {
     Map<String, Object?> arguments = {
       'apiKey': _apiKey,
@@ -51,14 +38,16 @@ class Splitio {
     return _channel.invokeMethod('init', arguments);
   }
 
-  Future<void> client(ClientReadinessCallback callback,
+  Future<SplitClient> client(
       {String? matchingKey,
       String? bucketingKey,
       bool waitForReady = false}) async {
     String? key = matchingKey ?? _defaultMatchingKey;
 
+    Completer<SplitClient> completer = Completer();
+
     _clientReadyCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
-        callback;
+        (client) => {completer.complete(client)};
 
     var arguments = {
       'matchingKey': key,
@@ -69,7 +58,9 @@ class Splitio {
       arguments.addAll({'bucketingKey': bucketingKey});
     }
 
-    return _channel.invokeMethod('getClient', arguments);
+    _channel.invokeMethod('getClient', arguments);
+
+    return completer.future;
   }
 
   Future<List<SplitView>> splits() async {
@@ -89,6 +80,21 @@ class Splitio {
     return _channel.invokeMethod('splitNames').then((value) {
       return []; //TODO
     });
+  }
+
+  Future<void> _methodCallHandler(MethodCall call) async {
+    if (call.method == 'clientReady') {
+      var matchingKey = call.arguments['matchingKey'];
+      var bucketingKey = call.arguments['bucketingKey'] ?? 'null';
+      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey);
+
+      if (_clientReadyCallbacks.containsKey(key)) {
+        _clientReadyCallbacks[key]
+            ?.call(SplitClient(matchingKey, bucketingKey));
+
+        _clientReadyCallbacks.remove(key);
+      }
+    }
   }
 
   _buildKeyForCallbackMap(String matchingKey, String? bucketingKey) {

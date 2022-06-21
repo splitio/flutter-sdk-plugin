@@ -43,18 +43,12 @@ class _MyAppState extends State<MyApp> {
   }
 
   void _initClients() {
-    _split
-        .client((client) => {_client = client},
-            matchingKey: 'key1', waitForReady: true)
-        .then((value) {
-      print("initSplit-clientRequested_for_key1");
+    _split.client(matchingKey: 'key1', waitForReady: false).then((value) {
+      print('initSplit-end_forClient_key1');
     });
 
-    _split
-        .client((client) => {print('initSplit-end_forClient_key2')},
-            matchingKey: 'key2', waitForReady: true)
-        .then((value) {
-      print("initSplit-secondClientRequested_for_key2");
+    _split.client(matchingKey: 'key2', waitForReady: false).then((value) {
+      print('initSplit-end_forClient_key2');
     });
   }
 
