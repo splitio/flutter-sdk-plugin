@@ -62,6 +62,18 @@ public class SplitWrapperImplTest {
     }
 
     @Test
+    public void testCallbackMethodNameAndArgumentsAreCorrectWithoutBucketingKey() {
+        SplitClient clientMock = mock(SplitClient.class);
+        when(clientMock.isReady()).thenReturn(true);
+        when(mSplitFactory.client(any(Key.class))).thenReturn(clientMock);
+        SplitClient client = mSplitWrapper.getClient("key", null, true, mMethodChannel);
+
+        Map<String, String> args = new HashMap<>();
+        args.put("matchingKey", "key");
+        verify(mMethodChannel).invokeMethod("clientReady", args);
+    }
+
+    @Test
     public void testDestroy() {
         SplitClient clientMock = mock(SplitClient.class);
         SplitClient clientMock2 = mock(SplitClient.class);
