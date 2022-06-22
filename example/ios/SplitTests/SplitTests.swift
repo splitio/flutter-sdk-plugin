@@ -11,13 +11,38 @@ class SplitTests: XCTestCase {
     }
 
     func testGetClient() throws {
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false)
+        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false, methodChannel: MethodChannelStub())
         XCTAssert(client != nil)
     }
 
+    func testCallbackMethodNameAndArgumentsAreCorrect() {
+        let channelStub = MethodChannelStub()
+        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: true, methodChannel: channelStub)
+
+        (client as? SplitClientStub)?.sdkReadyEventAction?()
+
+        XCTAssert(channelStub.methodName == "clientReady")
+        let args = channelStub.arguments as? [String: String]
+        XCTAssert(args?.count == 2)
+        XCTAssert(args?["matchingKey"] == "key")
+        XCTAssert(args?["bucketingKey"] == "bucketing")
+    }
+
+    func testCallbackMethodNameAndArgumentsAreCorrectWithoutBucketingKey() {
+        let channelStub = MethodChannelStub()
+        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true, methodChannel: channelStub)
+
+        (client as? SplitClientStub)?.sdkReadyEventAction?()
+
+        XCTAssert(channelStub.methodName == "clientReady")
+        let args = channelStub.arguments as? [String: String]
+        XCTAssert(args?.count == 1)
+        XCTAssert(args?["matchingKey"] == "key")
+    }
+
     func testDestroy() throws {
-        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false) as? SplitClientStub
-        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true) as? SplitClientStub
+        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false, methodChannel: MethodChannelStub()) as? SplitClientStub
+        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true, methodChannel: MethodChannelStub()) as? SplitClientStub
         splitWrapper?.destroy()
 
         XCTAssertTrue(client1?.destroyCalled.expectedFulfillmentCount == 1)
@@ -69,6 +94,7 @@ class SplitFactoryStub: SplitFactory {
 class SplitClientStub: SplitClient {
     
     var destroyCalled: XCTestExpectation = XCTestExpectation()
+    var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String : Any]?) -> String {
         return SplitConstants.control
@@ -95,6 +121,9 @@ class SplitClientStub: SplitClient {
     }
     
     func on(event: SplitEvent, execute action: @escaping SplitAction) {
+        if (event == SplitEvent.sdkReady) {
+            sdkReadyEventAction = action
+        }
     }
     
     func track(trafficType: String, eventType: String) -> Bool {
@@ -180,5 +209,15 @@ class SplitManagerStub: SplitManager, Destroyable {
     var destroyCalled = false
     func destroy() {
         destroyCalled = true
+    }
+}
+
+class MethodChannelStub : FlutterMethodChannel {
+    var methodName: String = ""
+    var arguments: Any?
+
+    override func invokeMethod(_ method: String, arguments: Any?) {
+        self.methodName = method
+        self.arguments = arguments
     }
 }

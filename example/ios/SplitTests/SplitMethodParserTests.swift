@@ -4,14 +4,16 @@ import XCTest
 
 class SplitMethodParserTests: XCTestCase {
 
-    private var methodParser: SplitMethodParser? = nil
-    private var splitWrapper: SplitWrapper? = nil
-    private var argumentParser: ArgumentParser? = nil
+    private var methodParser: SplitMethodParser?
+    private var splitWrapper: SplitWrapper?
+    private var argumentParser: ArgumentParser?
+    private var methodChannel: FlutterMethodChannel?
 
     override func setUpWithError() throws {
         splitWrapper = SplitWrapperStub()
         argumentParser = DefaultArgumentParser()
-        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!)
+        methodChannel = MethodChannelStub()
+        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!)
     }
 
     func testSuccessfulGetClient() throws {
@@ -56,7 +58,7 @@ class SplitWrapperStub: SplitWrapper {
     var bucketingKeyValue = ""
     var waitForReadyValue = false
 
-    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool) -> SplitClient? {
+    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool, methodChannel: FlutterMethodChannel) -> SplitClient? {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey ?? ""
         waitForReadyValue = waitForReady

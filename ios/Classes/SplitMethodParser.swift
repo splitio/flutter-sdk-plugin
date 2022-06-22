@@ -10,45 +10,38 @@ class DefaultSplitMethodParser : SplitMethodParser {
     
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
+    private var methodChannel: FlutterMethodChannel
     
-    private let METHOD_INIT = "init";
-    private let METHOD_GET_CLIENT = "getClient";
-    private let METHOD_DESTROY = "destroy";
-
-    private let ARG_API_KEY = "apiKey";
-    private let ARG_MATCHING_KEY = "matchingKey";
-    private let ARG_BUCKETING_KEY = "bucketingKey";
-    private let ARG_CONFIG = "sdkConfiguration";
-    private let ARG_WAIT_FOR_READY = "waitForReady";
-    
-    init() {
-        argumentParser = DefaultArgumentParser()
+    init(methodChannel: FlutterMethodChannel) {
+        self.argumentParser = DefaultArgumentParser()
+        self.methodChannel = methodChannel
     }
 
-    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser) {
+    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel) {
         self.splitWrapper = splitWrapper
         self.argumentParser = argumentParser
+        self.methodChannel = methodChannel
     }
 
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
         switch (methodName) {
-            case METHOD_INIT:
+            case Constants.Methods.METHOD_INIT:
                 initializeSplit(
-                    apiKey: argumentParser.getStringArgument(argumentName: ARG_API_KEY, arguments: arguments) ?? "",
-                    matchingKey: argumentParser.getStringArgument(argumentName: ARG_MATCHING_KEY, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: ARG_BUCKETING_KEY, arguments: arguments),
-                    configurationMap: argumentParser.getMapArgument(argumentName: ARG_CONFIG, arguments: arguments),
+                    apiKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_API_KEY, arguments: arguments) ?? "",
+                    matchingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_MATCHING_KEY, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_BUCKETING_KEY, arguments: arguments),
+                    configurationMap: argumentParser.getMapArgument(argumentName: Constants.Arguments.ARG_CONFIG, arguments: arguments),
                     result: result
                 )
                 break
-            case METHOD_GET_CLIENT:
+            case Constants.Methods.METHOD_GET_CLIENT:
                 getClient(
-                    matchingKey: argumentParser.getStringArgument(argumentName: ARG_MATCHING_KEY, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: ARG_BUCKETING_KEY, arguments: arguments),
-                    waitForReady: argumentParser.getBooleanArgument(argumentName: ARG_WAIT_FOR_READY, arguments: arguments),
+                    matchingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_MATCHING_KEY, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_BUCKETING_KEY, arguments: arguments),
+                    waitForReady: argumentParser.getBooleanArgument(argumentName: Constants.Arguments.ARG_WAIT_FOR_READY, arguments: arguments),
                     result: result);
                 break;
-            case METHOD_DESTROY:
+            case Constants.Methods.METHOD_DESTROY:
                 splitWrapper?.destroy();
                 result(nil);
             default:
@@ -69,7 +62,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
-        splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
+        splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady, methodChannel: self.methodChannel)
         result(nil)
     }
 }
