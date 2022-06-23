@@ -58,7 +58,7 @@ class SplitWrapperStub: SplitWrapper {
     var bucketingKeyValue = ""
     var waitForReadyValue = false
 
-    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool, methodChannel: FlutterMethodChannel) -> SplitClient? {
+    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool) -> SplitClient? {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey ?? ""
         waitForReadyValue = waitForReady

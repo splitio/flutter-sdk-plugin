@@ -62,7 +62,37 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
-        splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady, methodChannel: self.methodChannel)
+        let client = splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
+        if let client = client {
+            addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: self.methodChannel, waitForReady: waitForReady)
+        }
         result(nil)
+    }
+
+    private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {
+        if (waitForReady) {
+            client?.on(event: SplitEvent.sdkReady) {
+                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
+            }
+        } else {
+            client?.on(event: SplitEvent.sdkReadyFromCache) {
+                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
+            }
+        }
+
+        client?.on(event: SplitEvent.sdkReadyTimedOut) {
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
+        }
+    }
+
+    private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?) {
+        var args = [String: String]()
+        args[Constants.Arguments.ARG_MATCHING_KEY] = matchingKey
+
+        if let bucketing = bucketingKey {
+            args[Constants.Arguments.ARG_BUCKETING_KEY] = bucketing
+        }
+
+        methodChannel.invokeMethod(Constants.Methods.METHOD_CLIENT_READY, arguments: args)
     }
 }

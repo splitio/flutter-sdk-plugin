@@ -3,7 +3,7 @@ import Split
 
 protocol SplitWrapper {
 
-    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool, methodChannel: FlutterMethodChannel) -> SplitClient?
+    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool) -> SplitClient?
 
     func destroy()
 }
@@ -18,14 +18,11 @@ class DefaultSplitWrapper : SplitWrapper {
         usedKeys = Set()
     }
 
-    func getClient(matchingKey: String, bucketingKey: String? = nil, waitForReady: Bool = false, methodChannel: FlutterMethodChannel) -> SplitClient? {
+    func getClient(matchingKey: String, bucketingKey: String? = nil, waitForReady: Bool = false) -> SplitClient? {
         let key = buildKey(matchingKey: matchingKey, bucketingKey: bucketingKey)
-        let client = splitFactory?.client(key: key)
         usedKeys.insert(key)
 
-        addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: methodChannel, waitForReady: waitForReady)
-
-        return client
+        return splitFactory?.client(key: key)
     }
 
     func destroy() {
@@ -35,33 +32,6 @@ class DefaultSplitWrapper : SplitWrapper {
                 client.destroy()
             }
         }
-    }
-
-    private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {
-        if (waitForReady) {
-            client?.on(event: SplitEvent.sdkReady) {
-                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
-            }
-        } else {
-            client?.on(event: SplitEvent.sdkReadyFromCache) {
-                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
-            }
-        }
-
-        client?.on(event: SplitEvent.sdkReadyTimedOut) {
-            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
-        }
-    }
-
-    private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?) {
-        var args = [String: String]()
-        args[Constants.Arguments.ARG_MATCHING_KEY] = matchingKey
-
-        if let bucketing = bucketingKey {
-            args[Constants.Arguments.ARG_BUCKETING_KEY] = bucketing
-        }
-
-        methodChannel.invokeMethod(Constants.Methods.METHOD_CLIENT_READY, arguments: args)
     }
 }
 

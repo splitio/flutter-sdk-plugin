@@ -11,38 +11,13 @@ class SplitTests: XCTestCase {
     }
 
     func testGetClient() throws {
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false, methodChannel: MethodChannelStub())
+        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false)
         XCTAssert(client != nil)
     }
 
-    func testCallbackMethodNameAndArgumentsAreCorrect() {
-        let channelStub = MethodChannelStub()
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: true, methodChannel: channelStub)
-
-        (client as? SplitClientStub)?.sdkReadyEventAction?()
-
-        XCTAssert(channelStub.methodName == "clientReady")
-        let args = channelStub.arguments as? [String: String]
-        XCTAssert(args?.count == 2)
-        XCTAssert(args?["matchingKey"] == "key")
-        XCTAssert(args?["bucketingKey"] == "bucketing")
-    }
-
-    func testCallbackMethodNameAndArgumentsAreCorrectWithoutBucketingKey() {
-        let channelStub = MethodChannelStub()
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true, methodChannel: channelStub)
-
-        (client as? SplitClientStub)?.sdkReadyEventAction?()
-
-        XCTAssert(channelStub.methodName == "clientReady")
-        let args = channelStub.arguments as? [String: String]
-        XCTAssert(args?.count == 1)
-        XCTAssert(args?["matchingKey"] == "key")
-    }
-
     func testDestroy() throws {
-        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false, methodChannel: MethodChannelStub()) as? SplitClientStub
-        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true, methodChannel: MethodChannelStub()) as? SplitClientStub
+        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false) as? SplitClientStub
+        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true) as? SplitClientStub
         splitWrapper?.destroy()
 
         XCTAssertTrue(client1?.destroyCalled.expectedFulfillmentCount == 1)
