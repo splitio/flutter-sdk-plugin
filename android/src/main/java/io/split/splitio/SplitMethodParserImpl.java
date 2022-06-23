@@ -1,16 +1,16 @@
 package io.split.splitio;
 
-import static io.split.splitio.Constants.ARG_API_KEY;
-import static io.split.splitio.Constants.ARG_BUCKETING_KEY;
-import static io.split.splitio.Constants.ARG_CONFIG;
-import static io.split.splitio.Constants.ARG_MATCHING_KEY;
-import static io.split.splitio.Constants.ARG_WAIT_FOR_READY;
-import static io.split.splitio.Constants.ERROR_SDK_NOT_INITIALIZED;
-import static io.split.splitio.Constants.ERROR_SDK_NOT_INITIALIZED_MESSAGE;
-import static io.split.splitio.Constants.METHOD_CLIENT_READY;
-import static io.split.splitio.Constants.METHOD_DESTROY;
-import static io.split.splitio.Constants.METHOD_GET_CLIENT;
-import static io.split.splitio.Constants.METHOD_INIT;
+import static io.split.splitio.Constants.Argument.ARG_API_KEY;
+import static io.split.splitio.Constants.Argument.ARG_BUCKETING_KEY;
+import static io.split.splitio.Constants.Argument.ARG_CONFIG;
+import static io.split.splitio.Constants.Argument.ARG_MATCHING_KEY;
+import static io.split.splitio.Constants.Argument.ARG_WAIT_FOR_READY;
+import static io.split.splitio.Constants.Error.ERROR_SDK_NOT_INITIALIZED;
+import static io.split.splitio.Constants.Error.ERROR_SDK_NOT_INITIALIZED_MESSAGE;
+import static io.split.splitio.Constants.Method.METHOD_CLIENT_READY;
+import static io.split.splitio.Constants.Method.METHOD_DESTROY;
+import static io.split.splitio.Constants.Method.METHOD_GET_CLIENT;
+import static io.split.splitio.Constants.Method.METHOD_INIT;
 
 import android.content.Context;
 
@@ -116,7 +116,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
     }
 
     private static void invokeCallback(MethodChannel methodChannel, String matchingKey, @Nullable String bucketingKey) {
-        Map<String, String> arguments = new HashMap<>();
+        final Map<String, String> arguments = new HashMap<>();
         arguments.put(ARG_MATCHING_KEY, matchingKey);
         if (bucketingKey != null) {
             arguments.put(ARG_BUCKETING_KEY, bucketingKey);
