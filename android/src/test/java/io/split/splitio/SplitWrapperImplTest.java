@@ -12,10 +12,6 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.api.Key;
@@ -28,8 +24,6 @@ public class SplitWrapperImplTest {
     private SplitFactoryProvider mSplitFactoryProvider;
     @Mock
     private SplitFactory mSplitFactory;
-    @Mock
-    private MethodChannel mMethodChannel;
 
     @Before
     public void setUp() {
@@ -43,34 +37,9 @@ public class SplitWrapperImplTest {
     public void testGetClient() {
         SplitClient clientMock = mock(SplitClient.class);
         when(mSplitFactory.client(any(Key.class))).thenReturn(clientMock);
-        SplitClient client = mSplitWrapper.getClient("key", "bucketing", false, mMethodChannel);
+        SplitClient client = mSplitWrapper.getClient("key", "bucketing", false);
 
         assertEquals(clientMock, client);
-    }
-
-    @Test
-    public void testCallbackMethodNameAndArgumentsAreCorrect() {
-        SplitClient clientMock = mock(SplitClient.class);
-        when(clientMock.isReady()).thenReturn(true);
-        when(mSplitFactory.client(any(Key.class))).thenReturn(clientMock);
-        SplitClient client = mSplitWrapper.getClient("key", "bucketing", true, mMethodChannel);
-
-        Map<String, String> args = new HashMap<>();
-        args.put("matchingKey", "key");
-        args.put("bucketingKey", "bucketing");
-        verify(mMethodChannel).invokeMethod("clientReady", args);
-    }
-
-    @Test
-    public void testCallbackMethodNameAndArgumentsAreCorrectWithoutBucketingKey() {
-        SplitClient clientMock = mock(SplitClient.class);
-        when(clientMock.isReady()).thenReturn(true);
-        when(mSplitFactory.client(any(Key.class))).thenReturn(clientMock);
-        SplitClient client = mSplitWrapper.getClient("key", null, true, mMethodChannel);
-
-        Map<String, String> args = new HashMap<>();
-        args.put("matchingKey", "key");
-        verify(mMethodChannel).invokeMethod("clientReady", args);
     }
 
     @Test
@@ -83,8 +52,8 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client(key)).thenReturn(clientMock);
         when(mSplitFactory.client(key2)).thenReturn(clientMock2);
 
-        mSplitWrapper.getClient("key", "bucketing", false, mMethodChannel);
-        mSplitWrapper.getClient("key", null, false, mMethodChannel);
+        mSplitWrapper.getClient("key", "bucketing", false);
+        mSplitWrapper.getClient("key", null, false);
         mSplitWrapper.destroy();
 
         verify(clientMock, times(1)).destroy();
