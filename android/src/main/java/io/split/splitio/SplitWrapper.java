@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import androidx.annotation.Nullable;
 
+import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
 
 interface SplitWrapper {
