@@ -24,8 +24,12 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
-        switch (methodName) {
-            case Method.initialize.rawValue:
+        guard let method = Method(rawValue: methodName) else {
+            result(FlutterMethodNotImplemented)
+            return
+        }
+        switch (method) {
+            case .initialize:
                 initializeSplit(
                     apiKey: argumentParser.getStringArgument(argumentName: Argument.apiKey, arguments: arguments) ?? "",
                     matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
@@ -34,14 +38,14 @@ class DefaultSplitMethodParser : SplitMethodParser {
                     result: result
                 )
                 break
-            case Method.client.rawValue:
+            case .client:
                 getClient(
                     matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
                     bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
                     waitForReady: argumentParser.getBooleanArgument(argumentName: Argument.waitForReady, arguments: arguments),
                     result: result);
                 break;
-            case Method.destroy.rawValue:
+            case .destroy:
                 splitWrapper?.destroy();
                 result(nil);
             default:
@@ -64,6 +68,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
     private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
         guard let splitWrapper = splitWrapper else {
             print("Init needs to be called before getClient")
+            result(nil)
             return
         }
 
