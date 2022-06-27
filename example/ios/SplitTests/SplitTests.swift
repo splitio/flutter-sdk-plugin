@@ -69,6 +69,7 @@ class SplitFactoryStub: SplitFactory {
 class SplitClientStub: SplitClient {
     
     var destroyCalled: XCTestExpectation = XCTestExpectation()
+    var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String : Any]?) -> String {
         return SplitConstants.control
@@ -95,6 +96,9 @@ class SplitClientStub: SplitClient {
     }
     
     func on(event: SplitEvent, execute action: @escaping SplitAction) {
+        if (event == SplitEvent.sdkReady) {
+            sdkReadyEventAction = action
+        }
     }
     
     func track(trafficType: String, eventType: String) -> Bool {
@@ -180,5 +184,15 @@ class SplitManagerStub: SplitManager, Destroyable {
     var destroyCalled = false
     func destroy() {
         destroyCalled = true
+    }
+}
+
+class MethodChannelStub : FlutterMethodChannel {
+    var methodName: String = ""
+    var arguments: Any?
+
+    override func invokeMethod(_ method: String, arguments: Any?) {
+        self.methodName = method
+        self.arguments = arguments
     }
 }

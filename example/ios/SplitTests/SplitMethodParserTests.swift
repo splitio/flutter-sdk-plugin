@@ -4,14 +4,16 @@ import XCTest
 
 class SplitMethodParserTests: XCTestCase {
 
-    private var methodParser: SplitMethodParser? = nil
-    private var splitWrapper: SplitWrapper? = nil
-    private var argumentParser: ArgumentParser? = nil
+    private var methodParser: SplitMethodParser?
+    private var splitWrapper: SplitWrapper?
+    private var argumentParser: ArgumentParser?
+    private var methodChannel: FlutterMethodChannel?
 
     override func setUpWithError() throws {
         splitWrapper = SplitWrapperStub()
         argumentParser = DefaultArgumentParser()
-        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!)
+        methodChannel = MethodChannelStub()
+        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!)
     }
 
     func testSuccessfulGetClient() throws {

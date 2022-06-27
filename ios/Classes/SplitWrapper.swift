@@ -19,25 +19,12 @@ class DefaultSplitWrapper : SplitWrapper {
     }
 
     func getClient(matchingKey: String, bucketingKey: String? = nil, waitForReady: Bool = false) -> SplitClient? {
-        let key = buildKey(matchingKey: matchingKey, bucketingKey: bucketingKey)
-        let semaphore = DispatchSemaphore(value: 0)
-        let client = splitFactory?.client(key: key)
+        let key = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        guard let client = splitFactory?.client(key: key) else {
+            print("Client couldn't be created")
+            return nil
+        }
         usedKeys.insert(key)
-
-        if (waitForReady) {
-            client?.on(event: SplitEvent.sdkReady) {
-                semaphore.signal()
-            }
-        } else {
-            client?.on(event: SplitEvent.sdkReadyFromCache) {
-                semaphore.signal()
-            }
-        }
-
-        client?.on(event: SplitEvent.sdkReadyTimedOut) {
-            semaphore.signal()
-        }
-        semaphore.wait(timeout: DispatchTime.now() + .seconds(10))
 
         return client
     }
@@ -50,12 +37,4 @@ class DefaultSplitWrapper : SplitWrapper {
             }
         }
     }
-}
-
-func buildKey(matchingKey: String, bucketingKey: String? = nil) -> Key {
-    if (bucketingKey != "") {
-        return Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
-    }
-
-    return Key(matchingKey: matchingKey)
 }
