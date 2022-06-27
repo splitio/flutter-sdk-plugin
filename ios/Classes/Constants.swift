@@ -5,6 +5,10 @@ enum Method: String {
     case client = "getClient"
     case destroy = "destroy"
     case clientReady = "clientReady"
+    case getTreatment = "getTreatment"
+    case getTreatments = "getTreatments"
+    case getTreatmentWithConfig = "getTreatmentWithConfig"
+    case getTreatmentsWithConfig = "getTreatmentsWithConfig"
 }
 
 enum Argument: String {
@@ -13,4 +17,6 @@ enum Argument: String {
     case bucketingKey = "bucketingKey"
     case config = "config"
     case waitForReady = "waitForReady"
+    case splitName = "splitName"
+    case attributes = "attributes"
 }

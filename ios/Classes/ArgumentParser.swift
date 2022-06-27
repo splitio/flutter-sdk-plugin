@@ -7,6 +7,8 @@ protocol ArgumentParser {
     func getBooleanArgument(argumentName: Argument, arguments: Any?) -> Bool
 
     func getMapArgument(argumentName: Argument, arguments: Any?) -> [String: Any?]
+
+    func getStringListArgument(argumentName: Argument, arguments: Any?) -> [String]
 }
 
 class DefaultArgumentParser: ArgumentParser {
@@ -42,6 +44,18 @@ class DefaultArgumentParser: ArgumentParser {
 
         guard let argumentValue = arguments[argumentName.rawValue] as? [String: Any?] else {
             return [:]
+        }
+
+        return argumentValue
+    }
+
+    func getStringListArgument(argumentName: Argument, arguments: Any?) -> [String] {
+        guard let arguments = arguments as? [String: Any?] else {
+            return []
+        }
+
+        guard let argumentValue = arguments[argumentName.rawValue] as? [String] else {
+            return []
         }
 
         return argumentValue
