@@ -14,7 +14,7 @@ class DefaultSplitFactoryProvider : SplitFactoryProvider {
         splitFactory = DefaultSplitFactoryBuilder()
             .setConfig(splitClientConfig)
             .setApiKey(apiKey)
-            .setKey(buildKey(matchingKey: matchingKey, bucketingKey: bucketingKey))
+            .setKey(Key(matchingKey: matchingKey, bucketingKey: bucketingKey))
             .build()
     }
     
