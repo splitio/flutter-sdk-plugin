@@ -3,12 +3,16 @@ package io.split.splitio;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
+import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
 import io.split.android.client.utils.ConcurrentSet;
+import io.split.android.client.utils.Logger;
 
 class SplitWrapperImpl implements SplitWrapper {
 
@@ -21,11 +25,12 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @Override
-    public SplitClient getClient(String matchingKey, @Nullable String bucketingKey, boolean waitForReady) {
+    public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
         Key key = Helper.buildKey(matchingKey, bucketingKey);
+        SplitClient client = mSplitFactory.client(matchingKey, bucketingKey);
         mUsedKeys.add(key);
 
-        return mSplitFactory.client(key);
+        return client;
     }
 
     @Override
@@ -37,5 +42,25 @@ class SplitWrapperImpl implements SplitWrapper {
                 client.destroy();
             }
         }
+    }
+
+    @Override
+    public String getTreatment(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes) {
+        return getClient(matchingKey, bucketingKey).getTreatment(splitName, attributes);
+    }
+
+    @Override
+    public Map<String, String> getTreatments(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
+        return getClient(matchingKey, bucketingKey).getTreatments(splitNames, attributes);
+    }
+
+    @Override
+    public SplitResult getTreatmentWithConfig(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes) {
+        return getClient(matchingKey, bucketingKey).getTreatmentWithConfig(splitName, attributes);
+    }
+
+    @Override
+    public Map<String, SplitResult> getTreatmentsWithConfig(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
+        return getClient(matchingKey, bucketingKey).getTreatmentsWithConfig(splitNames, attributes);
     }
 }

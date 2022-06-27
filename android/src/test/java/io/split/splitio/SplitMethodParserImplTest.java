@@ -1,5 +1,6 @@
 package io.split.splitio;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -10,6 +11,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -45,12 +47,12 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
-        when(mSplitWrapper.getClient("user-key", "bucketing-key", true)).thenReturn(mock(SplitClient.class));
+        when(mSplitWrapper.getClient("user-key", "bucketing-key")).thenReturn(mock(SplitClient.class));
 
         mMethodParser.onMethodCall("getClient", map, mResult);
 
         verify(mResult).success(null);
-        verify(mSplitWrapper).getClient("user-key", "bucketing-key", true);
+        verify(mSplitWrapper).getClient("user-key", "bucketing-key");
     }
 
     @Test
@@ -85,7 +87,7 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
-        when(mSplitWrapper.getClient("user-key", "bucketing-key", true)).thenReturn(clientMock);
+        when(mSplitWrapper.getClient("user-key", "bucketing-key")).thenReturn(clientMock);
 
         mMethodParser.onMethodCall("getClient", map, mResult);
 
@@ -107,7 +109,7 @@ public class SplitMethodParserImplTest {
 
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
-        when(mSplitWrapper.getClient("user-key", null, true)).thenReturn(clientMock);
+        when(mSplitWrapper.getClient("user-key", null)).thenReturn(clientMock);
 
         mMethodParser.onMethodCall("getClient", map, mResult);
 
@@ -115,6 +117,48 @@ public class SplitMethodParserImplTest {
         args.put("matchingKey", "user-key");
         verify(mMethodChannel).invokeMethod("clientReady", args);
         verify(mResult).success(null);
+    }
+
+    @Test
+    public void getTreatmentWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("splitName", "split-name");
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn(null);
+        when(mArgumentParser.getStringArgument("splitName", map)).thenReturn("split-name");
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatment(any(), any(), any(), any())).thenReturn("on");
+
+        mMethodParser.onMethodCall("getTreatment", map, mResult);
+
+        verify(mSplitWrapper).getTreatment("user-key", null, "split-name", Collections.singletonMap("age", 10));
+        verify(mResult).success("on");
+    }
+
+    @Test
+    public void getTreatmentsWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("splitName", Arrays.asList("split1", "split2"));
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        Map<String, String> expectedResponse = new HashMap<>();
+        expectedResponse.put("split1", "on");
+        expectedResponse.put("split2", "off");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn(null);
+        when(mArgumentParser.getStringListArgument("splitName", map)).thenReturn(Arrays.asList("split1", "split2"));
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatments(any(), any(), any(), any())).thenReturn(expectedResponse);
+
+        mMethodParser.onMethodCall("getTreatments", map, mResult);
+
+        verify(mSplitWrapper).getTreatments("user-key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 10));
+        verify(mResult).success(expectedResponse);
     }
 
     @Test

@@ -2,12 +2,11 @@ package io.split.splitio;
 
 import androidx.annotation.Nullable;
 
-import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
 
-interface SplitWrapper {
+interface SplitWrapper extends EvaluationWrapper {
 
-    SplitClient getClient(String matchingKey, @Nullable String bucketingKey, boolean waitForReady);
+    SplitClient getClient(String matchingKey, @Nullable String bucketingKey);
 
     void destroy();
 }

@@ -1,16 +1,22 @@
 package io.split.splitio;
 
-import static io.split.splitio.Constants.Argument.ARG_API_KEY;
-import static io.split.splitio.Constants.Argument.ARG_BUCKETING_KEY;
-import static io.split.splitio.Constants.Argument.ARG_CONFIG;
-import static io.split.splitio.Constants.Argument.ARG_MATCHING_KEY;
-import static io.split.splitio.Constants.Argument.ARG_WAIT_FOR_READY;
-import static io.split.splitio.Constants.Error.ERROR_SDK_NOT_INITIALIZED;
-import static io.split.splitio.Constants.Error.ERROR_SDK_NOT_INITIALIZED_MESSAGE;
-import static io.split.splitio.Constants.Method.METHOD_CLIENT_READY;
-import static io.split.splitio.Constants.Method.METHOD_DESTROY;
-import static io.split.splitio.Constants.Method.METHOD_GET_CLIENT;
-import static io.split.splitio.Constants.Method.METHOD_INIT;
+import static io.split.splitio.Constants.Argument.API_KEY;
+import static io.split.splitio.Constants.Argument.ATTRIBUTES;
+import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
+import static io.split.splitio.Constants.Argument.SDK_CONFIGURATION;
+import static io.split.splitio.Constants.Argument.MATCHING_KEY;
+import static io.split.splitio.Constants.Argument.SPLIT_NAME;
+import static io.split.splitio.Constants.Argument.WAIT_FOR_READY;
+import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED;
+import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED_MESSAGE;
+import static io.split.splitio.Constants.Method.CLIENT_READY;
+import static io.split.splitio.Constants.Method.DESTROY;
+import static io.split.splitio.Constants.Method.CLIENT;
+import static io.split.splitio.Constants.Method.GET_TREATMENT;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
+import static io.split.splitio.Constants.Method.GET_TREATMENT_WITH_CONFIG;
+import static io.split.splitio.Constants.Method.INIT;
 
 import android.content.Context;
 
@@ -19,12 +25,15 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
+import io.split.android.client.SplitResult;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
+import io.split.android.client.utils.Logger;
 
 class SplitMethodParserImpl implements SplitMethodParser {
 
@@ -51,24 +60,57 @@ class SplitMethodParserImpl implements SplitMethodParser {
     @Override
     public void onMethodCall(String methodName, Object arguments, @NonNull MethodChannel.Result result) {
         switch (methodName) {
-            case METHOD_INIT:
+            case INIT:
                 initializeSplit(
-                        mArgumentParser.getStringArgument(ARG_API_KEY, arguments),
-                        mArgumentParser.getStringArgument(ARG_MATCHING_KEY, arguments),
-                        mArgumentParser.getStringArgument(ARG_BUCKETING_KEY, arguments),
-                        mArgumentParser.getMapArgument(ARG_CONFIG, arguments),
+                        mArgumentParser.getStringArgument(API_KEY, arguments),
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getMapArgument(SDK_CONFIGURATION, arguments),
                         result);
                 break;
-            case METHOD_GET_CLIENT:
+            case CLIENT:
                 getClient(
-                        mArgumentParser.getStringArgument(ARG_MATCHING_KEY, arguments),
-                        mArgumentParser.getStringArgument(ARG_BUCKETING_KEY, arguments),
-                        mArgumentParser.getBooleanArgument(ARG_WAIT_FOR_READY, arguments),
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getBooleanArgument(WAIT_FOR_READY, arguments),
                         result);
                 break;
-            case METHOD_DESTROY:
+            case GET_TREATMENT:
+                getTreatment(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(SPLIT_NAME, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        result);
+                break;
+            case GET_TREATMENTS:
+                getTreatments(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringListArgument(SPLIT_NAME, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        result);
+                break;
+            case GET_TREATMENT_WITH_CONFIG:
+                getTreatmentWithConfig(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(SPLIT_NAME, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        result);
+                break;
+            case GET_TREATMENTS_WITH_CONFIG:
+                getTreatmentsWithConfig(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringListArgument(SPLIT_NAME, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        result);
+                break;
+            case DESTROY:
                 mSplitWrapper.destroy();
                 result.success(null);
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -79,19 +121,62 @@ class SplitMethodParserImpl implements SplitMethodParser {
         mSplitWrapper = new SplitWrapperImpl(new SplitFactoryProviderImpl(
                 mContext, apiKey, matchingKey, bucketingKey, SplitClientConfigHelper.fromMap(mapArgument)
         ));
-
         result.success(null);
     }
 
     private void getClient(String matchingKey, String bucketingKey, boolean waitForReady, MethodChannel.Result result) {
         if (mSplitWrapper != null) {
-            SplitClient client = mSplitWrapper.getClient(matchingKey, bucketingKey, waitForReady);
+            SplitClient client = mSplitWrapper.getClient(matchingKey, bucketingKey);
             addEventListeners(client, matchingKey, bucketingKey, mMethodChannel, waitForReady);
 
             result.success(null);
         } else {
-            result.error(ERROR_SDK_NOT_INITIALIZED, ERROR_SDK_NOT_INITIALIZED_MESSAGE, null);
+            result.error(SDK_NOT_INITIALIZED, SDK_NOT_INITIALIZED_MESSAGE, null);
         }
+    }
+
+    private void getTreatment(String matchingKey,
+                              String bucketingKey,
+                              String splitName,
+                              Map<String, Object> attributes,
+                              MethodChannel.Result result) {
+        String treatment = mSplitWrapper.getTreatment(matchingKey, bucketingKey, splitName, attributes);
+        result.success(treatment);
+    }
+
+    private void getTreatments(String matchingKey,
+                               String bucketingKey,
+                               List<String> splitNames,
+                               Map<String, Object> attributes,
+                               MethodChannel.Result result) {
+        Map<String, String> treatments = mSplitWrapper.getTreatments(matchingKey, bucketingKey, splitNames, attributes);
+        result.success(treatments);
+    }
+
+    private void getTreatmentWithConfig(
+            String matchingKey,
+            String bucketingKey,
+            String splitName,
+            Map<String, Object> attributes,
+            MethodChannel.Result result) {
+        SplitResult treatment = mSplitWrapper.getTreatmentWithConfig(matchingKey, bucketingKey, splitName, attributes);
+        result.success(getSplitResultMap(treatment));
+    }
+
+    private void getTreatmentsWithConfig(
+            String matchingKey,
+            String bucketingKey,
+            List<String> splitNames,
+            Map<String, Object> attributes,
+            MethodChannel.Result result) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfig(matchingKey, bucketingKey, splitNames, attributes);
+        Map<String, Map<String, String>> resultMap = new HashMap<>();
+
+        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
+            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
+        }
+
+        result.success(resultMap);
     }
 
     private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel, boolean waitForReady) {
@@ -105,9 +190,9 @@ class SplitMethodParserImpl implements SplitMethodParser {
         if (waitForReady) {
             if (client.isReady()) {
                 invokeCallback(methodChannel, matchingKey, bucketingKey);
+            } else {
+                client.on(SplitEvent.SDK_READY, returnTask);
             }
-
-            client.on(SplitEvent.SDK_READY, returnTask);
         } else {
             client.on(SplitEvent.SDK_READY_FROM_CACHE, returnTask);
         }
@@ -117,11 +202,20 @@ class SplitMethodParserImpl implements SplitMethodParser {
 
     private static void invokeCallback(MethodChannel methodChannel, String matchingKey, @Nullable String bucketingKey) {
         final Map<String, String> arguments = new HashMap<>();
-        arguments.put(ARG_MATCHING_KEY, matchingKey);
+        arguments.put(MATCHING_KEY, matchingKey);
         if (bucketingKey != null) {
-            arguments.put(ARG_BUCKETING_KEY, bucketingKey);
+            arguments.put(BUCKETING_KEY, bucketingKey);
         }
 
-        methodChannel.invokeMethod(METHOD_CLIENT_READY, arguments);
+        methodChannel.invokeMethod(CLIENT_READY, arguments);
+    }
+
+    private static Map<String, String> getSplitResultMap(SplitResult splitResult) {
+        Map<String, String> splitResultMap = new HashMap<>();
+
+        splitResultMap.put("treatment", splitResult.treatment());
+        splitResultMap.put("config", splitResult.config());
+
+        return splitResultMap;
     }
 }

@@ -9,8 +9,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.MockitoAnnotations;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ArgumentParserImplTest {
@@ -84,5 +86,16 @@ public class ArgumentParserImplTest {
         boolean trueArgument = mArgumentParser.getBooleanArgument("trueArgument", arguments);
 
         assertFalse(trueArgument);
+    }
+
+    @Test
+    public void testGetListArgument() {
+        Map<String, Object> arguments = new HashMap<>();
+        List<Object> sourceList = Arrays.asList("a", false, Collections.singletonMap("String", null));
+        arguments.put("listArgument", sourceList);
+
+        List<String> listArgument = mArgumentParser.getStringListArgument("listArgument", arguments);
+
+        assertTrue(listArgument.containsAll(sourceList));
     }
 }
