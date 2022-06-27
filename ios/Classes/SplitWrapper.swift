@@ -8,7 +8,7 @@ protocol SplitWrapper {
     func destroy()
 }
 
-class DefaultSplitWrapper : SplitWrapper {
+class DefaultSplitWrapper: SplitWrapper {
 
     private let splitFactory: SplitFactory?
     private var usedKeys: Set<Key>

@@ -2,12 +2,12 @@ import Foundation
 import Split
 
 protocol SplitMethodParser {
-    
+
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult)
 }
 
-class DefaultSplitMethodParser : SplitMethodParser {
-    
+class DefaultSplitMethodParser: SplitMethodParser {
+
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
@@ -28,7 +28,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
             result(FlutterMethodNotImplemented)
             return
         }
-        switch (method) {
+        switch method {
             case .initialize:
                 initializeSplit(
                     apiKey: argumentParser.getStringArgument(argumentName: Argument.apiKey, arguments: arguments) ?? "",
@@ -43,11 +43,11 @@ class DefaultSplitMethodParser : SplitMethodParser {
                     matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
                     bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
                     waitForReady: argumentParser.getBooleanArgument(argumentName: Argument.waitForReady, arguments: arguments),
-                    result: result);
-                break;
+                    result: result)
+                break
             case .destroy:
-                splitWrapper?.destroy();
-                result(nil);
+                splitWrapper?.destroy()
+                result(nil)
             default:
                 result(FlutterMethodNotImplemented)
                 break
@@ -80,7 +80,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {
-        if (waitForReady) {
+        if waitForReady {
             client?.on(event: SplitEvent.sdkReady) {
                 self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
             }
