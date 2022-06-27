@@ -25,6 +25,7 @@ class Constants {
 
     static class Error {
         static final String SDK_NOT_INITIALIZED = "SDK_NOT_INITIALIZED";
+        static final String METHOD_PARSER_NOT_INITIALIZED = "METHOD_PARSER_NOT_INITIALIZED";
         static final String SDK_NOT_INITIALIZED_MESSAGE = "Split SDK has not been initialized";
     }
 }

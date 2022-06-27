@@ -91,11 +91,21 @@ public class ArgumentParserImplTest {
     @Test
     public void testGetListArgument() {
         Map<String, Object> arguments = new HashMap<>();
-        List<Object> sourceList = Arrays.asList("a", false, Collections.singletonMap("String", null));
+        List<Object> sourceList = Arrays.asList("a", "b");
         arguments.put("listArgument", sourceList);
 
         List<String> listArgument = mArgumentParser.getStringListArgument("listArgument", arguments);
 
         assertTrue(listArgument.containsAll(sourceList));
+    }
+
+    @Test
+    public void testGetListArgumentFailure() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("listArgument", true);
+
+        List<String> listArgument = mArgumentParser.getStringListArgument("listArgument", arguments);
+
+        assertTrue(listArgument.isEmpty());
     }
 }

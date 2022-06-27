@@ -18,6 +18,7 @@ import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
+import io.split.android.client.SplitResult;
 
 public class SplitMethodParserImplTest {
 
@@ -159,6 +160,64 @@ public class SplitMethodParserImplTest {
 
         verify(mSplitWrapper).getTreatments("user-key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 10));
         verify(mResult).success(expectedResponse);
+    }
+
+    @Test
+    public void getTreatmentsWithConfigWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("splitName", Arrays.asList("split1", "split2"));
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        Map<String, SplitResult> mockResult = new HashMap<>();
+        mockResult.put("split1", new SplitResult("on", "{config}"));
+        mockResult.put("split2", new SplitResult("off", "{config}"));
+
+        Map<String, String> resultMap1 = new HashMap<>();
+        resultMap1.put("treatment", "on");
+        resultMap1.put("config", "{config}");
+        Map<String, String> resultMap2 = new HashMap<>();
+        resultMap2.put("treatment", "off");
+        resultMap2.put("config", "{config}");
+        Map<String, Map<String, String>> finalResultMap = new HashMap<>();
+        finalResultMap.put("split1", resultMap1);
+        finalResultMap.put("split2", resultMap2);
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringListArgument("splitName", map)).thenReturn(Arrays.asList("split1", "split2"));
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentsWithConfig(any(), any(), any(), any())).thenReturn(mockResult);
+
+        mMethodParser.onMethodCall("getTreatmentsWithConfig", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentsWithConfig("user-key", "bucketing-key", Arrays.asList("split1", "split2"), Collections.singletonMap("age", 10));
+        verify(mResult).success(finalResultMap);
+    }
+
+    @Test
+    public void getTreatmentWithConfigWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("splitName", "split-name");
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("splitName", map)).thenReturn("split-name");
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentWithConfig(any(), any(), any(), any())).thenReturn(new SplitResult("on", "{config}"));
+
+        mMethodParser.onMethodCall("getTreatmentWithConfig", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentWithConfig("user-key", "bucketing-key", "split-name", Collections.singletonMap("age", 10));
+        Map<String, String> resultMap = new HashMap<>();
+        resultMap.put("treatment", "on");
+        resultMap.put("config", "{config}");
+
+        verify(mResult).success(Collections.singletonMap("split-name", resultMap));
     }
 
     @Test

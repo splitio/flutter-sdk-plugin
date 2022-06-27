@@ -24,6 +24,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -160,7 +161,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
             Map<String, Object> attributes,
             MethodChannel.Result result) {
         SplitResult treatment = mSplitWrapper.getTreatmentWithConfig(matchingKey, bucketingKey, splitName, attributes);
-        result.success(getSplitResultMap(treatment));
+        result.success(Collections.singletonMap(splitName, getSplitResultMap(treatment)));
     }
 
     private void getTreatmentsWithConfig(
@@ -211,6 +212,10 @@ class SplitMethodParserImpl implements SplitMethodParser {
     }
 
     private static Map<String, String> getSplitResultMap(SplitResult splitResult) {
+        if (splitResult == null) {
+            return new HashMap<>();
+        }
+
         Map<String, String> splitResultMap = new HashMap<>();
 
         splitResultMap.put("treatment", splitResult.treatment());
