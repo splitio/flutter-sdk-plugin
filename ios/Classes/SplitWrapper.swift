@@ -19,10 +19,14 @@ class DefaultSplitWrapper : SplitWrapper {
     }
 
     func getClient(matchingKey: String, bucketingKey: String? = nil, waitForReady: Bool = false) -> SplitClient? {
-        let key = buildKey(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        let key = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        guard let client = splitFactory?.client(key: key) else {
+            print("Client couldn't be created")
+            return nil
+        }
         usedKeys.insert(key)
 
-        return splitFactory?.client(key: key)
+        return client
     }
 
     func destroy() {
@@ -33,12 +37,4 @@ class DefaultSplitWrapper : SplitWrapper {
             }
         }
     }
-}
-
-func buildKey(matchingKey: String, bucketingKey: String? = nil) -> Key {
-    if (bucketingKey != "") {
-        return Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
-    }
-
-    return Key(matchingKey: matchingKey)
 }

@@ -11,45 +11,45 @@ class ArgumentParserTests: XCTestCase {
 
     func testGetStringArgument() throws {
         let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": true]
-        let stringArgument = argumentParser?.getStringArgument(argumentName: "apiKey", arguments: arguments)
+        let stringArgument = argumentParser?.getStringArgument(argumentName: Argument.apiKey, arguments: arguments)
         
         XCTAssert(stringArgument == "api-key")
     }
     
     func testGetStringArgumentFailure() throws {
-        let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": true]
-        let stringArgument = argumentParser?.getStringArgument(argumentName: "booleanValue", arguments: arguments)
+        let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": true]
+        let stringArgument = argumentParser?.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments)
         
         XCTAssert(stringArgument == nil)
     }
 
     func testGetMapArgument() throws {
         let dictArgument: [String: Any?] = ["key": "value", "key2": true]
-        let arguments: [String: Any?] = ["apiKey": "api-key", "mapValue": dictArgument]
-        let mapArgument: [String: Any?] = argumentParser?.getMapArgument(argumentName: "mapValue", arguments: arguments) ?? [:]
+        let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": dictArgument]
+        let mapArgument: [String: Any?] = argumentParser?.getMapArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? [:]
 
         XCTAssert(NSDictionary(dictionary: mapArgument).isEqual(to: dictArgument))
     }
 
     func testGetMapArgumentFailure() throws {
-        let arguments: [String: Any?] = ["apiKey": "api-key", "mapValue": false]
-        let mapArgument = argumentParser?.getMapArgument(argumentName: "mapValue", arguments: arguments) ?? [:]
+        let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": false]
+        let mapArgument = argumentParser?.getMapArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? [:]
 
         XCTAssert(NSDictionary(dictionary: mapArgument).isEqual(to: [:]))
     }
 
     func testGetBooleanArgument() throws {
-        let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": true]
+        let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": true]
 
-        let booleanValue = argumentParser?.getBooleanArgument(argumentName: "booleanValue", arguments: arguments)
+        let booleanValue = argumentParser?.getBooleanArgument(argumentName: Argument.matchingKey, arguments: arguments)
 
         XCTAssert(booleanValue == true)
     }
     
     func testGetBooleanArgumentFailure() throws {
-        let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": 25]
+        let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": 25]
 
-        let booleanValue = argumentParser?.getBooleanArgument(argumentName: "booleanValue", arguments: arguments)
+        let booleanValue = argumentParser?.getBooleanArgument(argumentName: Argument.matchingKey, arguments: arguments)
 
         XCTAssert(booleanValue == false)
     }
