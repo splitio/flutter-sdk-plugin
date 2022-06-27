@@ -1,6 +1,5 @@
 import Foundation
 
-
 enum Method : String {
     case initialize = "init"
     case client = "getClient"

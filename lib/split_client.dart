@@ -13,38 +13,43 @@ class SplitClient {
 
   const SplitClient(this.matchingKey, this.bucketingKey);
 
-  Future<String> getTreatment(String treatment,
+  Future<String> getTreatment(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return await _channel
-            .invokeMethod('getTreatment', {'attributes': attributes}) ??
+    return await _channel.invokeMethod(
+            'getTreatment',
+            _buildParameters(
+                {'splitName': splitName, 'attributes': attributes})) ??
         _controlTreatment;
   }
 
-  Future<SplitResult> getTreatmentWithConfig(String treatment,
+  Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return await _channel
-        .invokeMethod('getTreatmentWithConfig', {'attributes': attributes});
+    return await _channel.invokeMethod(
+            'getTreatmentWithConfig',
+            _buildParameters(
+                {'splitName': splitName, 'attributes': attributes})) ??
+        _controlResult;
   }
 
-  Future<Map<String, String>> getTreatments(List<String> treatments,
+  Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map<String, String> result = {};
-    for (String treatment in treatments) {
-      result.addAll({treatment: _controlTreatment});
-    }
+    Map? treatments = await _channel.invokeMapMethod('getTreatments',
+        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
-    return Future.value(result); //TODO implement
+    return treatments
+            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+        {for (var item in splitNames) item: _controlTreatment};
   }
 
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
-      List<String> treatments,
+      List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map<String, SplitResult> result = {};
-    for (String treatment in treatments) {
-      result.addAll({treatment: _controlResult});
-    }
+    Map? treatments = await _channel.invokeMapMethod('getTreatmentsWithConfig',
+        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
-    return Future.value(result); //TODO implement
+    return treatments?.map((key, value) =>
+            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+        {for (var item in splitNames) item: _controlResult};
   }
 
   Future<bool> track(String eventType,
@@ -93,7 +98,7 @@ class SplitClient {
     Map<String, String> result = {'matchingKey': matchingKey};
 
     if (bucketingKey != null) {
-      result.addAll({'bucketingKey': bucketingKey ?? ""});
+      result.addAll({'bucketingKey': bucketingKey!});
     }
 
     return result;

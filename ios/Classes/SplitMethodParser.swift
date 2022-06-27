@@ -11,7 +11,7 @@ class DefaultSplitMethodParser : SplitMethodParser {
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
-
+    
     init(methodChannel: FlutterMethodChannel) {
         self.argumentParser = DefaultArgumentParser()
         self.methodChannel = methodChannel
