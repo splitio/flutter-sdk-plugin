@@ -21,7 +21,7 @@ class SplitMethodParserTests: XCTestCase {
         methodParser?.onMethodCall(
             methodName: "getClient",
             arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "waitForReady": true],
-            result: { (param: Any?) in
+            result: { (_: Any?) in
                 return
             }
         )
@@ -29,7 +29,6 @@ class SplitMethodParserTests: XCTestCase {
         if let wrapper = (splitWrapper as? SplitWrapperStub) {
             XCTAssert(wrapper.matchingKeyValue == "user-key")
             XCTAssert(wrapper.bucketingKeyValue == "bucketing-key")
-            XCTAssert(wrapper.waitForReadyValue)
         }
     }
 
@@ -37,7 +36,7 @@ class SplitMethodParserTests: XCTestCase {
         methodParser?.onMethodCall(
             methodName: "destroy",
             arguments: [:],
-            result: { (param: Any?) in
+            result: { (_: Any?) in
                 return
             }
         )
@@ -56,14 +55,38 @@ class SplitWrapperStub: SplitWrapper {
     var destroyCalled = false
     var matchingKeyValue = ""
     var bucketingKeyValue = ""
-    var waitForReadyValue = false
 
-    func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool) -> SplitClient? {
+    func getClient(matchingKey: String, bucketingKey: String?) -> SplitClient? {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey ?? ""
-        waitForReadyValue = waitForReady
 
         return SplitClientStub()
+    }
+
+    func getTreatment(matchingKey: String, splitName: String, bucketingKey: String?, attributes: [String: Any]?) -> String? {
+        return "control"
+    }
+
+    func getTreatments(matchingKey: String, splits: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: String] {
+        var result: [String: String] = [:]
+        splits.forEach {
+            result[$0] = "control"
+        }
+
+        return result
+    }
+
+    func getTreatmentWithConfig(matchingKey: String, splitName: String, bucketingKey: String?, attributes: [String: Any]?) -> SplitResult? {
+        return SplitResult(treatment: "control", config: nil)
+    }
+
+    func getTreatmentsWithConfig(matchingKey: String, splits: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: SplitResult] {
+        var result: [String: SplitResult] = [:]
+        splits.forEach {
+            result[$0] = SplitResult(treatment: "control", config: nil)
+        }
+
+        return result
     }
 
     func destroy() {

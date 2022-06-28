@@ -207,7 +207,6 @@
 				C512775D2847F3D800B7D1A2 /* Frameworks */,
 				C512775E2847F3D800B7D1A2 /* Resources */,
 				8639C5B3E80E5EE46CFFE931 /* [CP] Embed Pods Frameworks */,
-				C5DE1A61286A29870062E277 /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -385,23 +384,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "/bin/sh \"$FLUTTER_ROOT/packages/flutter_tools/bin/xcode_backend.sh\" build";
-		};
-		C5DE1A61286A29870062E277 /* ShellScript */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "if which swiftlint >/dev/null; then\n    swiftlint\nelse\n    echo \"warning: SwiftLint is not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
