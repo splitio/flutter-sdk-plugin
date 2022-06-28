@@ -24,11 +24,18 @@ class SplitClient {
 
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return await _channel.invokeMethod(
+    Map? treatment = (await _channel.invokeMapMethod(
             'getTreatmentWithConfig',
             _buildParameters(
-                {'splitName': splitName, 'attributes': attributes})) ??
-        _controlResult;
+                {'splitName': splitName, 'attributes': attributes})))
+        ?.entries
+        .first
+        .value;
+    if (treatment == null) {
+      return _controlResult;
+    }
+
+    return SplitResult(treatment['treatment'], treatment['config']);
   }
 
   Future<Map<String, String>> getTreatments(List<String> splitNames,

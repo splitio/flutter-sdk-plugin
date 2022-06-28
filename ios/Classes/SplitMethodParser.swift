@@ -62,7 +62,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
                     result: result)
                 break
             case .getTreatmentWithConfig:
-                getTreatment(
+                getTreatmentWithConfig(
                     matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
                     bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
                     splitName: argumentParser.getStringArgument(argumentName: .splitName, arguments: arguments) ?? "",
@@ -70,7 +70,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
                     result: result)
                 break
             case .getTreatmentsWithConfig:
-                getTreatments(
+                getTreatmentsWithConfig(
                     matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
                     bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
                     splits: argumentParser.getStringListArgument(argumentName: .splitName, arguments: arguments),
