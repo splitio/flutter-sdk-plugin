@@ -24,24 +24,28 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
-        switch (methodName) {
-            case Constants.Methods.METHOD_INIT:
+        guard let method = Method(rawValue: methodName) else {
+            result(FlutterMethodNotImplemented)
+            return
+        }
+        switch (method) {
+            case .initialize:
                 initializeSplit(
-                    apiKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_API_KEY, arguments: arguments) ?? "",
-                    matchingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_MATCHING_KEY, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_BUCKETING_KEY, arguments: arguments),
-                    configurationMap: argumentParser.getMapArgument(argumentName: Constants.Arguments.ARG_CONFIG, arguments: arguments),
+                    apiKey: argumentParser.getStringArgument(argumentName: Argument.apiKey, arguments: arguments) ?? "",
+                    matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
+                    configurationMap: argumentParser.getMapArgument(argumentName: Argument.config, arguments: arguments),
                     result: result
                 )
                 break
-            case Constants.Methods.METHOD_GET_CLIENT:
+            case .client:
                 getClient(
-                    matchingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_MATCHING_KEY, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: Constants.Arguments.ARG_BUCKETING_KEY, arguments: arguments),
-                    waitForReady: argumentParser.getBooleanArgument(argumentName: Constants.Arguments.ARG_WAIT_FOR_READY, arguments: arguments),
+                    matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
+                    waitForReady: argumentParser.getBooleanArgument(argumentName: Argument.waitForReady, arguments: arguments),
                     result: result);
                 break;
-            case Constants.Methods.METHOD_DESTROY:
+            case .destroy:
                 splitWrapper?.destroy();
                 result(nil);
             default:
@@ -62,7 +66,13 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
-        let client = splitWrapper?.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
+        guard let splitWrapper = splitWrapper else {
+            print("Init needs to be called before getClient")
+            result(nil)
+            return
+        }
+
+        let client = splitWrapper.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
         if let client = client {
             addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: self.methodChannel, waitForReady: waitForReady)
         }
@@ -87,12 +97,12 @@ class DefaultSplitMethodParser : SplitMethodParser {
 
     private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?) {
         var args = [String: String]()
-        args[Constants.Arguments.ARG_MATCHING_KEY] = matchingKey
+        args[Argument.matchingKey.rawValue] = matchingKey
 
         if let bucketing = bucketingKey {
-            args[Constants.Arguments.ARG_BUCKETING_KEY] = bucketing
+            args[Argument.bucketingKey.rawValue] = bucketing
         }
 
-        methodChannel.invokeMethod(Constants.Methods.METHOD_CLIENT_READY, arguments: args)
+        methodChannel.invokeMethod(Method.clientReady.rawValue, arguments: args)
     }
 }
