@@ -24,54 +24,32 @@ class SplitClient {
 
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    var treatment = await _channel.invokeMethod('getTreatmentWithConfig',
-        _buildParameters({'splitName': splitName, 'attributes': attributes}));
-
-    if (treatment == null) {
-      return _controlResult;
-    }
-
-    return SplitResult(treatment['treatment'], treatment['config']);
+    return await _channel.invokeMethod(
+            'getTreatmentWithConfig',
+            _buildParameters(
+                {'splitName': splitName, 'attributes': attributes})) ??
+        _controlResult;
   }
 
   Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map<String, String> result = {};
-
-    Map<Object?, Object?>? treatments = await _channel.invokeMethod(
-        'getTreatments',
+    Map? treatments = await _channel.invokeMapMethod('getTreatments',
         _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
-    if (treatments == null) {
-      for (var element in splitNames) {
-        result[element] = _controlTreatment;
-      }
-    } else {
-      treatments.forEach((key, value) {
-        if (key is String && value is String) {
-          result[key] = value;
-        }
-      });
-    }
-
-    return result;
+    return treatments
+            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+        {for (var item in splitNames) item: _controlTreatment};
   }
 
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map<String, SplitResult> result = {};
-    Map<Object?, Object?> treatments = await _channel.invokeMethod(
-        'getTreatmentsWithConfig',
+    Map? treatments = await _channel.invokeMapMethod('getTreatmentsWithConfig',
         _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
-    treatments.forEach((key, value) {
-      if (key is String && value is Map) {
-        result[key] = SplitResult(value['treatment'], value['config']);
-      }
-    });
-
-    return result;
+    return treatments?.map((key, value) =>
+            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+        {for (var item in splitNames) item: _controlResult};
   }
 
   Future<bool> track(String eventType,
