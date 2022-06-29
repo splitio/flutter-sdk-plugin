@@ -63,8 +63,21 @@ class SplitClient {
       {String? trafficType,
       double? value,
       Map<String, dynamic> properties = const {}}) async {
-    // TODO implement
-    return false;
+    var parameters = _buildParameters({'eventType': eventType});
+
+    if (trafficType != null) {
+      parameters['trafficType'] = trafficType;
+    }
+
+    if (value != null) {
+      parameters['value'] = value;
+    }
+
+    try {
+      return await _channel.invokeMethod("track", parameters) as bool;
+    } on Exception catch (_) {
+      return false;
+    }
   }
 
   Future<bool> setAttribute(String attributeName, dynamic value) async {

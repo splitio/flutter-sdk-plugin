@@ -11,6 +11,7 @@ class Constants {
         static final String GET_TREATMENTS = "getTreatments";
         static final String GET_TREATMENT_WITH_CONFIG = "getTreatmentWithConfig";
         static final String GET_TREATMENTS_WITH_CONFIG = "getTreatmentsWithConfig";
+        static final String TRACK = "track";
     }
 
     static class Argument {
@@ -21,6 +22,10 @@ class Constants {
         static final String WAIT_FOR_READY = "waitForReady";
         static final String SPLIT_NAME = "splitName";
         static final String ATTRIBUTES = "attributes";
+        static final String EVENT_TYPE = "eventType";
+        static final String TRAFFIC_TYPE = "trafficType";
+        static final String VALUE = "value";
+        static final String PROPERTIES = "properties";
     }
 
     static class Error {

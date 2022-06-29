@@ -13,5 +13,7 @@ interface ArgumentParser {
 
     Map<String, Object> getMapArgument(@NonNull String argumentName, @NonNull Object arguments);
 
-    List<String> getStringListArgument(String argSplitName, Object arguments);
+    List<String> getStringListArgument(@NonNull String argument, @NonNull Object arguments);
+
+    Double getDoubleArgument(@NonNull String argument, @NonNull Object arguments);
 }
