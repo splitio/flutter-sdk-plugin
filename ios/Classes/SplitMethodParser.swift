@@ -31,10 +31,10 @@ class DefaultSplitMethodParser: SplitMethodParser {
         switch method {
             case .initialize:
                 initializeSplit(
-                    apiKey: argumentParser.getStringArgument(argumentName: Argument.apiKey, arguments: arguments) ?? "",
-                    matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
-                    configurationMap: argumentParser.getMapArgument(argumentName: Argument.config, arguments: arguments),
+                    apiKey: argumentParser.getStringArgument(argumentName: .apiKey, arguments: arguments) ?? "",
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    configurationMap: argumentParser.getMapArgument(argumentName: .config, arguments: arguments),
                     result: result
                 )
                 break
