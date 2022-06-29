@@ -53,4 +53,18 @@ class ArgumentParserTests: XCTestCase {
 
         XCTAssert(booleanValue == false)
     }
+
+    func testGetDoubleArgument() throws {
+        let arguments: [String: Any?] = ["apiKey": 25.50, "booleanValue": true]
+        let stringArgument = argumentParser?.getDoubleArgument(argumentName: Argument.apiKey, arguments: arguments)
+
+        XCTAssert(stringArgument == 25.50)
+    }
+
+    func testGetDoubleArgumentFailure() throws {
+        let arguments: [String: Any?] = ["apiKey": "25.50", "booleanValue": true]
+        let stringArgument = argumentParser?.getDoubleArgument(argumentName: Argument.apiKey, arguments: arguments)
+
+        XCTAssert(stringArgument == nil)
+    }
 }
