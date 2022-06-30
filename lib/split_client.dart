@@ -85,9 +85,9 @@ class SplitClient {
     return false;
   }
 
-  dynamic getAttribute(String attributeName) async {
-    // TODO implement
-    return null;
+  Future<dynamic> getAttribute(String attributeName) async {
+    return _channel.invokeMethod(
+        'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
@@ -96,8 +96,10 @@ class SplitClient {
   }
 
   Future<Map<String, dynamic>> getAllAttributes() async {
-    // TODO implement
-    return {};
+    return (await _channel.invokeMapMethod(
+                'getAllAttributes', _buildParameters({})))
+            ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
+        {};
   }
 
   Future<bool> removeAttribute(String attributeName) async {
