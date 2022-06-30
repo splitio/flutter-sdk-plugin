@@ -12,6 +12,8 @@ class Constants {
         static final String GET_TREATMENT_WITH_CONFIG = "getTreatmentWithConfig";
         static final String GET_TREATMENTS_WITH_CONFIG = "getTreatmentsWithConfig";
         static final String TRACK = "track";
+        static final String GET_ATTRIBUTE = "getAttribute";
+        static final String GET_ALL_ATTRIBUTES = "getAllAttributes";
     }
 
     static class Argument {
@@ -26,6 +28,7 @@ class Constants {
         static final String TRAFFIC_TYPE = "trafficType";
         static final String VALUE = "value";
         static final String PROPERTIES = "properties";
+        static final String ATTRIBUTE_NAME = "attributeName";
     }
 
     static class Error {

@@ -6,7 +6,7 @@ import java.util.Map;
 
 import io.split.android.client.SplitClient;
 
-interface SplitWrapper extends EvaluationWrapper {
+interface SplitWrapper extends EvaluationWrapper, AttributesWrapper {
 
     SplitClient getClient(String matchingKey, @Nullable String bucketingKey);
 

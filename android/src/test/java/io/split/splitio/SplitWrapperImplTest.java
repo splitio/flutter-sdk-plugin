@@ -150,4 +150,26 @@ public class SplitWrapperImplTest {
 
         verify(clientMock).track("account", "my_event", Collections.singletonMap("age", 50));
     }
+
+    @Test
+    public void testGetAttribute() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.getAttribute("key", null, "my_attribute");
+
+        verify(clientMock).getAttribute("my_attribute");
+    }
+
+    @Test
+    public void testGetAllAttributes() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.getAllAttributes("key", null);
+
+        verify(clientMock).getAllAttributes();
+    }
 }

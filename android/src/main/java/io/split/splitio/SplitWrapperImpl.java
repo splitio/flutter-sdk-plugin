@@ -3,6 +3,8 @@ package io.split.splitio;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -80,5 +82,37 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public Map<String, SplitResult> getTreatmentsWithConfig(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
         return getClient(matchingKey, bucketingKey).getTreatmentsWithConfig(splitNames, attributes);
+    }
+
+    @Override
+    public boolean setAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName, Object value) {
+        return false;
+    }
+
+    @Nullable
+    @Override
+    public Object getAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName) {
+        return getClient(matchingKey, bucketingKey).getAttribute(attributeName);
+    }
+
+    @Override
+    public boolean setAttributes(String matchingKey, @Nullable String bucketingKey, Map<String, Object> attributes) {
+        return false;
+    }
+
+    @NonNull
+    @Override
+    public Map<String, Object> getAllAttributes(String matchingKey, @Nullable String bucketingKey) {
+        return getClient(matchingKey, bucketingKey).getAllAttributes();
+    }
+
+    @Override
+    public boolean removeAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName) {
+        return false;
+    }
+
+    @Override
+    public boolean clearAttributes(String matchingKey, @Nullable String bucketingKey) {
+        return false;
     }
 }

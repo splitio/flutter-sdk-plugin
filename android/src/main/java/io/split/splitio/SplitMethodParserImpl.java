@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import static io.split.splitio.Constants.Argument.API_KEY;
 import static io.split.splitio.Constants.Argument.ATTRIBUTES;
+import static io.split.splitio.Constants.Argument.ATTRIBUTE_NAME;
 import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
 import static io.split.splitio.Constants.Argument.EVENT_TYPE;
 import static io.split.splitio.Constants.Argument.PROPERTIES;
@@ -16,6 +17,8 @@ import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED_MESSAGE;
 import static io.split.splitio.Constants.Method.CLIENT_READY;
 import static io.split.splitio.Constants.Method.DESTROY;
 import static io.split.splitio.Constants.Method.CLIENT;
+import static io.split.splitio.Constants.Method.GET_ALL_ATTRIBUTES;
+import static io.split.splitio.Constants.Method.GET_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.GET_TREATMENT;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
@@ -123,6 +126,19 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getMapArgument(PROPERTIES, arguments),
                         result);
                 break;
+            case GET_ATTRIBUTE:
+                getAttribute(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(ATTRIBUTE_NAME, arguments),
+                        result);
+                break;
+            case GET_ALL_ATTRIBUTES:
+                getAllAttributes(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        result);
+                break;
             case DESTROY:
                 mSplitWrapper.destroy();
                 result.success(null);
@@ -203,6 +219,14 @@ class SplitMethodParserImpl implements SplitMethodParser {
                        Map<String, Object> properties,
                        MethodChannel.Result result) {
         result.success(mSplitWrapper.track(matchingKey, bucketingKey, eventType,trafficType,value, properties));
+    }
+
+    private void getAttribute(String matchingKey, String bucketingKey, String attributeName, MethodChannel.Result result) {
+        result.success(mSplitWrapper.getAttribute(matchingKey, bucketingKey, attributeName));
+    }
+
+    private void getAllAttributes(String matchingKey, String bucketingKey, MethodChannel.Result result) {
+        result.success(mSplitWrapper.getAllAttributes(matchingKey, bucketingKey));
     }
 
     private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel, boolean waitForReady) {
