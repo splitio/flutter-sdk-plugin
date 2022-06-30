@@ -44,6 +44,50 @@ class SplitTests: XCTestCase {
         XCTAssert(client.getTreatmentsWithConfigCalled)
     }
 
+    func testTrack() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: "account", value: 25.50, properties: ["age": 50])
+        XCTAssert(track)
+        XCTAssert(client.eventTypeValue == "my_event")
+        XCTAssert(client.trafficTypeValue == "account")
+        XCTAssert(client.valueValue == 25.50)
+        XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: client.propertiesValue!))
+    }
+
+    func testTrackWithoutTrafficType() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: nil, value: 25.50, properties: ["age": 50])
+        XCTAssert(track)
+        XCTAssert(client.eventTypeValue == "my_event")
+        XCTAssert(client.trafficTypeValue == nil)
+        XCTAssert(client.valueValue == 25.50)
+        XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: client.propertiesValue!))
+    }
+
+    func testTrackWithoutTrafficTypeNorValue() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: nil, value: nil, properties: ["age": 50])
+        XCTAssert(track)
+        XCTAssert(client.eventTypeValue == "my_event")
+        XCTAssert(client.trafficTypeValue == nil)
+        XCTAssert(client.valueValue == nil)
+        XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: client.propertiesValue!))
+    }
+
+    func testTrackWithoutValue() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: "account", value: nil, properties: ["age": 50])
+        XCTAssert(track)
+        XCTAssert(client.eventTypeValue == "my_event")
+        XCTAssert(client.trafficTypeValue == "account")
+        XCTAssert(client.valueValue == nil)
+        XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: client.propertiesValue!))
+    }
+
     func testDestroy() throws {
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
         let client1 = splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing") as? SplitClientStub
@@ -123,6 +167,10 @@ class SplitClientStub: SplitClient {
     var getTreatmentWithConfigCalled: Bool = false
     var getTreatmentsCalled: Bool = false
     var getTreatmentsWithConfigCalled: Bool = false
+    var eventTypeValue: String = ""
+    var trafficTypeValue: String?
+    var valueValue: Double?
+    var propertiesValue: [String: Any]? = [:]
     var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
@@ -174,22 +222,36 @@ class SplitClientStub: SplitClient {
     }
 
     func track(eventType: String, value: Double) -> Bool {
+        eventTypeValue = eventType
+        valueValue = value
         return true
     }
 
     func track(trafficType: String, eventType: String, properties: [String: Any]?) -> Bool {
+        eventTypeValue = eventType
+        trafficTypeValue = trafficType
+        propertiesValue = properties
         return true
     }
 
     func track(trafficType: String, eventType: String, value: Double, properties: [String: Any]?) -> Bool {
+        eventTypeValue = eventType
+        trafficTypeValue = trafficType
+        valueValue = value
+        propertiesValue = properties
         return true
     }
 
     func track(eventType: String, properties: [String: Any]?) -> Bool {
+        eventTypeValue = eventType
+        propertiesValue = properties
         return true
     }
 
     func track(eventType: String, value: Double, properties: [String: Any]?) -> Bool {
+        eventTypeValue = eventType
+        valueValue = value
+        propertiesValue = properties
         return true
     }
 
