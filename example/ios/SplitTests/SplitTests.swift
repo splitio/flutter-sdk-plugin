@@ -97,6 +97,20 @@ class SplitTests: XCTestCase {
         XCTAssertTrue(client1?.destroyCalled == true)
         XCTAssertTrue(client2?.destroyCalled == true)
     }
+
+    func testGetAttribute() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.getAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr")
+        XCTAssert(client.attributeNameValue == "my_attr")
+    }
+
+    func testGetAllAttributes() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let track = splitWrapper.getAllAttributes(matchingKey: "key", bucketingKey: "bucketing")
+        XCTAssert(client.attributeNameValue == "")
+    }
 }
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
@@ -171,6 +185,7 @@ class SplitClientStub: SplitClient {
     var trafficTypeValue: String?
     var valueValue: Double?
     var propertiesValue: [String: Any]? = [:]
+    var attributeNameValue: String = ""
     var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
@@ -260,6 +275,7 @@ class SplitClientStub: SplitClient {
     }
 
     func getAttribute(name: String) -> Any? {
+        attributeNameValue = name
         return nil
     }
 
