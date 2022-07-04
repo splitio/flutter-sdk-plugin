@@ -111,7 +111,11 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func setAttribute(matchingKey: String, bucketingKey: String?, attributeName: String, value: Any?) -> Bool {
-        return true // TODO
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return false
+        }
+
+        return client.setAttribute(name: attributeName, value: value)
     }
 
     func getAttribute(matchingKey: String, bucketingKey: String?, attributeName: String) -> Any? {
@@ -123,7 +127,11 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func setAttributes(matchingKey: String, bucketingKey: String?, attributes: [String: Any?]) -> Bool {
-        return true // TODO
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return false
+        }
+
+        return client.setAttributes(attributes)
     }
 
     func getAllAttributes(matchingKey: String, bucketingKey: String?) -> [String: Any] {
