@@ -86,7 +86,7 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public boolean setAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName, Object value) {
-        return false;
+        return getClient(matchingKey, bucketingKey).setAttribute(attributeName, value);
     }
 
     @Nullable
@@ -97,7 +97,7 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public boolean setAttributes(String matchingKey, @Nullable String bucketingKey, Map<String, Object> attributes) {
-        return false;
+        return getClient(matchingKey, bucketingKey).setAttributes(attributes);
     }
 
     @NonNull

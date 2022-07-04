@@ -35,6 +35,9 @@ void main() {
             'attr_2': ['list-element'],
             'attr_3': 28.20
           };
+        case 'setAttribute':
+        case 'setAttributes':
+          return true;
       }
     });
   });
@@ -216,6 +219,41 @@ void main() {
       expect(methodArguments, {
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
+      });
+    });
+
+    test('set attribute', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.setAttribute('my_attr', 'attr_value');
+      expect(methodName, 'setAttribute');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributeName': 'my_attr',
+        'value': 'attr_value',
+      });
+    });
+
+    test('set multiple attributes', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.setAttributes({
+        'bool_attr': true,
+        'number_attr': 25.56,
+        'string_attr': 'attr-value',
+        'list_attr': ['one', 'two'],
+      });
+      expect(methodName, 'setAttributes');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {
+          'bool_attr': true,
+          'number_attr': 25.56,
+          'string_attr': 'attr-value',
+          'list_attr': ['one', 'two'],
+        }
       });
     });
   });
