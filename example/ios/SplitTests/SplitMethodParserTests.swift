@@ -162,6 +162,32 @@ class SplitMethodParserTests: XCTestCase {
         }
     }
 
+    func testSetSingleAttribute() {
+        methodParser?.onMethodCall(methodName: "setAttribute", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "attributeName": "my_attr", "value": "attr_value"], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.attributeNameValue == "my_attr")
+            XCTAssert(splitWrapper.attributeValue as? String == "attr_value")
+        }
+    }
+
+    func testSetMultipleAttributes() {
+        let expectedMap = ["bool_attr": true, "number_attr": 25.56, "string_attr": "attr-value", "list_attr": ["one", "two"]] as [String: Any]
+        methodParser?.onMethodCall(methodName: "setAttributes", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "attributes": expectedMap], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(NSDictionary(dictionary: expectedMap).isEqual(to: splitWrapper.attributesValue ?? [:]))
+        }
+    }
+
     func testDestroy() throws {
         methodParser?.onMethodCall(
             methodName: "destroy",
@@ -191,6 +217,7 @@ class SplitWrapperStub: SplitWrapper {
     var eventTypeValue: String = ""
     var propertiesValue: [String: Any]?
     var valueValue: Double?
+    var attributeValue: Any?
     var trafficTypeValue: String = ""
     var attributeNameValue: String = ""
 
@@ -268,10 +295,17 @@ class SplitWrapperStub: SplitWrapper {
     }
 
     func setAttribute(matchingKey: String, bucketingKey: String?, attributeName: String, value: Any?) -> Bool {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        attributeNameValue = attributeName
+        attributeValue = value
         return true
     }
 
     func setAttributes(matchingKey: String, bucketingKey: String?, attributes: [String: Any?]) -> Bool {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        attributesValue = attributes
         return true
     }
 
