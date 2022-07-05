@@ -105,11 +105,11 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public boolean removeAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName) {
-        return false;
+        return getClient(matchingKey, bucketingKey).removeAttribute(attributeName);
     }
 
     @Override
     public boolean clearAttributes(String matchingKey, @Nullable String bucketingKey) {
-        return false;
+        return getClient(matchingKey, bucketingKey).clearAttributes();
     }
 }

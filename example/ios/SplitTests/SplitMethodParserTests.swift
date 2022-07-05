@@ -188,6 +188,29 @@ class SplitMethodParserTests: XCTestCase {
         }
     }
 
+    func testRemoveAttribute() {
+        methodParser?.onMethodCall(methodName: "removeAttribute", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "attributeName": "my_attr"], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.attributeNameValue == "my_attr")
+        }
+    }
+
+    func testClearAttributes() {
+        methodParser?.onMethodCall(methodName: "clearAttributes", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key"], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+        }
+    }
+
     func testDestroy() throws {
         methodParser?.onMethodCall(
             methodName: "destroy",
@@ -310,10 +333,15 @@ class SplitWrapperStub: SplitWrapper {
     }
 
     func removeAttribute(matchingKey: String, bucketingKey: String?, attributeName: String) -> Bool {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        attributeNameValue = attributeName
         return true
     }
 
     func clearAttributes(matchingKey: String, bucketingKey: String?) -> Bool {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
         return true
     }
 

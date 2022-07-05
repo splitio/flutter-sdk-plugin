@@ -369,6 +369,36 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
+    public void removeAttribute() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("attributeName", "my_attr");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("attributeName", map)).thenReturn("my_attr");
+
+        mMethodParser.onMethodCall("removeAttribute", map, mResult);
+
+        verify(mSplitWrapper).removeAttribute("user-key", "bucketing-key","my_attr");
+    }
+
+    @Test
+    public void clearAttributes() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+
+        mMethodParser.onMethodCall("clearAttributes", map, mResult);
+
+        verify(mSplitWrapper).clearAttributes("user-key", "bucketing-key");
+    }
+
+    @Test
     public void destroy() {
         mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
 

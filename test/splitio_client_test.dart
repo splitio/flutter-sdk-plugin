@@ -37,6 +37,8 @@ void main() {
           };
         case 'setAttribute':
         case 'setAttributes':
+        case 'removeAttribute':
+        case 'clearAttributes':
           return true;
       }
     });
@@ -214,7 +216,7 @@ void main() {
     test('get all attributes', () async {
       SplitClient client = const SplitClient('matching-key', 'bucketing-key');
 
-      client.getAllAttributes();
+      client.getAttributes();
       expect(methodName, 'getAllAttributes');
       expect(methodArguments, {
         'matchingKey': 'matching-key',
@@ -254,6 +256,29 @@ void main() {
           'string_attr': 'attr-value',
           'list_attr': ['one', 'two'],
         }
+      });
+    });
+
+    test('remove attribute', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.removeAttribute('attr-name');
+      expect(methodName, 'removeAttribute');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributeName': 'attr-name',
+      });
+    });
+
+    test('clear attributes', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.clearAttributes();
+      expect(methodName, 'clearAttributes');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
       });
     });
   });

@@ -143,11 +143,19 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func removeAttribute(matchingKey: String, bucketingKey: String?, attributeName: String) -> Bool {
-        return true // TODO
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return false
+        }
+
+        return client.removeAttribute(name: attributeName)
     }
 
     func clearAttributes(matchingKey: String, bucketingKey: String?) -> Bool {
-        return true // TODO
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return false
+        }
+
+        return client.clearAttributes()
     }
 
     func destroy() {
