@@ -16,6 +16,8 @@ class Constants {
         static final String GET_ALL_ATTRIBUTES = "getAllAttributes";
         static final String SET_ATTRIBUTE = "setAttribute";
         static final String SET_ATTRIBUTES = "setAttributes";
+        static final String REMOVE_ATTRIBUTE = "removeAttribute";
+        static final String CLEAR_ATTRIBUTES = "clearAttributes";
     }
 
     static class Argument {
