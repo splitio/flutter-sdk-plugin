@@ -11,6 +11,8 @@ protocol ArgumentParser {
     func getStringListArgument(argumentName: Argument, arguments: Any?) -> [String]
 
     func getDoubleArgument(argumentName: Argument, arguments: Any?) -> Double?
+
+    func getAnyArgument(argumentName: Argument, arguments: Any?) -> Any?
 }
 
 class DefaultArgumentParser: ArgumentParser {
@@ -73,5 +75,13 @@ class DefaultArgumentParser: ArgumentParser {
         }
 
         return argumentValue
+    }
+
+    func getAnyArgument(argumentName: Argument, arguments: Any?) -> Any? {
+        guard let arguments = arguments as? [String: Any?] else {
+            return nil
+        }
+
+        return arguments[argumentName.rawValue] as Any?
     }
 }

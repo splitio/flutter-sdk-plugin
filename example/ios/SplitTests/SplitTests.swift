@@ -97,6 +97,39 @@ class SplitTests: XCTestCase {
         XCTAssertTrue(client1?.destroyCalled == true)
         XCTAssertTrue(client2?.destroyCalled == true)
     }
+
+    func testGetAttribute() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr")
+        XCTAssert(client.attributeNameValue == "my_attr")
+    }
+
+    func testGetAllAttributes() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getAllAttributes(matchingKey: "key", bucketingKey: "bucketing")
+        XCTAssert(client.attributeNameValue == "")
+    }
+
+    func testSetAttribute() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.setAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr", value: "attr_value")
+        XCTAssert(client.attributeNameValue == "my_attr")
+
+        let value = client.attributeValue as? String?
+        XCTAssert(value == "attr_value")
+    }
+
+    func testMultipleAttributes() {
+        let client = SplitClientStub()
+        let expectedMap = ["bool_attr": true, "number_attr": 25.56, "string_attr": "attr-value", "list_attr": ["one", "two"]] as [String: Any]
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.setAttributes(matchingKey: "key", bucketingKey: "bucketing", attributes: expectedMap)
+
+        XCTAssert(NSDictionary(dictionary: expectedMap).isEqual(to: client.attributesMapValue))
+    }
 }
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
@@ -171,6 +204,9 @@ class SplitClientStub: SplitClient {
     var trafficTypeValue: String?
     var valueValue: Double?
     var propertiesValue: [String: Any]? = [:]
+    var attributeNameValue: String = ""
+    var attributeValue: Any?
+    var attributesMapValue: [String: Any] = [:]
     var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
@@ -256,14 +292,18 @@ class SplitClientStub: SplitClient {
     }
 
     func setAttribute(name: String, value: Any) -> Bool {
+        attributeNameValue = name
+        attributeValue = value
         return true
     }
 
     func getAttribute(name: String) -> Any? {
+        attributeNameValue = name
         return nil
     }
 
     func setAttributes(_ values: [String: Any]) -> Bool {
+        attributesMapValue = values
         return true
     }
 

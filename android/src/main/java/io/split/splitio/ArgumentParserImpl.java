@@ -62,4 +62,15 @@ class ArgumentParserImpl implements ArgumentParser {
             return null;
         }
     }
+
+    @Nullable
+    @Override
+    public Object getObjectArgument(@NonNull String argumentName, @NonNull Object arguments) {
+        try {
+            Map<String, Object> argMap = (Map<String, Object>) arguments;
+            return argMap.get(argumentName);
+        } catch (ClassCastException exception) {
+            return null;
+        }
+    }
 }

@@ -1,7 +1,6 @@
 package io.split.splitio;
 
 import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -14,6 +13,8 @@ import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
@@ -149,5 +150,54 @@ public class SplitWrapperImplTest {
         mSplitWrapper.track("key", null, "my_event", "account", null, Collections.singletonMap("age", 50));
 
         verify(clientMock).track("account", "my_event", Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void testGetAttribute() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.getAttribute("key", null, "my_attribute");
+
+        verify(clientMock).getAttribute("my_attribute");
+    }
+
+    @Test
+    public void testGetAllAttributes() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.getAllAttributes("key", null);
+
+        verify(clientMock).getAllAttributes();
+    }
+
+    @Test
+    public void testSetAttribute() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.setAttribute("key", null, "my_attr", "attr_value");
+
+        verify(clientMock).setAttribute("my_attr", "attr_value");
+    }
+
+    @Test
+    public void testMultipleAttributes() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        Map<String, Object> attributesMap = new HashMap<>();
+        attributesMap.put("bool_attr", true);
+        attributesMap.put("number_attr", 25.56);
+        attributesMap.put("string_attr", "attr-value");
+        attributesMap.put("list_attr", Arrays.asList("one", "two"));
+        mSplitWrapper.setAttributes("key", null, attributesMap);
+
+        verify(clientMock).setAttributes(attributesMap);
     }
 }

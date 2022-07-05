@@ -10,6 +10,10 @@ enum Method: String {
     case getTreatmentWithConfig = "getTreatmentWithConfig"
     case getTreatmentsWithConfig = "getTreatmentsWithConfig"
     case track = "track"
+    case getAttribute = "getAttribute"
+    case getAllAttributes = "getAllAttributes"
+    case setAttribute = "setAttribute"
+    case setAttributes = "setAttributes"
 }
 
 enum Argument: String {
@@ -24,4 +28,5 @@ enum Argument: String {
     case trafficType = "trafficType"
     case value = "value"
     case properties = "properties"
+    case attributeName = "attributeName"
 }

@@ -12,7 +12,6 @@ import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
 import io.split.android.client.utils.ConcurrentSet;
-import io.split.android.client.utils.Logger;
 
 class SplitWrapperImpl implements SplitWrapper {
 
@@ -80,5 +79,37 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public Map<String, SplitResult> getTreatmentsWithConfig(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
         return getClient(matchingKey, bucketingKey).getTreatmentsWithConfig(splitNames, attributes);
+    }
+
+    @Override
+    public boolean setAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName, Object value) {
+        return getClient(matchingKey, bucketingKey).setAttribute(attributeName, value);
+    }
+
+    @Nullable
+    @Override
+    public Object getAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName) {
+        return getClient(matchingKey, bucketingKey).getAttribute(attributeName);
+    }
+
+    @Override
+    public boolean setAttributes(String matchingKey, @Nullable String bucketingKey, Map<String, Object> attributes) {
+        return getClient(matchingKey, bucketingKey).setAttributes(attributes);
+    }
+
+    @NonNull
+    @Override
+    public Map<String, Object> getAllAttributes(String matchingKey, @Nullable String bucketingKey) {
+        return getClient(matchingKey, bucketingKey).getAllAttributes();
+    }
+
+    @Override
+    public boolean removeAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName) {
+        return false;
+    }
+
+    @Override
+    public boolean clearAttributes(String matchingKey, @Nullable String bucketingKey) {
+        return false;
     }
 }

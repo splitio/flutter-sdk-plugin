@@ -16,4 +16,6 @@ interface ArgumentParser {
     List<String> getStringListArgument(@NonNull String argument, @NonNull Object arguments);
 
     Double getDoubleArgument(@NonNull String argument, @NonNull Object arguments);
+
+    Object getObjectArgument(@NonNull String argumentName, @NonNull Object arguments);
 }

@@ -81,23 +81,37 @@ class SplitClient {
   }
 
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    // TODO implement
+    var result = await _channel.invokeMethod('setAttribute',
+        _buildParameters({'attributeName': attributeName, 'value': value}));
+
+    if (result is bool) {
+      return result;
+    }
+
     return false;
   }
 
-  dynamic getAttribute(String attributeName) async {
-    // TODO implement
-    return null;
+  Future<dynamic> getAttribute(String attributeName) async {
+    return _channel.invokeMethod(
+        'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    // TODO implement
+    var result = await _channel.invokeMethod(
+        'setAttributes', _buildParameters({'attributes': attributes}));
+
+    if (result is bool) {
+      return result;
+    }
+
     return false;
   }
 
   Future<Map<String, dynamic>> getAllAttributes() async {
-    // TODO implement
-    return {};
+    return (await _channel.invokeMapMethod(
+                'getAllAttributes', _buildParameters({})))
+            ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
+        {};
   }
 
   Future<bool> removeAttribute(String attributeName) async {

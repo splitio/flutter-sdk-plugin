@@ -27,6 +27,17 @@ void main() {
           };
         case 'track':
           return true;
+        case 'getAttribute':
+          return true;
+        case 'getAllAttributes':
+          return {
+            'attr_1': true,
+            'attr_2': ['list-element'],
+            'attr_3': 28.20
+          };
+        case 'setAttribute':
+        case 'setAttributes':
+          return true;
       }
     });
   });
@@ -183,6 +194,66 @@ void main() {
         'bucketingKey': 'bucketing-key',
         'eventType': 'my_event',
         'trafficType': 'my_traffic_type',
+      });
+    });
+  });
+
+  group('attributes', () {
+    test('get single attribute', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.getAttribute('attribute-name');
+      expect(methodName, 'getAttribute');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributeName': 'attribute-name',
+      });
+    });
+
+    test('get all attributes', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.getAllAttributes();
+      expect(methodName, 'getAllAttributes');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+      });
+    });
+
+    test('set attribute', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.setAttribute('my_attr', 'attr_value');
+      expect(methodName, 'setAttribute');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributeName': 'my_attr',
+        'value': 'attr_value',
+      });
+    });
+
+    test('set multiple attributes', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.setAttributes({
+        'bool_attr': true,
+        'number_attr': 25.56,
+        'string_attr': 'attr-value',
+        'list_attr': ['one', 'two'],
+      });
+      expect(methodName, 'setAttributes');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {
+          'bool_attr': true,
+          'number_attr': 25.56,
+          'string_attr': 'attr-value',
+          'list_attr': ['one', 'two'],
+        }
       });
     });
   });
