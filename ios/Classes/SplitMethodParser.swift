@@ -98,6 +98,19 @@ class DefaultSplitMethodParser: SplitMethodParser {
                          bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
                          result: result)
                 break
+            case .setAttribute:
+                setAttribute(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                         bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                         attributeName: argumentParser.getStringArgument(argumentName: .attributeName, arguments: arguments),
+                         attributeValue: argumentParser.getAnyArgument(argumentName: .value, arguments: arguments),
+                         result: result)
+                break
+            case .setAttributes:
+                setAttributes(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                     bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                     attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments),
+                     result: result)
+                break
             case .destroy:
                 splitWrapper?.destroy()
                 result(nil)
@@ -205,6 +218,29 @@ class DefaultSplitMethodParser: SplitMethodParser {
         }
 
         result(splitWrapper.getAllAttributes(matchingKey: matchingKey, bucketingKey: bucketingKey))
+    }
+
+    private func setAttribute(matchingKey: String, bucketingKey: String?, attributeName: String?, attributeValue: Any?, result: FlutterResult) {
+        guard let attributeName = attributeName else {
+            result(nil)
+            return
+        }
+
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        result(splitWrapper.setAttribute(matchingKey: matchingKey, bucketingKey: bucketingKey, attributeName: attributeName, value: attributeValue))
+    }
+
+    private func setAttributes(matchingKey: String, bucketingKey: String?, attributes: [String: Any?], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        result(splitWrapper.setAttributes(matchingKey: matchingKey, bucketingKey: bucketingKey, attributes: attributes))
     }
 
     private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {

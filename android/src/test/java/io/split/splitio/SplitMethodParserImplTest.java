@@ -329,6 +329,46 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
+    public void setSingleAttribute() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("attributeName", "my_attr");
+        map.put("value", "attr_value");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("attributeName", map)).thenReturn("my_attr");
+        when(mArgumentParser.getObjectArgument("value", map)).thenReturn("attr_value");
+
+        mMethodParser.onMethodCall("setAttribute", map, mResult);
+
+        verify(mSplitWrapper).setAttribute("user-key", "bucketing-key","my_attr", "attr_value");
+    }
+
+    @Test
+    public void setMultipleAttributes() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("attributeName", "my_attr");
+
+        Map<String, Object> attributesMap = new HashMap<>();
+        attributesMap.put("bool_attr", true);
+        attributesMap.put("number_attr", 25.56);
+        attributesMap.put("string_attr", "attr-value");
+        attributesMap.put("list_attr", Arrays.asList("one", "two"));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(attributesMap);
+
+        mMethodParser.onMethodCall("setAttributes", map, mResult);
+
+        verify(mSplitWrapper).setAttributes("user-key", "bucketing-key", attributesMap);
+    }
+
+    @Test
     public void destroy() {
         mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
 

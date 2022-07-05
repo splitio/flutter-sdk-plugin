@@ -14,6 +14,8 @@ class Constants {
         static final String TRACK = "track";
         static final String GET_ATTRIBUTE = "getAttribute";
         static final String GET_ALL_ATTRIBUTES = "getAllAttributes";
+        static final String SET_ATTRIBUTE = "setAttribute";
+        static final String SET_ATTRIBUTES = "setAttributes";
     }
 
     static class Argument {

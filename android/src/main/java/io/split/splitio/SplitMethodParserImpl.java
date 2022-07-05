@@ -24,6 +24,8 @@ import static io.split.splitio.Constants.Method.GET_TREATMENTS;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.GET_TREATMENT_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.INIT;
+import static io.split.splitio.Constants.Method.SET_ATTRIBUTE;
+import static io.split.splitio.Constants.Method.SET_ATTRIBUTES;
 import static io.split.splitio.Constants.Method.TRACK;
 
 import android.content.Context;
@@ -139,6 +141,21 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         result);
                 break;
+            case SET_ATTRIBUTE:
+                setAttribute(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(ATTRIBUTE_NAME, arguments),
+                        mArgumentParser.getObjectArgument(VALUE, arguments),
+                        result);
+                break;
+            case SET_ATTRIBUTES:
+                setAttributes(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        result);
+                break;
             case DESTROY:
                 mSplitWrapper.destroy();
                 result.success(null);
@@ -227,6 +244,14 @@ class SplitMethodParserImpl implements SplitMethodParser {
 
     private void getAllAttributes(String matchingKey, String bucketingKey, MethodChannel.Result result) {
         result.success(mSplitWrapper.getAllAttributes(matchingKey, bucketingKey));
+    }
+
+    private void setAttribute(String matchingKey, String bucketingKey, String attributeName, Object attributeValue, MethodChannel.Result result) {
+        result.success(mSplitWrapper.setAttribute(matchingKey, bucketingKey, attributeName, attributeValue));
+    }
+
+    private void setAttributes(String matchingKey, String bucketingKey, Map<String, Object> attributes, MethodChannel.Result result) {
+        result.success(mSplitWrapper.setAttributes(matchingKey, bucketingKey, attributes));
     }
 
     private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel, boolean waitForReady) {

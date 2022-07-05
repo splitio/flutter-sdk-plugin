@@ -81,7 +81,13 @@ class SplitClient {
   }
 
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    // TODO implement
+    var result = await _channel.invokeMethod('setAttribute',
+        _buildParameters({'attributeName': attributeName, 'value': value}));
+
+    if (result is bool) {
+      return result;
+    }
+
     return false;
   }
 
@@ -91,7 +97,13 @@ class SplitClient {
   }
 
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    // TODO implement
+    var result = await _channel.invokeMethod(
+        'setAttributes', _buildParameters({'attributes': attributes}));
+
+    if (result is bool) {
+      return result;
+    }
+
     return false;
   }
 

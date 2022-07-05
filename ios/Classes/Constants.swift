@@ -12,6 +12,8 @@ enum Method: String {
     case track = "track"
     case getAttribute = "getAttribute"
     case getAllAttributes = "getAllAttributes"
+    case setAttribute = "setAttribute"
+    case setAttributes = "setAttributes"
 }
 
 enum Argument: String {
