@@ -9,6 +9,7 @@ enum Method: String {
     case getTreatments = "getTreatments"
     case getTreatmentWithConfig = "getTreatmentWithConfig"
     case getTreatmentsWithConfig = "getTreatmentsWithConfig"
+    case track = "track"
 }
 
 enum Argument: String {
@@ -19,4 +20,8 @@ enum Argument: String {
     case waitForReady = "waitForReady"
     case splitName = "splitName"
     case attributes = "attributes"
+    case eventType = "eventType"
+    case trafficType = "trafficType"
+    case value = "value"
+    case properties = "properties"
 }

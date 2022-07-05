@@ -84,6 +84,61 @@ class SplitMethodParserTests: XCTestCase {
         }
     }
 
+    func testTrackWithValue() {
+        methodParser?.onMethodCall(methodName: "track", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "eventType": "my_event", "value": 25.20], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.eventTypeValue == "my_event")
+            XCTAssert(splitWrapper.valueValue == 25.20)
+        }
+    }
+
+    func testTrackWithInvalidValue() {
+        methodParser?.onMethodCall(methodName: "track", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "eventType": "my_event", "value": "25.20"], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.eventTypeValue == "my_event")
+            XCTAssert(splitWrapper.valueValue == nil)
+        }
+    }
+
+    func testTrackWithValueAndProperties() {
+        methodParser?.onMethodCall(methodName: "track", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "eventType": "my_event", "value": 25.20, "properties": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.eventTypeValue == "my_event")
+            XCTAssert(splitWrapper.valueValue == 25.20)
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.propertiesValue!))
+        }
+    }
+
+    func testTrackWithEverything() {
+        methodParser?.onMethodCall(methodName: "track", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "trafficType": "account", "eventType": "my_event", "value": 25.20, "properties": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.eventTypeValue == "my_event")
+            XCTAssert(splitWrapper.valueValue == 25.20)
+            XCTAssert(splitWrapper.trafficTypeValue == "account")
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.propertiesValue!))
+        }
+    }
+
     func testDestroy() throws {
         methodParser?.onMethodCall(
             methodName: "destroy",
@@ -110,6 +165,10 @@ class SplitWrapperStub: SplitWrapper {
     var splitNameValue = ""
     var splitsValue: [String]?
     var attributesValue: [String: Any]?
+    var eventTypeValue: String = ""
+    var propertiesValue: [String: Any]?
+    var valueValue: Double?
+    var trafficTypeValue: String = ""
 
     func getClient(matchingKey: String, bucketingKey: String?) -> SplitClient? {
         matchingKeyValue = matchingKey
@@ -158,6 +217,17 @@ class SplitWrapperStub: SplitWrapper {
         }
 
         return result
+    }
+
+    func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        eventTypeValue = eventType
+        trafficTypeValue = trafficType ?? ""
+        valueValue = value
+        propertiesValue = properties
+
+        return true
     }
 
     func destroy() {

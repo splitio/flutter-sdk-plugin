@@ -9,6 +9,8 @@ protocol ArgumentParser {
     func getMapArgument(argumentName: Argument, arguments: Any?) -> [String: Any?]
 
     func getStringListArgument(argumentName: Argument, arguments: Any?) -> [String]
+
+    func getDoubleArgument(argumentName: Argument, arguments: Any?) -> Double?
 }
 
 class DefaultArgumentParser: ArgumentParser {
@@ -56,6 +58,18 @@ class DefaultArgumentParser: ArgumentParser {
 
         guard let argumentValue = arguments[argumentName.rawValue] as? [String] else {
             return []
+        }
+
+        return argumentValue
+    }
+
+    func getDoubleArgument(argumentName: Argument, arguments: Any?) -> Double? {
+        guard let arguments = arguments as? [String: Any?] else {
+            return nil
+        }
+
+        guard let argumentValue = arguments[argumentName.rawValue] as? Double else {
+            return nil
         }
 
         return argumentValue

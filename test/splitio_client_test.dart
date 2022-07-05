@@ -25,6 +25,8 @@ void main() {
             'split1': {'treatment': 'on', 'config': null},
             'split2': {'treatment': 'off', 'config': null}
           };
+        case 'track':
+          return true;
       }
     });
   });
@@ -139,6 +141,48 @@ void main() {
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
         'attributes': {'attr1': true}
+      });
+    });
+  });
+
+  group('track', () {
+    test('track with traffic type & value', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.track('my_event', trafficType: 'my_traffic_type', value: 25.10);
+      expect(methodName, 'track');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'eventType': 'my_event',
+        'trafficType': 'my_traffic_type',
+        'value': 25.10
+      });
+    });
+
+    test('track with value', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.track('my_event', value: 25.10);
+      expect(methodName, 'track');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'eventType': 'my_event',
+        'value': 25.10
+      });
+    });
+
+    test('track with traffic type', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.track('my_event', trafficType: 'my_traffic_type');
+      expect(methodName, 'track');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'eventType': 'my_event',
+        'trafficType': 'my_traffic_type',
       });
     });
   });

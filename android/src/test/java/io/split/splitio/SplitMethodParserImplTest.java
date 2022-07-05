@@ -221,6 +221,84 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
+    public void trackWithValue() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("eventType", "my-event");
+        map.put("value", 25.20);
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("eventType", map)).thenReturn("my-event");
+        when(mArgumentParser.getDoubleArgument("value", map)).thenReturn(25.20);
+
+        mMethodParser.onMethodCall("track", map, mResult);
+
+        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, 25.20, Collections.emptyMap());
+    }
+
+    @Test
+    public void trackWithInvalidValue() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("eventType", "my-event");
+        map.put("value", "25.20");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("eventType", map)).thenReturn("my-event");
+        when(mArgumentParser.getDoubleArgument("value", map)).thenReturn(null);
+
+        mMethodParser.onMethodCall("track", map, mResult);
+
+        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, null, Collections.emptyMap());
+    }
+
+    @Test
+    public void trackWithValueAndProperties() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("eventType", "my-event");
+        map.put("value", 25.20);
+        map.put("properties", Collections.singletonMap("age", 50));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("eventType", map)).thenReturn("my-event");
+        when(mArgumentParser.getDoubleArgument("value", map)).thenReturn(25.20);
+        when(mArgumentParser.getMapArgument("properties", map)).thenReturn(Collections.singletonMap("age", 50));
+
+        mMethodParser.onMethodCall("track", map, mResult);
+
+        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, 25.20, Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void trackWithEverything() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("eventType", "my-event");
+        map.put("value", 25.20);
+        map.put("properties", Collections.singletonMap("age", 50));
+        map.put("trafficType", "account");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("eventType", map)).thenReturn("my-event");
+        when(mArgumentParser.getDoubleArgument("value", map)).thenReturn(25.20);
+        when(mArgumentParser.getMapArgument("properties", map)).thenReturn(Collections.singletonMap("age", 50));
+        when(mArgumentParser.getStringArgument("trafficType", map)).thenReturn("account");
+
+        mMethodParser.onMethodCall("track", map, mResult);
+
+        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", "account", 25.20, Collections.singletonMap("age", 50));
+    }
+
+    @Test
     public void destroy() {
         mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
 

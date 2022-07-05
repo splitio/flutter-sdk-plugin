@@ -51,4 +51,15 @@ class ArgumentParserImpl implements ArgumentParser {
             return new ArrayList<>();
         }
     }
+
+    @Nullable
+    @Override
+    public Double getDoubleArgument(@NonNull String argumentName, @NonNull Object arguments) {
+        try {
+            Map<String, Object> argMap = (Map<String, Object>) arguments;
+            return (Double) argMap.get(argumentName);
+        } catch (ClassCastException exception) {
+            return null;
+        }
+    }
 }

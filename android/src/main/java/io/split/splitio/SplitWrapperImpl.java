@@ -34,6 +34,24 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @Override
+    public boolean track(String matchingKey, @Nullable String bucketingKey, String eventType, @Nullable String trafficType, @Nullable Double value, Map<String, Object> properties) {
+        SplitClient client = getClient(matchingKey, bucketingKey);
+        if (trafficType != null) {
+            if (value != null) {
+                return client.track(trafficType, eventType, value, properties);
+            } else {
+                return client.track(trafficType, eventType, properties);
+            }
+        }
+
+        if (value != null) {
+            return client.track(eventType, value, properties);
+        } else {
+            return client.track(eventType, properties);
+        }
+    }
+
+    @Override
     public void destroy() {
         for (Key key : mUsedKeys) {
             SplitClient client = mSplitFactory.client(key);

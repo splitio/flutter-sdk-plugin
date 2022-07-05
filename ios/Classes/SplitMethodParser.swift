@@ -11,7 +11,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
-    
+
     init(methodChannel: FlutterMethodChannel) {
         self.argumentParser = DefaultArgumentParser()
         self.methodChannel = methodChannel
@@ -77,6 +77,15 @@ class DefaultSplitMethodParser: SplitMethodParser {
                     attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any],
                     result: result)
                 break
+            case .track:
+                track(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                      bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                      eventType: argumentParser.getStringArgument(argumentName: .eventType, arguments: arguments) ?? "",
+                      trafficType: argumentParser.getStringArgument(argumentName: .trafficType, arguments: arguments),
+                      value: argumentParser.getDoubleArgument(argumentName: .value, arguments: arguments),
+                      properties: argumentParser.getMapArgument(argumentName: .properties, arguments: arguments),
+                      result: result)
+            break
             case .destroy:
                 splitWrapper?.destroy()
                 result(nil)
@@ -152,6 +161,15 @@ class DefaultSplitMethodParser: SplitMethodParser {
         result(treatments.mapValues {
             ["treatment": $0.treatment, "config": $0.config]
         })
+    }
+
+    private func track(matchingKey: String, bucketingKey: String? = nil, eventType: String, trafficType: String? = nil, value: Double? = nil, properties: [String: Any], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        return result(splitWrapper.track(matchingKey: matchingKey, bucketingKey: bucketingKey, eventType: eventType, trafficType: trafficType, value: value, properties: properties))
     }
 
     private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {

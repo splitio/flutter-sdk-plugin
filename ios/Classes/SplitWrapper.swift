@@ -1,9 +1,16 @@
 import Foundation
 import Split
 
-protocol SplitWrapper {
+protocol SplitWrapper: EvaluationWrapper {
 
     func getClient(matchingKey: String, bucketingKey: String?) -> SplitClient?
+
+    func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool
+
+    func destroy()
+}
+
+protocol EvaluationWrapper {
 
     func getTreatment(matchingKey: String, splitName: String, bucketingKey: String?, attributes: [String: Any]?) -> String?
 
@@ -12,8 +19,6 @@ protocol SplitWrapper {
     func getTreatmentWithConfig(matchingKey: String, splitName: String, bucketingKey: String?, attributes: [String: Any]?) -> SplitResult?
 
     func getTreatmentsWithConfig(matchingKey: String, splits: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: SplitResult]
-
-    func destroy()
 }
 
 class DefaultSplitWrapper: SplitWrapper {
@@ -67,6 +72,26 @@ class DefaultSplitWrapper: SplitWrapper {
         }
 
         return client.getTreatmentsWithConfig(splits: splits, attributes: attributes)
+    }
+
+    func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool {
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return false
+        }
+
+        guard let trafficType = trafficType else {
+            guard let value = value else {
+                return client.track(eventType: eventType, properties: properties)
+            }
+
+            return client.track(eventType: eventType, value: value, properties: properties)
+        }
+
+        guard let value = value else {
+            return client.track(trafficType: trafficType, eventType: eventType, properties: properties)
+        }
+
+        return client.track(trafficType: trafficType, eventType: eventType, value: value, properties: properties)
     }
 
     func destroy() {

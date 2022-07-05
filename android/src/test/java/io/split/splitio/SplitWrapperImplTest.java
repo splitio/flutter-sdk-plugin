@@ -106,4 +106,48 @@ public class SplitWrapperImplTest {
 
         verify(clientMock).getTreatmentsWithConfig(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
     }
+
+    @Test
+    public void testTrack() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.track("key", null, "my_event", "account", 25.20, Collections.singletonMap("age", 50));
+
+        verify(clientMock).track("account", "my_event", 25.20, Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void testTrackWithoutTrafficType() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.track("key", null, "my_event", null, 25.20, Collections.singletonMap("age", 50));
+
+        verify(clientMock).track("my_event", 25.20, Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void testTrackWithoutTrafficTypeNorValue() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.track("key", null, "my_event", null, null, Collections.singletonMap("age", 50));
+
+        verify(clientMock).track("my_event", Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void testTrackWithoutValue() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.track("key", null, "my_event", "account", null, Collections.singletonMap("age", 50));
+
+        verify(clientMock).track("account", "my_event", Collections.singletonMap("age", 50));
+    }
 }

@@ -3,9 +3,13 @@ package io.split.splitio;
 import static io.split.splitio.Constants.Argument.API_KEY;
 import static io.split.splitio.Constants.Argument.ATTRIBUTES;
 import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
+import static io.split.splitio.Constants.Argument.EVENT_TYPE;
+import static io.split.splitio.Constants.Argument.PROPERTIES;
 import static io.split.splitio.Constants.Argument.SDK_CONFIGURATION;
 import static io.split.splitio.Constants.Argument.MATCHING_KEY;
 import static io.split.splitio.Constants.Argument.SPLIT_NAME;
+import static io.split.splitio.Constants.Argument.TRAFFIC_TYPE;
+import static io.split.splitio.Constants.Argument.VALUE;
 import static io.split.splitio.Constants.Argument.WAIT_FOR_READY;
 import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED;
 import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED_MESSAGE;
@@ -17,6 +21,7 @@ import static io.split.splitio.Constants.Method.GET_TREATMENTS;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.GET_TREATMENT_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.INIT;
+import static io.split.splitio.Constants.Method.TRACK;
 
 import android.content.Context;
 
@@ -34,7 +39,6 @@ import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
-import io.split.android.client.utils.Logger;
 
 class SplitMethodParserImpl implements SplitMethodParser {
 
@@ -108,6 +112,16 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
                         result);
                 break;
+            case TRACK:
+                track(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(EVENT_TYPE, arguments),
+                        mArgumentParser.getStringArgument(TRAFFIC_TYPE, arguments),
+                        mArgumentParser.getDoubleArgument(VALUE, arguments),
+                        mArgumentParser.getMapArgument(PROPERTIES, arguments),
+                        result);
+                break;
             case DESTROY:
                 mSplitWrapper.destroy();
                 result.success(null);
@@ -178,6 +192,16 @@ class SplitMethodParserImpl implements SplitMethodParser {
         }
 
         result.success(resultMap);
+    }
+
+    private void track(String matchingKey,
+                       String bucketingKey,
+                       String eventType,
+                       @Nullable String trafficType,
+                       @Nullable Double value,
+                       Map<String, Object> properties,
+                       MethodChannel.Result result) {
+        result.success(mSplitWrapper.track(matchingKey, bucketingKey, eventType,trafficType,value, properties));
     }
 
     private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel, boolean waitForReady) {
