@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import androidx.annotation.NonNull;
 
+import java.util.List;
 import java.util.Map;
 
 interface ArgumentParser {
@@ -11,4 +12,6 @@ interface ArgumentParser {
     boolean getBooleanArgument(@NonNull String argumentName, @NonNull Object arguments);
 
     Map<String, Object> getMapArgument(@NonNull String argumentName, @NonNull Object arguments);
+
+    List<String> getStringListArgument(String argSplitName, Object arguments);
 }
