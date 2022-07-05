@@ -130,6 +130,20 @@ class SplitTests: XCTestCase {
 
         XCTAssert(NSDictionary(dictionary: expectedMap).isEqual(to: client.attributesMapValue))
     }
+
+    func testRemoveAttribute() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.removeAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr", value: "attr_value")
+        XCTAssert(client.attributeNameValue == "my_attr")
+    }
+
+    func testRemoveAttribute() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.clearAttributes(matchingKey: "key", bucketingKey: "bucketing")
+        XCTAssert(client.attributeNameValue == "my_attr")
+    }
 }
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
@@ -207,6 +221,7 @@ class SplitClientStub: SplitClient {
     var attributeNameValue: String = ""
     var attributeValue: Any?
     var attributesMapValue: [String: Any] = [:]
+    var clearAttributesCalled: Bool = false
     var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {

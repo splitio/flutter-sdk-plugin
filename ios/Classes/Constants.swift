@@ -14,6 +14,8 @@ enum Method: String {
     case getAllAttributes = "getAllAttributes"
     case setAttribute = "setAttribute"
     case setAttributes = "setAttributes"
+    case removeAttribute = "removeAttribute"
+    case clearAttributes = "clearAttributes"
 }
 
 enum Argument: String {

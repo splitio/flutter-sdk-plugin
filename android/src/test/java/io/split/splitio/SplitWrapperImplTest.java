@@ -186,7 +186,7 @@ public class SplitWrapperImplTest {
     }
 
     @Test
-    public void testMultipleAttributes() {
+    public void testSetMultipleAttributes() {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
@@ -199,5 +199,27 @@ public class SplitWrapperImplTest {
         mSplitWrapper.setAttributes("key", null, attributesMap);
 
         verify(clientMock).setAttributes(attributesMap);
+    }
+
+    @Test
+    public void testRemoveAttribute() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.removeAttribute("key", null, "my_attribute");
+
+        verify(clientMock).removeAttribute("my_attribute");
+    }
+
+    @Test
+    public void testClearAttributes() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.clearAttributes("key", null);
+
+        verify(clientMock).clearAttributes();
     }
 }
