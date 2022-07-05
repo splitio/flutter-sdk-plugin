@@ -4,56 +4,106 @@ import XCTest
 
 class SplitTests: XCTestCase {
 
-    private var splitWrapper: SplitWrapper?
-
-    override func setUpWithError() throws {
-        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
-    }
+    private var splitWrapper: SplitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
 
     func testGetClient() throws {
-        let client = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
+        let client = splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         XCTAssert(client != nil)
     }
 
-    func testDestroy() throws {
-        let client1 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: "bucketing", waitForReady: false) as? SplitClientStub
-        let client2 = splitWrapper?.getClient(matchingKey: "key", bucketingKey: nil, waitForReady: true) as? SplitClientStub
-        splitWrapper?.destroy()
+    func testGetTreatment() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let treatment = splitWrapper.getTreatment(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(treatment != nil)
+        XCTAssert(client.getTreatmentCalled)
+    }
 
-        XCTAssertTrue(client1?.destroyCalled.expectedFulfillmentCount == 1)
-        XCTAssertTrue(client2?.destroyCalled.expectedFulfillmentCount == 1)
+    func testGetTreatments() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let treatment = splitWrapper.getTreatments(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(!treatment.isEmpty)
+        XCTAssert(client.getTreatmentsCalled)
+    }
+
+    func testGetTreatmentWithConfig() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let treatment = splitWrapper.getTreatmentWithConfig(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(treatment != nil)
+        XCTAssert(client.getTreatmentWithConfigCalled)
+    }
+
+    func testGetTreatmentsWithConfig() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        let treatment = splitWrapper.getTreatmentsWithConfig(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(!treatment.isEmpty)
+        XCTAssert(client.getTreatmentsWithConfigCalled)
+    }
+
+    func testDestroy() throws {
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
+        let client1 = splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing") as? SplitClientStub
+        let client2 = splitWrapper.getClient(matchingKey: "key", bucketingKey: nil) as? SplitClientStub
+        splitWrapper.destroy()
+
+        XCTAssertTrue(client1?.destroyCalled == true)
+        XCTAssertTrue(client2?.destroyCalled == true)
     }
 }
 
-class SplitFactoryProviderStub : SplitFactoryProvider {
-    
+class SplitFactoryProviderStub: SplitFactoryProvider {
+
     func getFactory() -> SplitFactory? {
         return SplitFactoryStub(apiKey: "dummy-key")
+    }
+}
+
+class SplitFactoryProviderStubWithClient: SplitFactoryProvider {
+
+    let client: SplitClientStub
+
+    init(client: SplitClientStub) {
+        self.client = client
+    }
+
+    func getFactory() -> SplitFactory? {
+        return SplitFactoryStub(apiKey: "dummy-key", client: self.client)
     }
 }
 
 class SplitFactoryStub: SplitFactory {
 
     var client: SplitClient
-    
+
+    var nilBucketingKeyClient: SplitClient
+
     var manager: SplitManager
-    
+
     var version: String
 
     var apiKey: String
-    
-    init(apiKey: String) {
+
+    init(apiKey: String, client: SplitClient) {
         self.apiKey = apiKey
-        client = SplitClientStub()
+        self.client = client
+        self.nilBucketingKeyClient = SplitClientStub()
         manager = SplitManagerStub()
         version = "0.0.0-stub"
     }
 
+    convenience init(apiKey: String) {
+        self.init(apiKey: apiKey, client: SplitClientStub())
+    }
+
     func client(key: Key) -> SplitClient {
-        if (key.bucketingKey != nil) {
+        if key.bucketingKey != nil {
             return client
         } else {
-            return SplitClientStub()
+            return nilBucketingKeyClient
         }
     }
 
@@ -67,69 +117,79 @@ class SplitFactoryStub: SplitFactory {
 }
 
 class SplitClientStub: SplitClient {
-    
-    var destroyCalled: XCTestExpectation = XCTestExpectation()
+
+    var destroyCalled: Bool = false
+    var getTreatmentCalled: Bool = false
+    var getTreatmentWithConfigCalled: Bool = false
+    var getTreatmentsCalled: Bool = false
+    var getTreatmentsWithConfigCalled: Bool = false
     var sdkReadyEventAction: SplitAction?
 
-    func getTreatment(_ split: String, attributes: [String : Any]?) -> String {
+    func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
+        getTreatmentCalled = true
         return SplitConstants.control
     }
-    
+
     func getTreatment(_ split: String) -> String {
+        getTreatmentCalled = true
         return SplitConstants.control
     }
-    
-    func getTreatments(splits: [String], attributes: [String : Any]?) -> [String : String] {
+
+    func getTreatments(splits: [String], attributes: [String: Any]?) -> [String: String] {
+        getTreatmentsCalled = true
         return ["feature": SplitConstants.control]
     }
-    
+
     func getTreatmentWithConfig(_ split: String) -> SplitResult {
+        getTreatmentWithConfigCalled = true
         return SplitResult(treatment: SplitConstants.control)
     }
-    
-    func getTreatmentWithConfig(_ split: String, attributes: [String : Any]?) -> SplitResult {
+
+    func getTreatmentWithConfig(_ split: String, attributes: [String: Any]?) -> SplitResult {
+        getTreatmentWithConfigCalled = true
         return SplitResult(treatment: SplitConstants.control)
     }
-    
-    func getTreatmentsWithConfig(splits: [String], attributes: [String : Any]?) -> [String : SplitResult] {
+
+    func getTreatmentsWithConfig(splits: [String], attributes: [String: Any]?) -> [String: SplitResult] {
+        getTreatmentsWithConfigCalled = true
         return ["feature": SplitResult(treatment: SplitConstants.control)]
     }
-    
+
     func on(event: SplitEvent, execute action: @escaping SplitAction) {
-        if (event == SplitEvent.sdkReady) {
+        if event == SplitEvent.sdkReady {
             sdkReadyEventAction = action
         }
     }
-    
+
     func track(trafficType: String, eventType: String) -> Bool {
         return true
     }
-    
+
     func track(trafficType: String, eventType: String, value: Double) -> Bool {
         return true
     }
-    
+
     func track(eventType: String) -> Bool {
         return true
     }
-    
+
     func track(eventType: String, value: Double) -> Bool {
         return true
     }
-    
-    func track(trafficType: String, eventType: String, properties: [String:Any]?) -> Bool {
+
+    func track(trafficType: String, eventType: String, properties: [String: Any]?) -> Bool {
         return true
     }
-    
-    func track(trafficType: String, eventType: String, value: Double, properties: [String:Any]?) -> Bool {
+
+    func track(trafficType: String, eventType: String, value: Double, properties: [String: Any]?) -> Bool {
         return true
     }
-    
-    func track(eventType: String, properties: [String:Any]?) -> Bool {
+
+    func track(eventType: String, properties: [String: Any]?) -> Bool {
         return true
     }
-    
-    func track(eventType: String, value: Double, properties: [String:Any]?) -> Bool {
+
+    func track(eventType: String, value: Double, properties: [String: Any]?) -> Bool {
         return true
     }
 
@@ -156,27 +216,28 @@ class SplitClientStub: SplitClient {
     func clearAttributes() -> Bool {
         return true
     }
-    
+
     func flush() {
     }
 
     func destroy() {
-        destroyCalled.fulfill()
+        destroyCalled = true
     }
 
     func destroy(completion: (() -> Void)?) {
+        destroyCalled = true
     }
 }
 
 class SplitManagerStub: SplitManager, Destroyable {
     var splits: [SplitView]
     var splitNames: [String]
-    
+
     init() {
         splits = []
         splitNames = []
     }
-    
+
     func split(featureName: String) -> SplitView? {
         return nil
     }
@@ -187,7 +248,7 @@ class SplitManagerStub: SplitManager, Destroyable {
     }
 }
 
-class MethodChannelStub : FlutterMethodChannel {
+class MethodChannelStub: FlutterMethodChannel {
     var methodName: String = ""
     var arguments: Any?
 

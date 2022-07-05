@@ -12,14 +12,14 @@ class ArgumentParserTests: XCTestCase {
     func testGetStringArgument() throws {
         let arguments: [String: Any?] = ["apiKey": "api-key", "booleanValue": true]
         let stringArgument = argumentParser?.getStringArgument(argumentName: Argument.apiKey, arguments: arguments)
-        
+
         XCTAssert(stringArgument == "api-key")
     }
-    
+
     func testGetStringArgumentFailure() throws {
         let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": true]
         let stringArgument = argumentParser?.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments)
-        
+
         XCTAssert(stringArgument == nil)
     }
 
@@ -45,7 +45,7 @@ class ArgumentParserTests: XCTestCase {
 
         XCTAssert(booleanValue == true)
     }
-    
+
     func testGetBooleanArgumentFailure() throws {
         let arguments: [String: Any?] = ["apiKey": "api-key", "matchingKey": 25]
 

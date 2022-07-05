@@ -4,7 +4,7 @@ import XCTest
 class SplitClientConfigHelperTests: XCTestCase {
 
     func testConfigValuesAreMappedCorrectly() throws {
-        let configValues: Dictionary<String, Any?> = ["featuresRefreshRate": 80000,
+        let configValues: [String: Any?] = ["featuresRefreshRate": 80000,
         "segmentsRefreshRate": 70000,
         "impressionsRefreshRate": 60000,
         "telemetryRefreshRate": 2000,

@@ -2,12 +2,12 @@ import Foundation
 import Split
 
 protocol SplitMethodParser {
-    
+
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult)
 }
 
-class DefaultSplitMethodParser : SplitMethodParser {
-    
+class DefaultSplitMethodParser: SplitMethodParser {
+
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
@@ -28,26 +28,58 @@ class DefaultSplitMethodParser : SplitMethodParser {
             result(FlutterMethodNotImplemented)
             return
         }
-        switch (method) {
+        switch method {
             case .initialize:
                 initializeSplit(
-                    apiKey: argumentParser.getStringArgument(argumentName: Argument.apiKey, arguments: arguments) ?? "",
-                    matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
-                    configurationMap: argumentParser.getMapArgument(argumentName: Argument.config, arguments: arguments),
+                    apiKey: argumentParser.getStringArgument(argumentName: .apiKey, arguments: arguments) ?? "",
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    configurationMap: argumentParser.getMapArgument(argumentName: .config, arguments: arguments),
                     result: result
                 )
                 break
             case .client:
                 getClient(
-                    matchingKey: argumentParser.getStringArgument(argumentName: Argument.matchingKey, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: Argument.bucketingKey, arguments: arguments),
-                    waitForReady: argumentParser.getBooleanArgument(argumentName: Argument.waitForReady, arguments: arguments),
-                    result: result);
-                break;
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    waitForReady: argumentParser.getBooleanArgument(argumentName: .waitForReady, arguments: arguments),
+                    result: result)
+                break
+            case .getTreatment:
+                getTreatment(
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    splitName: argumentParser.getStringArgument(argumentName: .splitName, arguments: arguments) ?? "",
+                    attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any],
+                    result: result)
+                break
+            case .getTreatments:
+                getTreatments(
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    splits: argumentParser.getStringListArgument(argumentName: .splitName, arguments: arguments),
+                    attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any],
+                    result: result)
+                break
+            case .getTreatmentWithConfig:
+                getTreatmentWithConfig(
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    splitName: argumentParser.getStringArgument(argumentName: .splitName, arguments: arguments) ?? "",
+                    attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any],
+                    result: result)
+                break
+            case .getTreatmentsWithConfig:
+                getTreatmentsWithConfig(
+                    matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                    splits: argumentParser.getStringListArgument(argumentName: .splitName, arguments: arguments),
+                    attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any],
+                    result: result)
+                break
             case .destroy:
-                splitWrapper?.destroy();
-                result(nil);
+                splitWrapper?.destroy()
+                result(nil)
             default:
                 result(FlutterMethodNotImplemented)
                 break
@@ -66,21 +98,64 @@ class DefaultSplitMethodParser : SplitMethodParser {
     }
 
     private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false, result: FlutterResult) {
-        guard let splitWrapper = splitWrapper else {
-            print("Init needs to be called before getClient")
+        guard let splitWrapper = getSplitWrapper() else {
             result(nil)
             return
         }
 
-        let client = splitWrapper.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey, waitForReady: waitForReady)
-        if let client = client {
+        if let client = splitWrapper.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) {
             addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: self.methodChannel, waitForReady: waitForReady)
         }
         result(nil)
     }
 
+    private func getTreatment(matchingKey: String, bucketingKey: String? = nil, splitName: String, attributes: [String: Any]? = [:], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        result(splitWrapper.getTreatment(matchingKey: matchingKey, splitName: splitName, bucketingKey: bucketingKey, attributes: attributes))
+    }
+
+    private func getTreatments(matchingKey: String, bucketingKey: String? = nil, splits: [String], attributes: [String: Any]? = [:], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        result(splitWrapper.getTreatments(matchingKey: matchingKey, splits: splits, bucketingKey: bucketingKey, attributes: attributes))
+    }
+
+    private func getTreatmentWithConfig(matchingKey: String, bucketingKey: String? = nil, splitName: String, attributes: [String: Any]? = [:], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        guard let treatment = splitWrapper.getTreatmentWithConfig(matchingKey: matchingKey, splitName: splitName, bucketingKey: bucketingKey, attributes: attributes) else {
+            result(nil)
+            return
+        }
+
+        result([splitName: ["treatment": treatment.treatment, "config": treatment.config]])
+    }
+
+    private func getTreatmentsWithConfig(matchingKey: String, bucketingKey: String? = nil, splits: [String], attributes: [String: Any]? = [:], result: FlutterResult) {
+        guard let splitWrapper = getSplitWrapper() else {
+            result(nil)
+            return
+        }
+
+        let treatments = splitWrapper.getTreatmentsWithConfig(matchingKey: matchingKey, splits: splits, bucketingKey: bucketingKey, attributes: attributes)
+
+        result(treatments.mapValues {
+            ["treatment": $0.treatment, "config": $0.config]
+        })
+    }
+
     private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {
-        if (waitForReady) {
+        if waitForReady {
             client?.on(event: SplitEvent.sdkReady) {
                 self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
             }
@@ -104,5 +179,14 @@ class DefaultSplitMethodParser : SplitMethodParser {
         }
 
         methodChannel.invokeMethod(Method.clientReady.rawValue, arguments: args)
+    }
+
+    private func getSplitWrapper() -> SplitWrapper? {
+        guard let splitWrapper = splitWrapper else {
+            print("Init needs to be called before getClient")
+            return nil
+        }
+
+        return splitWrapper
     }
 }

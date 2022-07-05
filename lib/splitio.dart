@@ -24,7 +24,7 @@ class Splitio {
     _channel.setMethodCallHandler(_methodCallHandler);
   }
 
-  Future<void> init() async {
+  Future<void> init() {
     Map<String, Object?> arguments = {
       'apiKey': _apiKey,
       'matchingKey': _defaultMatchingKey,
@@ -77,8 +77,8 @@ class Splitio {
   Future<void> _methodCallHandler(MethodCall call) async {
     if (call.method == 'clientReady') {
       var matchingKey = call.arguments['matchingKey'];
-      var bucketingKey = call.arguments['bucketingKey'] ?? 'null';
-      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey);
+      var bucketingKey = call.arguments['bucketingKey'];
+      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey ?? 'null');
 
       if (_clientReadyCallbacks.containsKey(key)) {
         _clientReadyCallbacks[key]
