@@ -46,6 +46,7 @@ import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
+import io.split.android.client.utils.Logger;
 
 class SplitMethodParserImpl implements SplitMethodParser {
 

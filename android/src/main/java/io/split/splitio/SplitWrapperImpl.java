@@ -3,8 +3,6 @@ package io.split.splitio;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,7 +12,6 @@ import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
 import io.split.android.client.utils.ConcurrentSet;
-import io.split.android.client.utils.Logger;
 
 class SplitWrapperImpl implements SplitWrapper {
 
