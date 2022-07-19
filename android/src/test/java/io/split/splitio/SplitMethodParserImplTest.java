@@ -399,12 +399,36 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
-    public void destroy() {
+    public void flush() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+
         mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
 
-        mMethodParser.onMethodCall("destroy", Collections.emptyMap(), mResult);
+        mMethodParser.onMethodCall("flush", map, mResult);
 
-        verify(mSplitWrapper).destroy();
+        verify(mSplitWrapper).flush("user-key", "bucketing-key");
+        verify(mResult).success(null);
+    }
+
+    @Test
+    public void destroy() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
+
+        mMethodParser.onMethodCall("destroy", map, mResult);
+
+        verify(mSplitWrapper).destroy("user-key", "bucketing-key");
         verify(mResult).success(null);
     }
 }

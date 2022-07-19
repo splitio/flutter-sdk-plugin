@@ -18,6 +18,7 @@ import static io.split.splitio.Constants.Method.CLEAR_ATTRIBUTES;
 import static io.split.splitio.Constants.Method.CLIENT_READY;
 import static io.split.splitio.Constants.Method.DESTROY;
 import static io.split.splitio.Constants.Method.CLIENT;
+import static io.split.splitio.Constants.Method.FLUSH;
 import static io.split.splitio.Constants.Method.GET_ALL_ATTRIBUTES;
 import static io.split.splitio.Constants.Method.GET_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.GET_TREATMENT;
@@ -82,11 +83,15 @@ class SplitMethodParserImpl implements SplitMethodParser {
                 result.success(null);
                 break;
             case CLIENT:
-                getClient(
+                SplitClient client = getClient(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
-                        mArgumentParser.getBooleanArgument(WAIT_FOR_READY, arguments),
-                        result);
+                        mArgumentParser.getBooleanArgument(WAIT_FOR_READY, arguments));
+                if (client != null) {
+                    result.success(null);
+                } else {
+                    result.error(SDK_NOT_INITIALIZED, SDK_NOT_INITIALIZED_MESSAGE, null);
+                }
                 break;
             case GET_TREATMENT:
                 result.success(getTreatment(
@@ -160,8 +165,16 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments)));
                 break;
+            case FLUSH:
+                mSplitWrapper.flush(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments));
+                result.success(null);
+                break;
             case DESTROY:
-                mSplitWrapper.destroy();
+                mSplitWrapper.destroy(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments));
                 result.success(null);
                 break;
             default:
@@ -176,15 +189,15 @@ class SplitMethodParserImpl implements SplitMethodParser {
         ));
     }
 
-    private void getClient(String matchingKey, String bucketingKey, boolean waitForReady, MethodChannel.Result result) {
+    private SplitClient getClient(String matchingKey, String bucketingKey, boolean waitForReady) {
         if (mSplitWrapper != null) {
             SplitClient client = mSplitWrapper.getClient(matchingKey, bucketingKey);
             addEventListeners(client, matchingKey, bucketingKey, mMethodChannel, waitForReady);
 
-            result.success(null);
-        } else {
-            result.error(SDK_NOT_INITIALIZED, SDK_NOT_INITIALIZED_MESSAGE, null);
+            return client;
         }
+
+        return null;
     }
 
     private String getTreatment(String matchingKey,

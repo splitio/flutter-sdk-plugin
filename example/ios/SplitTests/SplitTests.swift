@@ -88,16 +88,6 @@ class SplitTests: XCTestCase {
         XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: client.propertiesValue!))
     }
 
-    func testDestroy() throws {
-        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStub())
-        let client1 = splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing") as? SplitClientStub
-        let client2 = splitWrapper.getClient(matchingKey: "key", bucketingKey: nil) as? SplitClientStub
-        splitWrapper.destroy()
-
-        XCTAssertTrue(client1?.destroyCalled == true)
-        XCTAssertTrue(client2?.destroyCalled == true)
-    }
-
     func testGetAttribute() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
@@ -134,15 +124,22 @@ class SplitTests: XCTestCase {
     func testRemoveAttribute() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
-        splitWrapper.removeAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr", value: "attr_value")
+        splitWrapper.removeAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr")
         XCTAssert(client.attributeNameValue == "my_attr")
     }
 
-    func testRemoveAttribute() {
+    func testFlush() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
-        splitWrapper.clearAttributes(matchingKey: "key", bucketingKey: "bucketing")
-        XCTAssert(client.attributeNameValue == "my_attr")
+        splitWrapper.flush(matchingKey: "key", bucketingKey: "bucketing")
+        XCTAssert(client.flushCalled)
+    }
+
+    func testDestroy() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.destroy(matchingKey: "key", bucketingKey: "bucketing")
+        XCTAssert(client.destroyCalled)
     }
 }
 
@@ -214,6 +211,7 @@ class SplitClientStub: SplitClient {
     var getTreatmentWithConfigCalled: Bool = false
     var getTreatmentsCalled: Bool = false
     var getTreatmentsWithConfigCalled: Bool = false
+    var flushCalled: Bool = false
     var eventTypeValue: String = ""
     var trafficTypeValue: String?
     var valueValue: Double?
@@ -327,6 +325,7 @@ class SplitClientStub: SplitClient {
     }
 
     func removeAttribute(name: String) -> Bool {
+        attributeNameValue = name
         return true
     }
 
@@ -335,6 +334,7 @@ class SplitClientStub: SplitClient {
     }
 
     func flush() {
+        flushCalled = true
     }
 
     func destroy() {

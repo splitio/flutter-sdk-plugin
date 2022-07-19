@@ -47,24 +47,6 @@ public class SplitWrapperImplTest {
     }
 
     @Test
-    public void testDestroy() {
-        SplitClient clientMock = mock(SplitClient.class);
-        SplitClient clientMock2 = mock(SplitClient.class);
-
-        Key key = new Key("key", "bucketing");
-        Key key2 = new Key("key");
-        when(mSplitFactory.client(key)).thenReturn(clientMock);
-        when(mSplitFactory.client(key2)).thenReturn(clientMock2);
-
-        mSplitWrapper.getClient("key", "bucketing");
-        mSplitWrapper.getClient("key", null);
-        mSplitWrapper.destroy();
-
-        verify(clientMock, times(1)).destroy();
-        verify(clientMock2, times(1)).destroy();
-    }
-
-    @Test
     public void testGetTreatment() {
         SplitClient clientMock = mock(SplitClient.class);
 
@@ -221,5 +203,27 @@ public class SplitWrapperImplTest {
         mSplitWrapper.clearAttributes("key", null);
 
         verify(clientMock).clearAttributes();
+    }
+
+    @Test
+    public void testFlush() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.flush("key", null);
+
+        verify(clientMock).flush();
+    }
+
+    @Test
+    public void testDestroy() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+
+        mSplitWrapper.destroy("key", null);
+
+        verify(clientMock).destroy();
     }
 }

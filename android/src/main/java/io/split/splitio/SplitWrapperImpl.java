@@ -5,31 +5,22 @@ import androidx.annotation.Nullable;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
-import io.split.android.client.api.Key;
-import io.split.android.client.utils.ConcurrentSet;
 
 class SplitWrapperImpl implements SplitWrapper {
 
     private final SplitFactory mSplitFactory;
-    private final Set<Key> mUsedKeys;
 
     SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider) {
         mSplitFactory = splitFactoryProvider.getSplitFactory();
-        mUsedKeys = new ConcurrentSet<>();
     }
 
     @Override
     public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
-        Key key = Helper.buildKey(matchingKey, bucketingKey);
-        SplitClient client = mSplitFactory.client(matchingKey, bucketingKey);
-        mUsedKeys.add(key);
-
-        return client;
+        return mSplitFactory.client(matchingKey, bucketingKey);
     }
 
     @Override
@@ -47,17 +38,6 @@ class SplitWrapperImpl implements SplitWrapper {
             return client.track(eventType, value, properties);
         } else {
             return client.track(eventType, properties);
-        }
-    }
-
-    @Override
-    public void destroy() {
-        for (Key key : mUsedKeys) {
-            SplitClient client = mSplitFactory.client(key);
-            if (client != null) {
-                mUsedKeys.remove(key);
-                client.destroy();
-            }
         }
     }
 
@@ -111,5 +91,15 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public boolean clearAttributes(String matchingKey, @Nullable String bucketingKey) {
         return getClient(matchingKey, bucketingKey).clearAttributes();
+    }
+
+    @Override
+    public void flush(String matchingKey, @Nullable String bucketingKey) {
+        getClient(matchingKey, bucketingKey).flush();
+    }
+
+    @Override
+    public void destroy(String matchingKey, @Nullable String bucketingKey) {
+        getClient(matchingKey, bucketingKey).destroy();
     }
 }

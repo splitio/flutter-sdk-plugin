@@ -12,5 +12,7 @@ interface SplitWrapper extends EvaluationWrapper, AttributesWrapper {
 
     boolean track(String matchingKey, @Nullable String bucketingKey, String eventType, @Nullable String trafficType, @Nullable Double value, Map<String, Object> properties);
 
-    void destroy();
+    void flush(String matchingKey, @Nullable String bucketingKey);
+
+    void destroy(String matchingKey, @Nullable String bucketingKey);
 }

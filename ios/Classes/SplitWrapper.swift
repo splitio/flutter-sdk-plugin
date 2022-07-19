@@ -7,7 +7,9 @@ protocol SplitWrapper: EvaluationWrapper, AttributesWrapper {
 
     func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool
 
-    func destroy()
+    func flush(matchingKey: String, bucketingKey: String?)
+
+    func destroy(matchingKey: String, bucketingKey: String?)
 }
 
 protocol EvaluationWrapper {
@@ -39,11 +41,9 @@ protocol AttributesWrapper {
 class DefaultSplitWrapper: SplitWrapper {
 
     private let splitFactory: SplitFactory?
-    private var usedKeys: Set<Key>
 
     init(splitFactoryProvider: SplitFactoryProvider) {
         splitFactory = splitFactoryProvider.getFactory()
-        usedKeys = Set()
     }
 
     func getClient(matchingKey: String, bucketingKey: String? = nil) -> SplitClient? {
@@ -52,8 +52,6 @@ class DefaultSplitWrapper: SplitWrapper {
             print("Client couldn't be created")
             return nil
         }
-
-        usedKeys.insert(key)
 
         return client
     }
@@ -158,12 +156,19 @@ class DefaultSplitWrapper: SplitWrapper {
         return client.clearAttributes()
     }
 
-    func destroy() {
-        usedKeys.forEach { usedKey in
-            if let client = splitFactory?.client(key: usedKey) {
-                usedKeys.remove(usedKey)
-                client.destroy()
-            }
+    func flush(matchingKey: String, bucketingKey: String?) {
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return
         }
+
+        client.flush()
+    }
+
+    func destroy(matchingKey: String, bucketingKey: String?) {
+        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return
+        }
+
+        client.destroy()
     }
 }

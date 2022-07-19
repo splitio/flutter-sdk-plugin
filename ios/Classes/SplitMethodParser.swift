@@ -110,8 +110,14 @@ class DefaultSplitMethodParser: SplitMethodParser {
                 result(clearAttributes(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
                                bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments)))
                 break
+            case .flush:
+                splitWrapper?.flush(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                              bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments))
+                result(nil)
+                break
             case .destroy:
-                splitWrapper?.destroy()
+                splitWrapper?.flush(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                              bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments))
                 result(nil)
                 break
             default:
