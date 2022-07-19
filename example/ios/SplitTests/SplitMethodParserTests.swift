@@ -214,7 +214,7 @@ class SplitMethodParserTests: XCTestCase {
     func testDestroy() throws {
         methodParser?.onMethodCall(
             methodName: "destroy",
-            arguments: [:],
+            arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key"],
             result: { (_: Any?) in
                 return
             }
@@ -227,11 +227,29 @@ class SplitMethodParserTests: XCTestCase {
 
         XCTAssert(wrapper.destroyCalled)
     }
+
+    func testFlush() throws {
+        methodParser?.onMethodCall(
+            methodName: "flush",
+            arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key"],
+            result: { (_: Any?) in
+                return
+            }
+        )
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.flushCalled)
+    }
 }
 
 class SplitWrapperStub: SplitWrapper {
 
     var destroyCalled = false
+    var flushCalled = false
     var matchingKeyValue = ""
     var bucketingKeyValue: String?
     var splitNameValue = ""
@@ -345,7 +363,11 @@ class SplitWrapperStub: SplitWrapper {
         return true
     }
 
-    func destroy() {
+    func destroy(matchingKey: String, bucketingKey: String?) {
         destroyCalled = true
+    }
+
+    func flush(matchingKey: String, bucketingKey: String?) {
+        flushCalled = true
     }
 }

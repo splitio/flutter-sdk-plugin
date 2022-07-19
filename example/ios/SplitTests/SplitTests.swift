@@ -130,14 +130,18 @@ class SplitTests: XCTestCase {
 
     func testFlush() {
         let client = SplitClientStub()
-        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        var usedKeys = Set<Key>()
+        usedKeys.insert(Key(matchingKey: "key", bucketingKey: "bucketing"))
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client), usedKeys: usedKeys)
         splitWrapper.flush(matchingKey: "key", bucketingKey: "bucketing")
         XCTAssert(client.flushCalled)
     }
 
     func testDestroy() {
         let client = SplitClientStub()
-        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        var usedKeys = Set<Key>()
+        usedKeys.insert(Key(matchingKey: "key", bucketingKey: "bucketing"))
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client), usedKeys: usedKeys)
         splitWrapper.destroy(matchingKey: "key", bucketingKey: "bucketing")
         XCTAssert(client.destroyCalled)
     }

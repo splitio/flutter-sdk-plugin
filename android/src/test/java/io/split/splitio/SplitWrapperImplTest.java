@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
@@ -28,13 +29,15 @@ public class SplitWrapperImplTest {
     private SplitFactoryProvider mSplitFactoryProvider;
     @Mock
     private SplitFactory mSplitFactory;
+    @Mock
+    private Set<Key> mUsedKeys;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         when(mSplitFactoryProvider.getSplitFactory()).thenReturn(mSplitFactory);
 
-        mSplitWrapper = new SplitWrapperImpl(mSplitFactoryProvider);
+        mSplitWrapper = new SplitWrapperImpl(mSplitFactoryProvider, mUsedKeys);
     }
 
     @Test
@@ -210,6 +213,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key"))).thenReturn(true);
 
         mSplitWrapper.flush("key", null);
 
@@ -221,6 +225,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key"))).thenReturn(true);
 
         mSplitWrapper.destroy("key", null);
 

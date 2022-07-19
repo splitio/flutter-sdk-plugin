@@ -116,7 +116,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
                 result(nil)
                 break
             case .destroy:
-                splitWrapper?.flush(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                splitWrapper?.destroy(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
                               bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments))
                 result(nil)
                 break

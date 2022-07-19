@@ -2,25 +2,41 @@ package io.split.splitio;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
+import io.split.android.client.api.Key;
+import io.split.android.client.utils.ConcurrentSet;
 
 class SplitWrapperImpl implements SplitWrapper {
 
     private final SplitFactory mSplitFactory;
+    private final Set<Key> mUsedKeys;
 
     SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider) {
+        this(splitFactoryProvider, new ConcurrentSet<>());
+    }
+
+    @VisibleForTesting
+    SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider, Set<Key> usedKeys) {
         mSplitFactory = splitFactoryProvider.getSplitFactory();
+        mUsedKeys = usedKeys;
     }
 
     @Override
     public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
-        return mSplitFactory.client(matchingKey, bucketingKey);
+        Key key = Helper.buildKey(matchingKey, bucketingKey);
+        SplitClient client = mSplitFactory.client(matchingKey, bucketingKey);
+
+        mUsedKeys.add(key);
+
+        return client;
     }
 
     @Override
@@ -95,11 +111,15 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public void flush(String matchingKey, @Nullable String bucketingKey) {
-        getClient(matchingKey, bucketingKey).flush();
+        if (mUsedKeys.contains(new Key(matchingKey, bucketingKey))) {
+            getClient(matchingKey, bucketingKey).flush();
+        }
     }
 
     @Override
     public void destroy(String matchingKey, @Nullable String bucketingKey) {
-        getClient(matchingKey, bucketingKey).destroy();
+        if (mUsedKeys.contains(new Key(matchingKey, bucketingKey))) {
+            getClient(matchingKey, bucketingKey).destroy();
+        }
     }
 }
