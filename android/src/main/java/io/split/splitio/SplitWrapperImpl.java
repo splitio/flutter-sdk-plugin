@@ -111,15 +111,19 @@ class SplitWrapperImpl implements SplitWrapper {
 
     @Override
     public void flush(String matchingKey, @Nullable String bucketingKey) {
-        if (mUsedKeys.contains(new Key(matchingKey, bucketingKey))) {
+        Key requestedKey = new Key(matchingKey, bucketingKey);
+        if (mUsedKeys.contains(requestedKey)) {
             getClient(matchingKey, bucketingKey).flush();
         }
     }
 
     @Override
     public void destroy(String matchingKey, @Nullable String bucketingKey) {
-        if (mUsedKeys.contains(new Key(matchingKey, bucketingKey))) {
+        Key requestedKey = new Key(matchingKey, bucketingKey);
+        if (mUsedKeys.contains(requestedKey)) {
             getClient(matchingKey, bucketingKey).destroy();
+
+            mUsedKeys.remove(requestedKey);
         }
     }
 }

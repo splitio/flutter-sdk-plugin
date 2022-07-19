@@ -175,12 +175,15 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func destroy(matchingKey: String, bucketingKey: String?) {
-        if usedKeys.contains(Key(matchingKey: matchingKey, bucketingKey: bucketingKey)) {
+        let requestedKey = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        if usedKeys.contains(requestedKey) {
             guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
                 return
             }
 
             client.destroy()
+
+            usedKeys.remove(requestedKey)
         }
     }
 }
