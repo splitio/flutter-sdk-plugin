@@ -55,7 +55,7 @@ class DefaultSplitWrapper: SplitWrapper {
     func getClient(matchingKey: String, bucketingKey: String? = nil) -> SplitClient? {
         let key = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
         guard let client = splitFactory?.client(key: key) else {
-            print("Client couldn't be created")
+            print("Split Client couldn't be created")
             return nil
         }
 
@@ -64,24 +64,39 @@ class DefaultSplitWrapper: SplitWrapper {
         return client
     }
 
-    func getTreatment(matchingKey: String, splitName: String, bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> String? {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+    private func getInitializedClient(matchingKey: String, bucketingKey: String? = nil) -> SplitClient? {
+        let key = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        if usedKeys.contains(key) {
+            return splitFactory?.client(key: key)
+        } else {
+            print("Split Client has not been initialized")
             return nil
+        }
+    }
+
+    func getTreatment(matchingKey: String, splitName: String, bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> String? {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return "control"
         }
 
         return client.getTreatment(splitName, attributes: attributes)
     }
 
     func getTreatments(matchingKey: String, splits: [String], bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> [String: String] {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
-            return [:]
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            var defaultResults: [String: String] = [:]
+            splits.forEach {
+                defaultResults[$0] = "control"
+            }
+
+            return defaultResults
         }
 
         return client.getTreatments(splits: splits, attributes: attributes)
     }
 
     func getTreatmentWithConfig(matchingKey: String, splitName: String, bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> SplitResult? {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return nil
         }
 
@@ -89,7 +104,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func getTreatmentsWithConfig(matchingKey: String, splits: [String], bucketingKey: String?, attributes: [String: Any]? = [:]) -> [String: SplitResult] {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return [:]
         }
 
@@ -97,7 +112,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return false
         }
 
@@ -117,7 +132,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func setAttribute(matchingKey: String, bucketingKey: String?, attributeName: String, value: Any?) -> Bool {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return false
         }
 
@@ -125,7 +140,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func getAttribute(matchingKey: String, bucketingKey: String?, attributeName: String) -> Any? {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return nil
         }
 
@@ -133,7 +148,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func setAttributes(matchingKey: String, bucketingKey: String?, attributes: [String: Any?]) -> Bool {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return false
         }
 
@@ -141,7 +156,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func getAllAttributes(matchingKey: String, bucketingKey: String?) -> [String: Any] {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return [:]
         }
 
@@ -149,7 +164,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func removeAttribute(matchingKey: String, bucketingKey: String?, attributeName: String) -> Bool {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return false
         }
 
@@ -157,7 +172,7 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func clearAttributes(matchingKey: String, bucketingKey: String?) -> Bool {
-        guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
             return false
         }
 
@@ -165,25 +180,21 @@ class DefaultSplitWrapper: SplitWrapper {
     }
 
     func flush(matchingKey: String, bucketingKey: String?) {
-        if usedKeys.contains(Key(matchingKey: matchingKey, bucketingKey: bucketingKey)) {
-            guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
-                return
-            }
-
-            client.flush()
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return
         }
+
+        client.flush()
     }
 
     func destroy(matchingKey: String, bucketingKey: String?) {
         let requestedKey = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
-        if usedKeys.contains(requestedKey) {
-            guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
-                return
-            }
-
-            client.destroy()
-
-            usedKeys.remove(requestedKey)
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return
         }
+
+        client.destroy()
+
+        usedKeys.remove(requestedKey)
     }
 }

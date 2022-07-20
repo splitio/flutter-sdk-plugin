@@ -1,6 +1,7 @@
 package io.split.splitio;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -54,6 +55,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getTreatment("key", null, "split-name", Collections.singletonMap("age", 50));
 
@@ -65,6 +67,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getTreatments("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
 
@@ -76,6 +79,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getTreatmentWithConfig("key", null, "split-name", Collections.singletonMap("age", 50));
 
@@ -87,6 +91,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getTreatmentsWithConfig("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
 
@@ -98,6 +103,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.track("key", null, "my_event", "account", 25.20, Collections.singletonMap("age", 50));
 
@@ -109,6 +115,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.track("key", null, "my_event", null, 25.20, Collections.singletonMap("age", 50));
 
@@ -120,6 +127,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.track("key", null, "my_event", null, null, Collections.singletonMap("age", 50));
 
@@ -131,6 +139,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.track("key", null, "my_event", "account", null, Collections.singletonMap("age", 50));
 
@@ -142,6 +151,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getAttribute("key", null, "my_attribute");
 
@@ -153,6 +163,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.getAllAttributes("key", null);
 
@@ -164,6 +175,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.setAttribute("key", null, "my_attr", "attr_value");
 
@@ -175,6 +187,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         Map<String, Object> attributesMap = new HashMap<>();
         attributesMap.put("bool_attr", true);
@@ -191,6 +204,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.removeAttribute("key", null, "my_attribute");
 
@@ -202,6 +216,7 @@ public class SplitWrapperImplTest {
         SplitClient clientMock = mock(SplitClient.class);
 
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         mSplitWrapper.clearAttributes("key", null);
 

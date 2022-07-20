@@ -15,6 +15,7 @@ class SplitTests: XCTestCase {
     func testGetTreatment() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatment(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
         XCTAssert(treatment != nil)
         XCTAssert(client.getTreatmentCalled)
@@ -23,6 +24,7 @@ class SplitTests: XCTestCase {
     func testGetTreatments() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatments(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
         XCTAssert(!treatment.isEmpty)
         XCTAssert(client.getTreatmentsCalled)
@@ -31,6 +33,7 @@ class SplitTests: XCTestCase {
     func testGetTreatmentWithConfig() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatmentWithConfig(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
         XCTAssert(treatment != nil)
         XCTAssert(client.getTreatmentWithConfigCalled)
@@ -39,6 +42,7 @@ class SplitTests: XCTestCase {
     func testGetTreatmentsWithConfig() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatmentsWithConfig(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
         XCTAssert(!treatment.isEmpty)
         XCTAssert(client.getTreatmentsWithConfigCalled)
@@ -47,6 +51,7 @@ class SplitTests: XCTestCase {
     func testTrack() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: "account", value: 25.50, properties: ["age": 50])
         XCTAssert(track)
         XCTAssert(client.eventTypeValue == "my_event")
@@ -58,6 +63,7 @@ class SplitTests: XCTestCase {
     func testTrackWithoutTrafficType() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: nil, value: 25.50, properties: ["age": 50])
         XCTAssert(track)
         XCTAssert(client.eventTypeValue == "my_event")
@@ -69,6 +75,7 @@ class SplitTests: XCTestCase {
     func testTrackWithoutTrafficTypeNorValue() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: nil, value: nil, properties: ["age": 50])
         XCTAssert(track)
         XCTAssert(client.eventTypeValue == "my_event")
@@ -80,6 +87,7 @@ class SplitTests: XCTestCase {
     func testTrackWithoutValue() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let track = splitWrapper.track(matchingKey: "key", bucketingKey: "bucketing", eventType: "my_event", trafficType: "account", value: nil, properties: ["age": 50])
         XCTAssert(track)
         XCTAssert(client.eventTypeValue == "my_event")
@@ -91,6 +99,7 @@ class SplitTests: XCTestCase {
     func testGetAttribute() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         splitWrapper.getAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr")
         XCTAssert(client.attributeNameValue == "my_attr")
     }
@@ -105,6 +114,7 @@ class SplitTests: XCTestCase {
     func testSetAttribute() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         splitWrapper.setAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr", value: "attr_value")
         XCTAssert(client.attributeNameValue == "my_attr")
 
@@ -116,6 +126,7 @@ class SplitTests: XCTestCase {
         let client = SplitClientStub()
         let expectedMap = ["bool_attr": true, "number_attr": 25.56, "string_attr": "attr-value", "list_attr": ["one", "two"]] as [String: Any]
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         splitWrapper.setAttributes(matchingKey: "key", bucketingKey: "bucketing", attributes: expectedMap)
 
         XCTAssert(NSDictionary(dictionary: expectedMap).isEqual(to: client.attributesMapValue))
@@ -124,6 +135,7 @@ class SplitTests: XCTestCase {
     func testRemoveAttribute() {
         let client = SplitClientStub()
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         splitWrapper.removeAttribute(matchingKey: "key", bucketingKey: "bucketing", attributeName: "my_attr")
         XCTAssert(client.attributeNameValue == "my_attr")
     }
