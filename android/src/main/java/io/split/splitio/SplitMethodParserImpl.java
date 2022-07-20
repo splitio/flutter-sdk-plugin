@@ -299,17 +299,13 @@ class SplitMethodParserImpl implements SplitMethodParser {
     }
 
     private static void invokeCallback(MethodChannel methodChannel, String matchingKey, @Nullable String bucketingKey, String methodName) {
-        methodChannel.invokeMethod(methodName, buildCallbackArguments(matchingKey, bucketingKey));
-    }
-
-    @NonNull
-    private static Map<String, String> buildCallbackArguments(String matchingKey, @Nullable String bucketingKey) {
         final Map<String, String> arguments = new HashMap<>();
         arguments.put(MATCHING_KEY, matchingKey);
         if (bucketingKey != null) {
             arguments.put(BUCKETING_KEY, bucketingKey);
         }
-        return arguments;
+
+        methodChannel.invokeMethod(methodName, arguments);
     }
 
     private static Map<String, String> getSplitResultMap(SplitResult splitResult) {
