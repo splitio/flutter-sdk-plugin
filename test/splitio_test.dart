@@ -95,30 +95,17 @@ void main() {
       splitio.client();
 
       expect(methodName, 'getClient');
-      expect(methodArguments,
-          {'matchingKey': 'matching-key', 'waitForReady': false});
-    });
-
-    test('get client with no keys waiting for ready', () {
-      var splitio = Splitio('api-key', 'matching-key');
-      splitio.init();
-
-      splitio.client(waitForReady: true);
-
-      expect(methodName, 'getClient');
-      expect(methodArguments,
-          {'matchingKey': 'matching-key', 'waitForReady': true});
+      expect(methodArguments, {'matchingKey': 'matching-key'});
     });
 
     test('get client with new matching key', () {
       var splitio = Splitio('api-key', 'matching-key');
       splitio.init();
 
-      splitio.client(matchingKey: 'new-matching-key', waitForReady: true);
+      splitio.client(matchingKey: 'new-matching-key');
 
       expect(methodName, 'getClient');
-      expect(methodArguments,
-          {'matchingKey': 'new-matching-key', 'waitForReady': true});
+      expect(methodArguments, {'matchingKey': 'new-matching-key'});
     });
 
     test('get client with new matching key and bucketing key', () {
@@ -126,16 +113,11 @@ void main() {
       splitio.init();
 
       splitio.client(
-          matchingKey: 'new-matching-key',
-          bucketingKey: 'bucketing-key',
-          waitForReady: true);
+          matchingKey: 'new-matching-key', bucketingKey: 'bucketing-key');
 
       expect(methodName, 'getClient');
-      expect(methodArguments, {
-        'matchingKey': 'new-matching-key',
-        'bucketingKey': 'bucketing-key',
-        'waitForReady': true
-      });
+      expect(methodArguments,
+          {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'});
     });
   });
 }
