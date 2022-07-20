@@ -5,19 +5,20 @@ import static io.split.splitio.Constants.Argument.ATTRIBUTES;
 import static io.split.splitio.Constants.Argument.ATTRIBUTE_NAME;
 import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
 import static io.split.splitio.Constants.Argument.EVENT_TYPE;
+import static io.split.splitio.Constants.Argument.MATCHING_KEY;
 import static io.split.splitio.Constants.Argument.PROPERTIES;
 import static io.split.splitio.Constants.Argument.SDK_CONFIGURATION;
-import static io.split.splitio.Constants.Argument.MATCHING_KEY;
 import static io.split.splitio.Constants.Argument.SPLIT_NAME;
 import static io.split.splitio.Constants.Argument.TRAFFIC_TYPE;
 import static io.split.splitio.Constants.Argument.VALUE;
-import static io.split.splitio.Constants.Argument.WAIT_FOR_READY;
 import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED;
 import static io.split.splitio.Constants.Error.SDK_NOT_INITIALIZED_MESSAGE;
 import static io.split.splitio.Constants.Method.CLEAR_ATTRIBUTES;
-import static io.split.splitio.Constants.Method.CLIENT_READY;
-import static io.split.splitio.Constants.Method.DESTROY;
 import static io.split.splitio.Constants.Method.CLIENT;
+import static io.split.splitio.Constants.Method.CLIENT_READY;
+import static io.split.splitio.Constants.Method.CLIENT_READY_FROM_CACHE;
+import static io.split.splitio.Constants.Method.CLIENT_TIMEOUT;
+import static io.split.splitio.Constants.Method.DESTROY;
 import static io.split.splitio.Constants.Method.FLUSH;
 import static io.split.splitio.Constants.Method.GET_ALL_ATTRIBUTES;
 import static io.split.splitio.Constants.Method.GET_ATTRIBUTE;
@@ -47,7 +48,6 @@ import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
-import io.split.android.client.utils.Logger;
 
 class SplitMethodParserImpl implements SplitMethodParser {
 
@@ -85,8 +85,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
             case CLIENT:
                 SplitClient client = getClient(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
-                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
-                        mArgumentParser.getBooleanArgument(WAIT_FOR_READY, arguments));
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments));
                 if (client != null) {
                     result.success(null);
                 } else {
@@ -189,10 +188,10 @@ class SplitMethodParserImpl implements SplitMethodParser {
         ));
     }
 
-    private SplitClient getClient(String matchingKey, String bucketingKey, boolean waitForReady) {
+    private SplitClient getClient(String matchingKey, String bucketingKey) {
         if (mSplitWrapper != null) {
             SplitClient client = mSplitWrapper.getClient(matchingKey, bucketingKey);
-            addEventListeners(client, matchingKey, bucketingKey, mMethodChannel, waitForReady);
+            addEventListeners(client, matchingKey, bucketingKey, mMethodChannel);
 
             return client;
         }
@@ -272,35 +271,45 @@ class SplitMethodParserImpl implements SplitMethodParser {
         return mSplitWrapper.clearAttributes(matchingKey, bucketingKey);
     }
 
-    private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel, boolean waitForReady) {
-        SplitEventTask returnTask = new SplitEventTask() {
-            @Override
-            public void onPostExecutionView(SplitClient client) {
-                invokeCallback(methodChannel, matchingKey, bucketingKey);
-            }
-        };
-
-        if (waitForReady) {
-            if (client.isReady()) {
-                invokeCallback(methodChannel, matchingKey, bucketingKey);
-            } else {
-                client.on(SplitEvent.SDK_READY, returnTask);
-            }
-        } else {
-            client.on(SplitEvent.SDK_READY_FROM_CACHE, returnTask);
+    private static void addEventListeners(SplitClient client, String matchingKey, @Nullable String bucketingKey, MethodChannel methodChannel) {
+        if (client.isReady()) {
+            invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_READY);
         }
 
-        client.on(SplitEvent.SDK_READY_TIMED_OUT, returnTask);
+        client.on(SplitEvent.SDK_READY, new SplitEventTask() {
+            @Override
+            public void onPostExecutionView(SplitClient client) {
+                invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_READY);
+            }
+        });
+
+        client.on(SplitEvent.SDK_READY_FROM_CACHE, new SplitEventTask() {
+            @Override
+            public void onPostExecutionView(SplitClient client) {
+                invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_READY_FROM_CACHE);
+            }
+        });
+
+        client.on(SplitEvent.SDK_READY_TIMED_OUT, new SplitEventTask() {
+            @Override
+            public void onPostExecutionView(SplitClient client) {
+                invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_TIMEOUT);
+            }
+        });
     }
 
-    private static void invokeCallback(MethodChannel methodChannel, String matchingKey, @Nullable String bucketingKey) {
+    private static void invokeCallback(MethodChannel methodChannel, String matchingKey, @Nullable String bucketingKey, String methodName) {
+        methodChannel.invokeMethod(methodName, buildCallbackArguments(matchingKey, bucketingKey));
+    }
+
+    @NonNull
+    private static Map<String, String> buildCallbackArguments(String matchingKey, @Nullable String bucketingKey) {
         final Map<String, String> arguments = new HashMap<>();
         arguments.put(MATCHING_KEY, matchingKey);
         if (bucketingKey != null) {
             arguments.put(BUCKETING_KEY, bucketingKey);
         }
-
-        methodChannel.invokeMethod(CLIENT_READY, arguments);
+        return arguments;
     }
 
     private static Map<String, String> getSplitResultMap(SplitResult splitResult) {

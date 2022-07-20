@@ -43,11 +43,9 @@ public class SplitMethodParserImplTest {
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
         map.put("bucketingKey", "bucketing-key");
-        map.put("waitForReady", true);
 
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
-        when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
         when(mSplitWrapper.getClient("user-key", "bucketing-key")).thenReturn(mock(SplitClient.class));
 
         mMethodParser.onMethodCall("getClient", map, mResult);
@@ -63,11 +61,9 @@ public class SplitMethodParserImplTest {
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
         map.put("bucketingKey", "bucketing-key");
-        map.put("waitForReady", true);
 
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
-        when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
 
         mMethodParser.onMethodCall("getClient", map, mResult);
 
@@ -76,18 +72,16 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
-    public void testCallbackMethodNameAndArgumentsAreCorrect() {
+    public void testReadyCallbackMethodNameAndArgumentsAreCorrect() {
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
         map.put("bucketingKey", "bucketing-key");
-        map.put("waitForReady", true);
 
         SplitClient clientMock = mock(SplitClient.class);
         when(clientMock.isReady()).thenReturn(true);
 
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
-        when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
         when(mSplitWrapper.getClient("user-key", "bucketing-key")).thenReturn(clientMock);
 
         mMethodParser.onMethodCall("getClient", map, mResult);
@@ -103,13 +97,11 @@ public class SplitMethodParserImplTest {
     public void testCallbackMethodNameAndArgumentsAreCorrectWithoutBucketingKey() {
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
-        map.put("waitForReady", true);
 
         SplitClient clientMock = mock(SplitClient.class);
         when(clientMock.isReady()).thenReturn(true);
 
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
-        when(mArgumentParser.getBooleanArgument("waitForReady", map)).thenReturn(true);
         when(mSplitWrapper.getClient("user-key", null)).thenReturn(clientMock);
 
         mMethodParser.onMethodCall("getClient", map, mResult);
