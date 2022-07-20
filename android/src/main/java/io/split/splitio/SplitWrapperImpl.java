@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.VisibleForTesting;
 
 import java.util.List;
 import java.util.Map;
@@ -19,14 +20,20 @@ class SplitWrapperImpl implements SplitWrapper {
     private final Set<Key> mUsedKeys;
 
     SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider) {
+        this(splitFactoryProvider, new ConcurrentSet<>());
+    }
+
+    @VisibleForTesting
+    SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider, Set<Key> usedKeys) {
         mSplitFactory = splitFactoryProvider.getSplitFactory();
-        mUsedKeys = new ConcurrentSet<>();
+        mUsedKeys = usedKeys;
     }
 
     @Override
     public SplitClient getClient(String matchingKey, @Nullable String bucketingKey) {
         Key key = Helper.buildKey(matchingKey, bucketingKey);
         SplitClient client = mSplitFactory.client(matchingKey, bucketingKey);
+
         mUsedKeys.add(key);
 
         return client;
@@ -47,17 +54,6 @@ class SplitWrapperImpl implements SplitWrapper {
             return client.track(eventType, value, properties);
         } else {
             return client.track(eventType, properties);
-        }
-    }
-
-    @Override
-    public void destroy() {
-        for (Key key : mUsedKeys) {
-            SplitClient client = mSplitFactory.client(key);
-            if (client != null) {
-                mUsedKeys.remove(key);
-                client.destroy();
-            }
         }
     }
 
@@ -111,5 +107,23 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public boolean clearAttributes(String matchingKey, @Nullable String bucketingKey) {
         return getClient(matchingKey, bucketingKey).clearAttributes();
+    }
+
+    @Override
+    public void flush(String matchingKey, @Nullable String bucketingKey) {
+        Key requestedKey = new Key(matchingKey, bucketingKey);
+        if (mUsedKeys.contains(requestedKey)) {
+            getClient(matchingKey, bucketingKey).flush();
+        }
+    }
+
+    @Override
+    public void destroy(String matchingKey, @Nullable String bucketingKey) {
+        Key requestedKey = new Key(matchingKey, bucketingKey);
+        if (mUsedKeys.contains(requestedKey)) {
+            getClient(matchingKey, bucketingKey).destroy();
+
+            mUsedKeys.remove(requestedKey);
+        }
     }
 }

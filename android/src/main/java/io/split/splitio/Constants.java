@@ -6,6 +6,7 @@ class Constants {
         static final String INIT = "init";
         static final String CLIENT = "getClient";
         static final String DESTROY = "destroy";
+        static final String FLUSH = "flush";
         static final String CLIENT_READY = "clientReady";
         static final String GET_TREATMENT = "getTreatment";
         static final String GET_TREATMENTS = "getTreatments";

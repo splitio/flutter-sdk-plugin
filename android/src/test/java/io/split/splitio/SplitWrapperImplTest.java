@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
@@ -28,13 +29,15 @@ public class SplitWrapperImplTest {
     private SplitFactoryProvider mSplitFactoryProvider;
     @Mock
     private SplitFactory mSplitFactory;
+    @Mock
+    private Set<Key> mUsedKeys;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
         when(mSplitFactoryProvider.getSplitFactory()).thenReturn(mSplitFactory);
 
-        mSplitWrapper = new SplitWrapperImpl(mSplitFactoryProvider);
+        mSplitWrapper = new SplitWrapperImpl(mSplitFactoryProvider, mUsedKeys);
     }
 
     @Test
@@ -44,24 +47,6 @@ public class SplitWrapperImplTest {
         SplitClient client = mSplitWrapper.getClient("key", "bucketing");
 
         assertEquals(clientMock, client);
-    }
-
-    @Test
-    public void testDestroy() {
-        SplitClient clientMock = mock(SplitClient.class);
-        SplitClient clientMock2 = mock(SplitClient.class);
-
-        Key key = new Key("key", "bucketing");
-        Key key2 = new Key("key");
-        when(mSplitFactory.client(key)).thenReturn(clientMock);
-        when(mSplitFactory.client(key2)).thenReturn(clientMock2);
-
-        mSplitWrapper.getClient("key", "bucketing");
-        mSplitWrapper.getClient("key", null);
-        mSplitWrapper.destroy();
-
-        verify(clientMock, times(1)).destroy();
-        verify(clientMock2, times(1)).destroy();
     }
 
     @Test
@@ -221,5 +206,29 @@ public class SplitWrapperImplTest {
         mSplitWrapper.clearAttributes("key", null);
 
         verify(clientMock).clearAttributes();
+    }
+
+    @Test
+    public void testFlush() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key"))).thenReturn(true);
+
+        mSplitWrapper.flush("key", null);
+
+        verify(clientMock).flush();
+    }
+
+    @Test
+    public void testDestroy() {
+        SplitClient clientMock = mock(SplitClient.class);
+
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key"))).thenReturn(true);
+
+        mSplitWrapper.destroy("key", null);
+
+        verify(clientMock).destroy();
     }
 }

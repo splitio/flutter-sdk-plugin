@@ -123,8 +123,12 @@ class SplitClient {
     return await _channel.invokeMethod('clearAttributes', _buildParameters());
   }
 
+  Future<void> flush() async {
+    return _channel.invokeMethod('flush', _buildParameters());
+  }
+
   Future<void> destroy() async {
-    // TODO implement
+    return _channel.invokeMethod('destroy', _buildParameters());
   }
 
   Map<String, String> _getKeysMap() {

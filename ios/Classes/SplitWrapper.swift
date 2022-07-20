@@ -7,7 +7,9 @@ protocol SplitWrapper: EvaluationWrapper, AttributesWrapper {
 
     func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool
 
-    func destroy()
+    func flush(matchingKey: String, bucketingKey: String?)
+
+    func destroy(matchingKey: String, bucketingKey: String?)
 }
 
 protocol EvaluationWrapper {
@@ -41,9 +43,13 @@ class DefaultSplitWrapper: SplitWrapper {
     private let splitFactory: SplitFactory?
     private var usedKeys: Set<Key>
 
-    init(splitFactoryProvider: SplitFactoryProvider) {
-        splitFactory = splitFactoryProvider.getFactory()
-        usedKeys = Set()
+    convenience init(splitFactoryProvider: SplitFactoryProvider) {
+        self.init(splitFactoryProvider: splitFactoryProvider, usedKeys: Set())
+    }
+
+    init(splitFactoryProvider: SplitFactoryProvider, usedKeys: Set<Key>) {
+        self.splitFactory = splitFactoryProvider.getFactory()
+        self.usedKeys = usedKeys
     }
 
     func getClient(matchingKey: String, bucketingKey: String? = nil) -> SplitClient? {
@@ -158,12 +164,26 @@ class DefaultSplitWrapper: SplitWrapper {
         return client.clearAttributes()
     }
 
-    func destroy() {
-        usedKeys.forEach { usedKey in
-            if let client = splitFactory?.client(key: usedKey) {
-                usedKeys.remove(usedKey)
-                client.destroy()
+    func flush(matchingKey: String, bucketingKey: String?) {
+        if usedKeys.contains(Key(matchingKey: matchingKey, bucketingKey: bucketingKey)) {
+            guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+                return
             }
+
+            client.flush()
+        }
+    }
+
+    func destroy(matchingKey: String, bucketingKey: String?) {
+        let requestedKey = Key(matchingKey: matchingKey, bucketingKey: bucketingKey)
+        if usedKeys.contains(requestedKey) {
+            guard let client = getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+                return
+            }
+
+            client.destroy()
+
+            usedKeys.remove(requestedKey)
         }
     }
 }

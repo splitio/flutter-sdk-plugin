@@ -281,5 +281,27 @@ void main() {
         'bucketingKey': 'bucketing-key',
       });
     });
+
+    test('flush', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.flush();
+      expect(methodName, 'flush');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+      });
+    });
+
+    test('destroy', () async {
+      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+
+      client.destroy();
+      expect(methodName, 'destroy');
+      expect(methodArguments, {
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+      });
+    });
   });
 }

@@ -4,6 +4,7 @@ enum Method: String {
     case initialize = "init"
     case client = "getClient"
     case destroy = "destroy"
+    case flush = "flush"
     case clientReady = "clientReady"
     case getTreatment = "getTreatment"
     case getTreatments = "getTreatments"
