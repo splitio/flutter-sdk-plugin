@@ -5,50 +5,70 @@ import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/splitio.dart';
 
+const String _apiKey = 'api-key';
+const String _matchingKey = 'key1';
+
 void main() {
-  runApp(const MyApp());
+  runApp(const SplitioExampleApp());
 }
 
-class MyApp extends StatefulWidget {
-  const MyApp({Key? key}) : super(key: key);
+/// Splitio example home widget
+class SplitioExampleApp extends StatefulWidget {
+  /// Default Constructor
+  const SplitioExampleApp({Key? key}) : super(key: key);
 
   @override
-  State<MyApp> createState() => _MyAppState();
+  State<SplitioExampleApp> createState() {
+    return _SplitioExampleAppState();
+  }
 }
 
-class _MyAppState extends State<MyApp> {
-  String _matchingKey = 'Unknown';
-  final Splitio _split = Splitio('api-key', 'key1',
-      configuration: SplitConfiguration(enableDebug: true));
-  SplitClient? _client;
+class _SplitioExampleAppState extends State<SplitioExampleApp> {
+  String _splitName = '';
+  bool _sdkReady = false;
+  bool _sdkReadyFromCache = false;
+  bool _sdkTimeout = false;
+  late SplitClient _client;
+
+  final Splitio _split = Splitio(_apiKey, _matchingKey,
+      configuration: SplitConfiguration(
+          enableDebug: true,
+          trafficType: "user",
+          persistentAttributesEnabled: true));
 
   @override
   void initState() {
     super.initState();
-    setupState();
     initSplit();
   }
 
-  void setupState() {
-    if (!mounted) return;
-
-    setState(() {
-      _matchingKey = _client?.matchingKey ?? 'Unknown';
-    });
-  }
-
   Future<void> initSplit() async {
-    print("initSplit-start");
     _split.init().then((value) => {_initClients()});
   }
 
-  void _initClients() {
-    _split.client(matchingKey: 'key1', waitForReady: false).then((value) {
-      print('initSplit-end_forClient_key1');
-    });
+  void _initClients() async {
+    _client = await _split.client(
+        matchingKey: _matchingKey,
+        onReady: (value) => {
+              setState(() {
+                _sdkReady = true;
+              })
+            },
+        onReadyFromCache: (value) => {
+              setState(() {
+                _sdkReadyFromCache = true;
+              })
+            },
+        onTimeout: (value) => {
+              setState(() {
+                _sdkTimeout = true;
+              })
+            });
 
-    _split.client(matchingKey: 'key2', waitForReady: false).then((value) {
-      print('initSplit-end_forClient_key2');
+    _client.setAttributes({
+      'name': 'splitio',
+      'age': 1,
+      'available': true,
     });
   }
 
@@ -57,27 +77,85 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       home: Scaffold(
         appBar: AppBar(
-          title: const Text('Plugin example app'),
+          title: const Text('split.io example app'),
         ),
-        body: Center(
-            child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            Text('Running with key: $_matchingKey\n'),
-            ElevatedButton(
-                onPressed: performEvaluation,
-                child: const Text('Evaluate android_test_2'))
-          ],
+        body: SingleChildScrollView(
+            child: Padding(
+          padding: EdgeInsets.all(8),
+          child: Center(
+              child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text(
+                'SDK ready: $_sdkReady',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              Text(
+                'SDK ready from cache: $_sdkReadyFromCache',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              Text(
+                'SDK timeout: $_sdkTimeout',
+                style:
+                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(32, 8, 32, 8),
+                child: TextField(
+                  decoration:
+                      const InputDecoration(hintText: 'Enter split name'),
+                  onChanged: (text) {
+                    setState(() {
+                      _splitName = text;
+                    });
+                  },
+                ),
+              ),
+              Visibility(
+                visible: _splitName != '',
+                child: ElevatedButton(
+                    onPressed: performEvaluation,
+                    child: Text('Evaluate: $_splitName')),
+              ),
+              ElevatedButton(
+                  onPressed: track, child: const Text('Track event')),
+              ElevatedButton(
+                  onPressed: getAttribute, child: const Text('Get attributes')),
+              ElevatedButton(onPressed: flush, child: const Text('Flush')),
+              ElevatedButton(onPressed: destroy, child: const Text('Destroy')),
+            ],
+          )),
         )),
       ),
     );
   }
 
   void performEvaluation() async {
-    String? treatment = await _client?.getTreatment('android_test_2');
-    if (treatment != null) {
-      print('Treatment is: ' + treatment);
-    }
+    _client
+        .getTreatment(_splitName)
+        .then((value) => {print('Evaluation value for $_splitName is $value')});
+  }
+
+  void track() {
+    _client.track("event-type", trafficType: "account", value: 25, properties: {
+      "age": 50
+    }).then((value) => print('Track result is: ' + value.toString()));
+  }
+
+  void getAttribute() async {
+    _client.getAttributes().then((value) {
+      print('Attribute value is: ' + value.toString());
+    });
+  }
+
+  void flush() async {
+    _client.flush();
+  }
+
+  void destroy() async {
+    _client.destroy();
   }
 }
