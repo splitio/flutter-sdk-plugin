@@ -19,7 +19,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   String _matchingKey = 'Unknown';
   final Splitio _split = Splitio('api-key', 'key1',
-      configuration: SplitConfiguration(enableDebug: true));
+      configuration: SplitConfiguration(
+          enableDebug: true,
+          trafficType: "user",
+          persistentAttributesEnabled: true));
   SplitClient? _client;
 
   @override
@@ -42,13 +45,18 @@ class _MyAppState extends State<MyApp> {
     _split.init().then((value) => {_initClients()});
   }
 
-  void _initClients() {
-    _split.client(matchingKey: 'key1', waitForReady: false).then((value) {
-      print('initSplit-end_forClient_key1');
-    });
+  void _initClients() async {
+    _client = await _split.client(
+        matchingKey: 'key1',
+        onReady: (value) => {print('SKD READY'), _client = value},
+        onReadyFromCache: (value) => {print('SKD READY FROM CACHE')});
 
-    _split.client(matchingKey: 'key2', waitForReady: false).then((value) {
-      print('initSplit-end_forClient_key2');
+    _client?.setAttributes({
+      'name': 'gaston',
+      'bool_attr': true,
+      'number_attr': 25.56,
+      'string_attr': 'attr-value',
+      'list_attr': ['one', 'two'],
     });
   }
 
@@ -67,7 +75,12 @@ class _MyAppState extends State<MyApp> {
             Text('Running with key: $_matchingKey\n'),
             ElevatedButton(
                 onPressed: performEvaluation,
-                child: const Text('Evaluate android_test_2'))
+                child: const Text('Evaluate android_test_2')),
+            ElevatedButton(onPressed: track, child: const Text('Track event')),
+            ElevatedButton(
+                onPressed: getAttribute, child: const Text('Get attribute')),
+            ElevatedButton(onPressed: flush, child: const Text('Flush')),
+            ElevatedButton(onPressed: destroy, child: const Text('Destroy')),
           ],
         )),
       ),
@@ -75,9 +88,35 @@ class _MyAppState extends State<MyApp> {
   }
 
   void performEvaluation() async {
-    String? treatment = await _client?.getTreatment('android_test_2');
+    // var treatment = await _client?.getTreatmentWithConfig('android_test_2');
+    Map<String, String>? treatment =
+        await _client?.getTreatments(['android_test_2', 'android_test_3']);
     if (treatment != null) {
-      print('Treatment is: ' + treatment);
+      print('Treatment is: ' + treatment.toString());
     }
+  }
+
+  void track() {
+    _client?.track("eventType", trafficType: "account", value: 25, properties: {
+      "age": 50
+    }).then((value) => print('Track result is: ' + value.toString()));
+  }
+
+  void getAttribute() async {
+    _client
+        // ?.getAttribute('test_attribute_2')
+        ?.getAttributes()
+        .then((value) {
+      print('Attribute value is: ' + value.toString());
+      _client?.removeAttribute('name');
+    });
+  }
+
+  void flush() async {
+    _client?.flush();
+  }
+
+  void destroy() async {
+    _client?.destroy();
   }
 }
