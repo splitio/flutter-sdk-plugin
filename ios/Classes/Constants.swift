@@ -7,6 +7,7 @@ enum Method: String {
     case flush = "flush"
     case clientReady = "clientReady"
     case clientReadyFromCache = "clientReadyFromCache"
+    case clientUpdated = "clientUpdated"
     case clientTimeout = "clientTimeout"
     case getTreatment = "getTreatment"
     case getTreatments = "getTreatments"

@@ -66,27 +66,6 @@ void main() {
     });
   });
 
-  group('manager', () {
-    test('get split', () {
-      Splitio('api-key', 'matching-key').split('feature');
-
-      expect(methodName, 'split');
-      expect(methodArguments, {'featureName': 'feature'});
-    });
-
-    test('get split returns SplitView', () {
-      //TODO
-    });
-
-    test('get split names', () {
-      //TODO
-    });
-
-    test('get split names returns list of strings', () {
-      //TODO
-    });
-  });
-
   group('client', () {
     test('get client with no keys', () {
       var splitio = Splitio('api-key', 'matching-key');

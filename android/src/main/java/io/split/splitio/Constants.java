@@ -9,6 +9,7 @@ class Constants {
         static final String FLUSH = "flush";
         static final String CLIENT_READY = "clientReady";
         static final String CLIENT_READY_FROM_CACHE = "clientReadyFromCache";
+        static final String CLIENT_UPDATED = "clientUpdated";
         static final String CLIENT_TIMEOUT = "clientTimeout";
         static final String GET_TREATMENT = "getTreatment";
         static final String GET_TREATMENTS = "getTreatments";

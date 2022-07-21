@@ -264,6 +264,10 @@ class DefaultSplitMethodParser: SplitMethodParser {
         client?.on(event: SplitEvent.sdkReadyTimedOut) {
             self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientTimeout)
         }
+
+        client?.on(event: SplitEvent.sdkUpdated) {
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientUpdated)
+        }
     }
 
     private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?, method: Method) {
