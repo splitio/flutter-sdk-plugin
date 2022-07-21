@@ -18,6 +18,7 @@ import static io.split.splitio.Constants.Method.CLIENT;
 import static io.split.splitio.Constants.Method.CLIENT_READY;
 import static io.split.splitio.Constants.Method.CLIENT_READY_FROM_CACHE;
 import static io.split.splitio.Constants.Method.CLIENT_TIMEOUT;
+import static io.split.splitio.Constants.Method.CLIENT_UPDATED;
 import static io.split.splitio.Constants.Method.DESTROY;
 import static io.split.splitio.Constants.Method.FLUSH;
 import static io.split.splitio.Constants.Method.GET_ALL_ATTRIBUTES;
@@ -294,6 +295,13 @@ class SplitMethodParserImpl implements SplitMethodParser {
             @Override
             public void onPostExecutionView(SplitClient client) {
                 invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_TIMEOUT);
+            }
+        });
+
+        client.on(SplitEvent.SDK_UPDATE, new SplitEventTask() {
+            @Override
+            public void onPostExecutionView(SplitClient client) {
+                invokeCallback(methodChannel, matchingKey, bucketingKey, CLIENT_UPDATED);
             }
         });
     }

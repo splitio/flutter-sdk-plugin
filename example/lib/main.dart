@@ -123,7 +123,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
               ElevatedButton(
                   onPressed: track, child: const Text('Track event')),
               ElevatedButton(
-                  onPressed: getAttribute, child: const Text('Get attributes')),
+                  onPressed: getAttributes, child: const Text('Get attributes')),
               ElevatedButton(onPressed: flush, child: const Text('Flush')),
               ElevatedButton(onPressed: destroy, child: const Text('Destroy')),
             ],
@@ -145,7 +145,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
     }).then((value) => print('Track result is: ' + value.toString()));
   }
 
-  void getAttribute() async {
+  void getAttributes() async {
     _client.getAttributes().then((value) {
       print('Attribute value is: ' + value.toString());
     });
@@ -157,5 +157,4 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
 
   void destroy() async {
     _client.destroy();
-  }
 }
