@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
@@ -40,11 +38,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   @override
   void initState() {
     super.initState();
-    initSplit();
-  }
-
-  Future<void> initSplit() async {
-    _split.init().then((value) => {_initClients()});
+    _initClients();
   }
 
   void _initClients() async {
