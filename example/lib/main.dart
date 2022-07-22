@@ -5,8 +5,9 @@ import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/splitio.dart';
 
+/// Replace these with valid values
 const String _apiKey = 'api-key';
-const String _matchingKey = 'key1';
+const String _matchingKey = 'user-id';
 
 void main() {
   runApp(const SplitioExampleApp());
@@ -158,5 +159,11 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
 
   void destroy() async {
     _client.destroy();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    destroy();
   }
 }

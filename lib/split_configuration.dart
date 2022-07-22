@@ -2,17 +2,29 @@ class SplitConfiguration {
   final Map<String, dynamic> configurationMap = {};
 
   /// Initializes the Split configuration.
-  /// [featuresRefreshRate] The SDK polls Split servers for changes to feature splits at this rate (in seconds).
+  ///
+  /// [featuresRefreshRate] the SDK polls Split servers for changes to feature splits at this rate (in seconds).
+  ///
   /// [segmentsRefreshRate] The SDK polls Split servers for changes to segments at this rate (in seconds).
+  ///
   /// [impressionsRefreshRate] The treatment log captures which customer saw what treatment (on, off, etc.) at what time. This log is periodically flushed back to Split servers. This configuration controls how quickly the cache expires after a write (in seconds).
+  ///
   /// [telemetryRefreshRate] The SDK caches diagnostic data that it periodically sends to Split servers. This configuration controls how frequently this data is sent back to Split servers (in seconds).
+  ///
   /// [eventsQueueSize] When using .track, the number of events to be kept in memory.
+  ///
   /// [impressionsQueueSize] Default queue size for impressions.
+  ///
   /// [eventFlushInterval] When using .track, how often the events queue is flushed to Split servers.
+  ///
   /// [eventsPerPush] Maximum size of the batch to push events.
+  ///
   /// [trafficType] The default traffic type for events tracked using the track method. If not specified, every track call should specify a traffic type.
+  ///
   /// [enableDebug] If true, the SDK will log debug messages to the console.
+  ///
   /// [streamingEnabled] Boolean flag to enable the streaming service as default synchronization mechanism when in foreground. In the event of an issue with streaming, the SDK will fallback to the polling mechanism. If false, the SDK will poll for changes as usual without attempting to use streaming.
+  ///
   /// [persistentAttributesEnabled] Enables saving attributes on persistent cache which is loaded as part of the SDK_READY_FROM_CACHE flow. All functions that mutate the stored attributes map affect the persistent cache.
   SplitConfiguration(
       {int? featuresRefreshRate,
