@@ -82,7 +82,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
         ),
         body: SingleChildScrollView(
             child: Padding(
-          padding: EdgeInsets.all(8),
+          padding: const EdgeInsets.all(8),
           child: Center(
               child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -121,13 +121,27 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
                     onPressed: performEvaluation,
                     child: Text('Evaluate: $_splitName')),
               ),
-              ElevatedButton(
-                  onPressed: track, child: const Text('Track event')),
-              ElevatedButton(
-                  onPressed: getAttributes,
-                  child: const Text('Get attributes')),
-              ElevatedButton(onPressed: flush, child: const Text('Flush')),
-              ElevatedButton(onPressed: destroy, child: const Text('Destroy')),
+              Visibility(
+                  visible: _sdkReady || _sdkReadyFromCache,
+                  child: Column(
+                    children: [
+                      ElevatedButton(
+                          onPressed: track, child: const Text('Track event')),
+                      ElevatedButton(
+                          onPressed: getAttributes,
+                          child: const Text('Get attributes')),
+                      ElevatedButton(
+                          onPressed: removeAttribute,
+                          child: const Text('Remove age attribute')),
+                      ElevatedButton(
+                          onPressed: flush, child: const Text('Flush')),
+                      ElevatedButton(
+                          onPressed: destroy, child: const Text('Destroy')),
+                    ],
+                  )),
+              Visibility(
+                  visible: !(_sdkReady || _sdkReadyFromCache),
+                  child: const CircularProgressIndicator())
             ],
           )),
         )),
@@ -148,9 +162,13 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   }
 
   void getAttributes() async {
-    _client.getAttributes().then((value) {
-      print('Attribute value is: ' + value.toString());
-    });
+    var attributes = await _client.getAttributes();
+
+    print('Attribute values: ' + attributes.toString());
+  }
+
+  void removeAttribute() async {
+    _client.removeAttribute('age');
   }
 
   void flush() async {
