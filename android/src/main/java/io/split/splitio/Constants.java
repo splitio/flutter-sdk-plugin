@@ -8,6 +8,9 @@ class Constants {
         static final String DESTROY = "destroy";
         static final String FLUSH = "flush";
         static final String CLIENT_READY = "clientReady";
+        static final String CLIENT_READY_FROM_CACHE = "clientReadyFromCache";
+        static final String CLIENT_UPDATED = "clientUpdated";
+        static final String CLIENT_TIMEOUT = "clientTimeout";
         static final String GET_TREATMENT = "getTreatment";
         static final String GET_TREATMENTS = "getTreatments";
         static final String GET_TREATMENT_WITH_CONFIG = "getTreatmentWithConfig";
@@ -26,7 +29,6 @@ class Constants {
         static final String MATCHING_KEY = "matchingKey";
         static final String BUCKETING_KEY = "bucketingKey";
         static final String SDK_CONFIGURATION = "sdkConfiguration";
-        static final String WAIT_FOR_READY = "waitForReady";
         static final String SPLIT_NAME = "splitName";
         static final String ATTRIBUTES = "attributes";
         static final String EVENT_TYPE = "eventType";

@@ -19,7 +19,7 @@ class SplitMethodParserTests: XCTestCase {
     func testSuccessfulGetClient() throws {
         methodParser?.onMethodCall(
             methodName: "getClient",
-            arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "waitForReady": true],
+            arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key"],
             result: { (_: Any?) in
                 return
             }

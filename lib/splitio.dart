@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
-import 'package:splitio/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
@@ -15,6 +14,10 @@ class Splitio {
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
   final Map<String, ClientReadinessCallback?> _clientReadyCallbacks = {};
+  final Map<String, ClientReadinessCallback?> _clientReadyFromCacheCallbacks =
+      {};
+  final Map<String, ClientReadinessCallback?> _clientTimeoutCallbacks = {};
+  final Map<String, ClientReadinessCallback?> _clientUpdateCallbacks = {};
 
   Splitio(this._apiKey, this._defaultMatchingKey,
       {String? bucketingKey, SplitConfiguration? configuration}) {
@@ -40,51 +43,64 @@ class Splitio {
   Future<SplitClient> client(
       {String? matchingKey,
       String? bucketingKey,
-      bool waitForReady = false}) async {
-    Completer<SplitClient> completer = Completer();
-
+      ClientReadinessCallback? onReady,
+      ClientReadinessCallback? onReadyFromCache,
+      ClientReadinessCallback? onUpdated,
+      ClientReadinessCallback? onTimeout}) async {
     String? key = matchingKey ?? _defaultMatchingKey;
 
-    _clientReadyCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
-        (client) => {completer.complete(client)};
+    if (onReady != null) {
+      _clientReadyCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
+          onReady;
+    }
+
+    if (onReadyFromCache != null) {
+      _clientReadyFromCacheCallbacks[
+          _buildKeyForCallbackMap(key, bucketingKey)] = onReadyFromCache;
+    }
+
+    if (onTimeout != null) {
+      _clientTimeoutCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
+          onTimeout;
+    }
+
+    if (onUpdated != null) {
+      _clientUpdateCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
+          onUpdated;
+    }
 
     _channel.invokeMethod(
-        'getClient', _buildGetClientArguments(key, bucketingKey, waitForReady));
+        'getClient', _buildGetClientArguments(key, bucketingKey));
 
-    return completer.future;
-  }
-
-  Future<List<SplitView>> splits() async {
-    List<SplitView> list = [];
-    await _channel.invokeMethod('splits').then((value) {});
-    return list; //TODO
-  }
-
-  Future<SplitView?> split(String featureName) async {
-    return _channel
-        .invokeMethod('split', {'featureName': featureName}).then((value) {
-      return null; //TODO
-    });
-  }
-
-  Future<List<String>> splitNames() async {
-    return _channel.invokeMethod('splitNames').then((value) {
-      return []; //TODO
-    });
+    return SplitClient(key, bucketingKey);
   }
 
   /// Call handler for calls coming from the native side
   Future<void> _methodCallHandler(MethodCall call) async {
-    if (call.method == 'clientReady') {
+    if (call.method == 'clientReady' ||
+        call.method == 'clientReadyFromCache' ||
+        call.method == 'clientTimeout' ||
+        call.method == 'clientUpdated') {
       var matchingKey = call.arguments['matchingKey'];
       var bucketingKey = call.arguments['bucketingKey'];
       String key = _buildKeyForCallbackMap(matchingKey, bucketingKey ?? 'null');
 
-      if (_clientReadyCallbacks.containsKey(key)) {
+      if (call.method == 'clientReady' &&
+          _clientReadyCallbacks.containsKey(key)) {
         _clientReadyCallbacks[key]
             ?.call(SplitClient(matchingKey, bucketingKey));
-
-        _clientReadyCallbacks.remove(key);
+      } else if (call.method == 'clientReadyFromCache' &&
+          _clientReadyFromCacheCallbacks.containsKey(key)) {
+        _clientReadyFromCacheCallbacks[key]
+            ?.call(SplitClient(matchingKey, bucketingKey));
+      } else if (call.method == 'clientTimeout' &&
+          _clientTimeoutCallbacks.containsKey(key)) {
+        _clientTimeoutCallbacks[key]
+            ?.call(SplitClient(matchingKey, bucketingKey));
+      } else if (call.method == 'clientUpdated' &&
+          _clientUpdateCallbacks.containsKey(key)) {
+        _clientUpdateCallbacks[key]
+            ?.call(SplitClient(matchingKey, bucketingKey));
       }
     }
   }
@@ -94,10 +110,9 @@ class Splitio {
   }
 
   Map<String, Object> _buildGetClientArguments(
-      String key, String? bucketingKey, bool waitForReady) {
+      String key, String? bucketingKey) {
     var arguments = {
       'matchingKey': key,
-      'waitForReady': waitForReady,
     };
 
     if (bucketingKey != null) {

@@ -41,8 +41,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
             case .client:
                 getClient(
                     matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
-                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
-                    waitForReady: argumentParser.getBooleanArgument(argumentName: .waitForReady, arguments: arguments))
+                    bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments))
                 result(nil)
                 break
             case .getTreatment:
@@ -135,13 +134,13 @@ class DefaultSplitMethodParser: SplitMethodParser {
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
     }
 
-    private func getClient(matchingKey: String, bucketingKey: String?, waitForReady: Bool = false) {
+    private func getClient(matchingKey: String, bucketingKey: String?) {
         guard let splitWrapper = getSplitWrapper() else {
             return
         }
 
         if let client = splitWrapper.getClient(matchingKey: matchingKey, bucketingKey: bucketingKey) {
-            addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: self.methodChannel, waitForReady: waitForReady)
+            addEventListeners(client: client, matchingKey: matchingKey, bucketingKey: bucketingKey, methodChannel: self.methodChannel)
         }
     }
 
@@ -253,23 +252,25 @@ class DefaultSplitMethodParser: SplitMethodParser {
         return splitWrapper.clearAttributes(matchingKey: matchingKey, bucketingKey: bucketingKey)
     }
 
-    private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel, waitForReady: Bool) {
-        if waitForReady {
-            client?.on(event: SplitEvent.sdkReady) {
-                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
-            }
-        } else {
-            client?.on(event: SplitEvent.sdkReadyFromCache) {
-                self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
-            }
+    private func addEventListeners(client: SplitClient?, matchingKey: String, bucketingKey: String?, methodChannel: FlutterMethodChannel) {
+        client?.on(event: SplitEvent.sdkReady) {
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientReady)
+        }
+
+        client?.on(event: SplitEvent.sdkReadyFromCache) {
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientReadyFromCache)
         }
 
         client?.on(event: SplitEvent.sdkReadyTimedOut) {
-            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey)
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientTimeout)
+        }
+
+        client?.on(event: SplitEvent.sdkUpdated) {
+            self.invokeCallback(methodChannel: methodChannel, matchingKey: matchingKey, bucketingKey: bucketingKey, method: .clientUpdated)
         }
     }
 
-    private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?) {
+    private func invokeCallback(methodChannel: FlutterMethodChannel, matchingKey: String, bucketingKey: String?, method: Method) {
         var args = [String: String]()
         args[Argument.matchingKey.rawValue] = matchingKey
 
@@ -277,7 +278,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
             args[Argument.bucketingKey.rawValue] = bucketing
         }
 
-        methodChannel.invokeMethod(Method.clientReady.rawValue, arguments: args)
+        methodChannel.invokeMethod(method.rawValue, arguments: args)
     }
 
     private func getSplitWrapper() -> SplitWrapper? {
