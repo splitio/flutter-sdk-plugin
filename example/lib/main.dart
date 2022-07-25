@@ -175,7 +175,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
 
   @override
   void dispose() {
-    super.dispose();
     destroy();
+    super.dispose();
   }
 }
