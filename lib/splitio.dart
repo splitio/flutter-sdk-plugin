@@ -61,13 +61,13 @@ class Splitio {
   /// new splits or modifying segments.
   ///
   /// [onTimeout] is executed if the SDK has not been able to get ready in time.
-  Future<SplitClient> client(
+  SplitClient client(
       {String? matchingKey,
       String? bucketingKey,
       ClientReadinessCallback? onReady,
       ClientReadinessCallback? onReadyFromCache,
       ClientReadinessCallback? onUpdated,
-      ClientReadinessCallback? onTimeout}) async {
+      ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
 
     if (onReady != null) {

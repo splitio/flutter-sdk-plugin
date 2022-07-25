@@ -42,7 +42,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   }
 
   void _initClients() async {
-    _client = await _split.client(
+    _client = _split.client(
         matchingKey: _matchingKey,
         onReady: (value) => {
               setState(() {
