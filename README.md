@@ -33,7 +33,7 @@ _split.client(onReady: (client) async {
 
   if (treatment == 'on') {
     /// Insert code here to show on treatment
-  } else if (treatment == "off") {
+  } else if (treatment == 'off') {
     /// Insert code here to show off treatment
   } else {
     /// Insert your control treatment code here
