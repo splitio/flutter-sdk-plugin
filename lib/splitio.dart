@@ -19,7 +19,7 @@ class Splitio {
   final Map<String, ClientReadinessCallback?> _clientTimeoutCallbacks = {};
   final Map<String, ClientReadinessCallback?> _clientUpdateCallbacks = {};
 
-  /// Entry point for SDK.
+  /// SDK instance constructor.
   ///
   /// Use [_apiKey] to specify your Split API key.
   ///

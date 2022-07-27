@@ -13,10 +13,10 @@ class SplitClient {
 
   const SplitClient(this._matchingKey, this._bucketingKey);
 
-  /// Performs the treatment for the [splitName] feature.
+  /// Performs an evaluation for the [splitName] feature.
   ///
   /// This method returns the string 'control' if: there was an exception in
-  /// evaluating the treatment, the SDK does not know of the existence of this
+  /// evaluating the feature, the SDK does not know of the existence of this
   /// feature, and/or the feature was deleted through the web console.
   ///
   /// The sdk returns the default treatment of this feature if: The feature was
@@ -38,7 +38,7 @@ class SplitClient {
         _controlTreatment;
   }
 
-  /// Performs and evaluation and resturns a [SplitResult] object for the
+  /// Performs and evaluation and returns a [SplitResult] object for the
   /// [splitName] feature. This object contains the treatment alongside the
   /// split's configuration, if any.
   ///
