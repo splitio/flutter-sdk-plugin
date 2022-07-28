@@ -21,6 +21,11 @@ class SplitClientConfigHelper {
     private static final String ENABLE_DEBUG = "enableDebug";
     private static final String STREAMING_ENABLED = "streamingEnabled";
     private static final String PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled";
+    private static final String SDK_ENDPOINT = "sdkEndpoint";
+    private static final String EVENTS_ENDPOINT = "eventsEndpoint";
+    private static final String SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint";
+    private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
+    private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -93,7 +98,35 @@ class SplitClientConfigHelper {
             builder.persistentAttributesEnabled(persistentAttributesEnabled);
         }
 
-        return builder.build();
+        ServiceEndpoints.Builder serviceEndpointsBuilder = ServiceEndpoints
+                .builder();
+
+        String apiEndpoint = getString(configurationMap, SDK_ENDPOINT);
+        if (apiEndpoint != null) {
+            serviceEndpointsBuilder.apiEndpoint(apiEndpoint);
+        }
+
+        String eventsEndpoint = getString(configurationMap, EVENTS_ENDPOINT);
+        if (eventsEndpoint != null) {
+            serviceEndpointsBuilder.eventsEndpoint(eventsEndpoint);
+        }
+
+        String sseAuthServiceEndpoint = getString(configurationMap, SSE_AUTH_SERVICE_ENDPOINT);
+        if (sseAuthServiceEndpoint != null) {
+            serviceEndpointsBuilder.sseAuthServiceEndpoint(sseAuthServiceEndpoint);
+        }
+
+        String streamingServiceEndpoint = getString(configurationMap, STREAMING_SERVICE_ENDPOINT);
+        if (streamingServiceEndpoint != null) {
+            serviceEndpointsBuilder.streamingServiceEndpoint(streamingServiceEndpoint);
+        }
+
+        String telemetryServiceEndpoint = getString(configurationMap, TELEMETRY_SERVICE_ENDPOINT);
+        if (telemetryServiceEndpoint != null) {
+            serviceEndpointsBuilder.telemetryServiceEndpoint(telemetryServiceEndpoint);
+        }
+
+        return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
     }
 
     @Nullable
