@@ -1,8 +1,6 @@
 # split.io
 
-<?code-excerpt path-base="excerpts/packages/camera_example"?>
-
-A Flutter plugin for iOS and Android for split.io, the platform for controlled rollouts, which serves features to your users via a Split feature flag to manage your complete customer experience.
+The official Flutter plugin for split.io, the platform for controlled rollouts, which serves features to your users via a Split feature flag to manage your complete customer experience.
 
 |                | Android | iOS      |
 |----------------|---------|----------|
