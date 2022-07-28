@@ -37,7 +37,7 @@ void main() {
     assert(
         config.configurationMap['eventsEndpoint'] == 'eventsEndpoint.split.io');
     assert(config.configurationMap['authServiceEndpoint'] ==
-        'sseAuthServiceEndpoint.split.io');
+        'authServiceEndpoint.split.io');
     assert(config.configurationMap['streamingServiceEndpoint'] ==
         'streamingServiceEndpoint.split.io');
     assert(config.configurationMap['telemetryServiceEndpoint'] ==
