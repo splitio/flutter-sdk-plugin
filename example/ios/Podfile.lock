@@ -1,9 +1,9 @@
 PODS:
   - Flutter (1.0.0)
-  - Split (2.14.0)
+  - Split (2.15.0)
   - splitio (0.0.1):
     - Flutter
-    - Split (~> 2.14.0)
+    - Split (~> 2.15.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
@@ -21,8 +21,8 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
-  Split: 22c530cb41c0fdac40c692e284713974e81e9a6f
-  splitio: ff4f724eff32cbda7fa61313d02ae03551bd1614
+  Split: d103c6afa47b5d1eac21e066c6bc09c879b21798
+  splitio: d06a91b6a23fa1225cd63286553653d9b2b12258
 
 PODFILE CHECKSUM: 6ab177d3659abbf5f15e864674366127c98cb8c0
 
