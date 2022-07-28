@@ -41,7 +41,7 @@ class SplitConfiguration {
     bool? persistentAttributesEnabled,
     String? sdkEndpoint,
     String? eventsEndpoint,
-    String? sseAuthServiceEndpoint,
+    String? authServiceEndpoint,
     String? streamingServiceEndpoint,
     String? telemetryServiceEndpoint,
   }) {
@@ -102,8 +102,8 @@ class SplitConfiguration {
       configurationMap['eventsEndpoint'] = eventsEndpoint;
     }
 
-    if (sseAuthServiceEndpoint != null) {
-      configurationMap['sseAuthServiceEndpoint'] = sseAuthServiceEndpoint;
+    if (authServiceEndpoint != null) {
+      configurationMap['authServiceEndpoint'] = authServiceEndpoint;
     }
 
     if (streamingServiceEndpoint != null) {

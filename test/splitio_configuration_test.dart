@@ -18,7 +18,7 @@ void main() {
         trafficType: 'traffic-type',
         sdkEndpoint: 'sdkEndpoint.split.io',
         eventsEndpoint: 'eventsEndpoint.split.io',
-        sseAuthServiceEndpoint: 'sseAuthServiceEndpoint.split.io',
+        authServiceEndpoint: 'authServiceEndpoint.split.io',
         streamingServiceEndpoint: 'streamingServiceEndpoint.split.io',
         telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io');
 
@@ -36,7 +36,7 @@ void main() {
     assert(config.configurationMap['sdkEndpoint'] == 'sdkEndpoint.split.io');
     assert(
         config.configurationMap['eventsEndpoint'] == 'eventsEndpoint.split.io');
-    assert(config.configurationMap['sseAuthServiceEndpoint'] ==
+    assert(config.configurationMap['authServiceEndpoint'] ==
         'sseAuthServiceEndpoint.split.io');
     assert(config.configurationMap['streamingServiceEndpoint'] ==
         'streamingServiceEndpoint.split.io');

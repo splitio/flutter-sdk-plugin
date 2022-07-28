@@ -32,7 +32,6 @@ class SplitClientConfigHelper {
      *
      * @param configurationMap Map of config values.
      * @return {@link SplitClientConfig} object.
-    }
      */
     static SplitClientConfig fromMap(Map<String, Object> configurationMap) {
         SplitClientConfig.Builder builder = SplitClientConfig.builder();
