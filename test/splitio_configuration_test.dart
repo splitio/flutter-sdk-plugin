@@ -15,7 +15,12 @@ void main() {
         segmentsRefreshRate: 5000,
         streamingEnabled: true,
         telemetryRefreshRate: 6000,
-        trafficType: "traffic-type");
+        trafficType: 'traffic-type',
+        sdkEndpoint: 'sdkEndpoint.split.io',
+        eventsEndpoint: 'eventsEndpoint.split.io',
+        sseAuthServiceEndpoint: 'sseAuthServiceEndpoint.split.io',
+        streamingServiceEndpoint: 'streamingServiceEndpoint.split.io',
+        telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io');
 
     assert(config.configurationMap['eventFlushInterval'] == 2000);
     assert(config.configurationMap['eventsPerPush'] == 300);
@@ -27,7 +32,16 @@ void main() {
     assert(config.configurationMap['segmentsRefreshRate'] == 5000);
     assert(config.configurationMap['streamingEnabled'] == true);
     assert(config.configurationMap['telemetryRefreshRate'] == 6000);
-    assert(config.configurationMap['trafficType'] == "traffic-type");
+    assert(config.configurationMap['trafficType'] == 'traffic-type');
+    assert(config.configurationMap['sdkEndpoint'] == 'sdkEndpoint.split.io');
+    assert(
+        config.configurationMap['eventsEndpoint'] == 'eventsEndpoint.split.io');
+    assert(config.configurationMap['sseAuthServiceEndpoint'] ==
+        'sseAuthServiceEndpoint.split.io');
+    assert(config.configurationMap['streamingServiceEndpoint'] ==
+        'streamingServiceEndpoint.split.io');
+    assert(config.configurationMap['telemetryServiceEndpoint'] ==
+        'telemetryServiceEndpoint.split.io');
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {
