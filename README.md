@@ -1,4 +1,4 @@
-# split.io
+# Split Flutter plugin
 
 ## Overview
 This is the official Flutter plugin designed to work with Split, the platform for controlled rollouts, which serves features to your users via a Split feature flag to manage your complete customer experience.
