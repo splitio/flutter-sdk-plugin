@@ -28,7 +28,7 @@ public class SplitClientConfigHelperTest {
         configValues.put("enableDebug", true);
         configValues.put("streamingEnabled", true);
         configValues.put("persistentAttributesEnabled", true);
-        configValues.put("apiEndpoint", "apiEndpoint.split.io");
+        configValues.put("sdkEndpoint", "apiEndpoint.split.io");
         configValues.put("eventsEndpoint", "eventsEndpoint.split.io");
         configValues.put("sseAuthServiceEndpoint", "sseAuthServiceEndpoint.split.io");
         configValues.put("streamingServiceEndpoint", "streamingServiceEndpoint.split.io");
@@ -48,10 +48,10 @@ public class SplitClientConfigHelperTest {
         assertTrue(splitClientConfig.debugEnabled());
         assertTrue(splitClientConfig.streamingEnabled());
         assertTrue(splitClientConfig.persistentAttributesEnabled());
-        assertEquals(splitClientConfig.endpoint(), "apiEndpoint.split.io");
-        assertEquals(splitClientConfig.eventsEndpoint(), "eventsEndpoint.split.io");
-        assertEquals(splitClientConfig.authServiceUrl(), "sseAuthServiceEndpoint.split.io");
-        assertEquals(splitClientConfig.streamingServiceUrl(), "streamingServiceEndpoint.split.io");
-        assertEquals(splitClientConfig.telemetryEndpoint(), "telemetryServiceEndpoint.split.io");
+        assertEquals("apiEndpoint.split.io", splitClientConfig.endpoint());
+        assertEquals("eventsEndpoint.split.io", splitClientConfig.eventsEndpoint());
+        assertEquals("sseAuthServiceEndpoint.split.io", splitClientConfig.authServiceUrl());
+        assertEquals("streamingServiceEndpoint.split.io", splitClientConfig.streamingServiceUrl());
+        assertEquals("telemetryServiceEndpoint.split.io", splitClientConfig.telemetryEndpoint());
     }
 }
