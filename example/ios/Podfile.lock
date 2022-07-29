@@ -1,7 +1,7 @@
 PODS:
   - Flutter (1.0.0)
   - Split (2.15.0)
-  - splitio (0.0.1):
+  - splitio (0.1.0):
     - Flutter
     - Split (~> 2.15.0)
 
