@@ -18,7 +18,7 @@ class Splitio {
   final String _defaultMatchingKey;
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
-  late final SplitEventCallbackManager _nativeMethodParser;
+  late final SplitEventCallbackManagerImpl _nativeMethodParser;
 
   /// SDK instance constructor.
   ///
@@ -34,7 +34,7 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
-    _nativeMethodParser = SplitEventCallbackManager();
+    _nativeMethodParser = SplitEventCallbackManagerImpl();
 
     _init();
   }

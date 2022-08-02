@@ -12,10 +12,10 @@ class SplitClient {
   final String _matchingKey;
   final String? _bucketingKey;
 
-  late final SplitEventCallbackManager nativeMethodParser;
+  late final SplitEventsCallbackManager nativeMethodParser;
 
   SplitClient(this._matchingKey, this._bucketingKey,
-      SplitEventCallbackManager callbackManager) {
+      SplitEventsCallbackManager callbackManager) {
     nativeMethodParser = callbackManager;
     nativeMethodParser.register(_matchingKey, _bucketingKey);
   }

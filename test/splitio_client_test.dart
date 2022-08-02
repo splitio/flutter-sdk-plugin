@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio/split_client.dart';
+import 'package:splitio/split_native_method_parser.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('splitio');
@@ -9,6 +10,11 @@ void main() {
   var methodName;
 
   TestWidgetsFlutterBinding.ensureInitialized();
+
+  SplitClient _getClient() {
+    return SplitClient(
+        'matching-key', 'bucketing-key', SplitEventsCallbackManagerStub());
+  }
 
   setUp(() {
     channel.setMockMethodCallHandler((MethodCall methodCall) async {
@@ -46,7 +52,7 @@ void main() {
 
   group('evaluation', () {
     test('getTreatment without attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatment('split');
 
@@ -60,7 +66,7 @@ void main() {
     });
 
     test('getTreatment with attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatment('split', {'attr1': true});
 
@@ -74,7 +80,7 @@ void main() {
     });
 
     test('getTreatments without attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatments(['split1', 'split2']);
 
@@ -88,7 +94,7 @@ void main() {
     });
 
     test('getTreatments with attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatments(['split1', 'split2'], {'attr1': true});
 
@@ -102,7 +108,7 @@ void main() {
     });
 
     test('getTreatmentWithConfig with attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatmentWithConfig('split1', {'attr1': true});
 
@@ -116,7 +122,7 @@ void main() {
     });
 
     test('getTreatmentWithConfig without attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatmentWithConfig('split1');
 
@@ -130,7 +136,7 @@ void main() {
     });
 
     test('getTreatmentsWithConfig without attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatmentsWithConfig(['split1', 'split2']);
 
@@ -144,7 +150,7 @@ void main() {
     });
 
     test('getTreatmentsWithConfig with attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getTreatmentsWithConfig(['split1', 'split2'], {'attr1': true});
 
@@ -160,7 +166,7 @@ void main() {
 
   group('track', () {
     test('track with traffic type & value', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.track('my_event', trafficType: 'my_traffic_type', value: 25.10);
       expect(methodName, 'track');
@@ -174,7 +180,7 @@ void main() {
     });
 
     test('track with value', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.track('my_event', value: 25.10);
       expect(methodName, 'track');
@@ -187,7 +193,7 @@ void main() {
     });
 
     test('track with traffic type', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.track('my_event', trafficType: 'my_traffic_type');
       expect(methodName, 'track');
@@ -202,7 +208,7 @@ void main() {
 
   group('attributes', () {
     test('get single attribute', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getAttribute('attribute-name');
       expect(methodName, 'getAttribute');
@@ -214,7 +220,7 @@ void main() {
     });
 
     test('get all attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.getAttributes();
       expect(methodName, 'getAllAttributes');
@@ -225,7 +231,7 @@ void main() {
     });
 
     test('set attribute', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.setAttribute('my_attr', 'attr_value');
       expect(methodName, 'setAttribute');
@@ -238,7 +244,7 @@ void main() {
     });
 
     test('set multiple attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.setAttributes({
         'bool_attr': true,
@@ -260,7 +266,7 @@ void main() {
     });
 
     test('remove attribute', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.removeAttribute('attr-name');
       expect(methodName, 'removeAttribute');
@@ -272,7 +278,7 @@ void main() {
     });
 
     test('clear attributes', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.clearAttributes();
       expect(methodName, 'clearAttributes');
@@ -283,7 +289,7 @@ void main() {
     });
 
     test('flush', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.flush();
       expect(methodName, 'flush');
@@ -294,7 +300,7 @@ void main() {
     });
 
     test('destroy', () async {
-      SplitClient client = const SplitClient('matching-key', 'bucketing-key');
+      SplitClient client = _getClient();
 
       client.destroy();
       expect(methodName, 'destroy');
@@ -304,4 +310,32 @@ void main() {
       });
     });
   });
+}
+
+class SplitEventsCallbackManagerStub extends SplitEventsCallbackManager {
+  @override
+  Future<SplitClient> onReady(String matchingKey, String? bucketingKey) {
+    return Future.value(SplitClient('matchingKey', 'bucketingKey', this));
+  }
+
+  @override
+  Future<SplitClient> onReadyFromCache(
+      String matchingKey, String? bucketingKey) {
+    return Future.value(SplitClient('matchingKey', 'bucketingKey', this));
+  }
+
+  @override
+  Future<SplitClient> onTimeout(String matchingKey, String? bucketingKey) {
+    return Future.value(SplitClient('matchingKey', 'bucketingKey', this));
+  }
+
+  @override
+  Future<SplitClient> onUpdated(String matchingKey, String? bucketingKey) {
+    return Future.value(SplitClient('matchingKey', 'bucketingKey', this));
+  }
+
+  @override
+  void register(String matchingKey, String? bucketingKey) {
+    // TODO: implement register
+  }
 }

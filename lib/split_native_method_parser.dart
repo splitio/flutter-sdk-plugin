@@ -3,7 +3,20 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:splitio/split_client.dart';
 
-class SplitEventCallbackManager {
+abstract class SplitEventsCallbackManager {
+  Future<SplitClient> onReady(String matchingKey, String? bucketingKey);
+
+  Future<SplitClient> onReadyFromCache(
+      String matchingKey, String? bucketingKey);
+
+  Future<SplitClient> onUpdated(String matchingKey, String? bucketingKey);
+
+  Future<SplitClient> onTimeout(String matchingKey, String? bucketingKey);
+
+  void register(String matchingKey, String? bucketingKey);
+}
+
+class SplitEventCallbackManagerImpl extends SplitEventsCallbackManager {
   static const MethodChannel _channel = MethodChannel('splitio');
 
   static const String _eventClientReady = 'clientReady';
@@ -19,27 +32,32 @@ class SplitEventCallbackManager {
     _eventClientUpdated: {},
   };
 
-  SplitEventCallbackManager() {
+  SplitEventCallbackManagerImpl() {
     _channel.setMethodCallHandler((call) => _methodCallHandler(call));
   }
 
+  @override
   Future<SplitClient> onReady(String matchingKey, String? bucketingKey) {
     return _onEvent(_eventClientReady, matchingKey, bucketingKey);
   }
 
+  @override
   Future<SplitClient> onReadyFromCache(
       String matchingKey, String? bucketingKey) {
     return _onEvent(_eventClientReadyFromCache, matchingKey, bucketingKey);
   }
 
+  @override
   Future<SplitClient> onUpdated(String matchingKey, String? bucketingKey) {
     return _onEvent(_eventClientUpdated, matchingKey, bucketingKey);
   }
 
+  @override
   Future<SplitClient> onTimeout(String matchingKey, String? bucketingKey) {
     return _onEvent(_eventClientTimeout, matchingKey, bucketingKey);
   }
 
+  @override
   void register(String matchingKey, String? bucketingKey) {
     _addCallback(_eventClientReady, matchingKey, bucketingKey, Completer());
     _addCallback(
