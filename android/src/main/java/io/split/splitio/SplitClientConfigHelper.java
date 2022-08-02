@@ -23,7 +23,7 @@ class SplitClientConfigHelper {
     private static final String PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled";
     private static final String SDK_ENDPOINT = "sdkEndpoint";
     private static final String EVENTS_ENDPOINT = "eventsEndpoint";
-    private static final String SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint";
+    private static final String SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint";
     private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
 
