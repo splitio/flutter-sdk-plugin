@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:splitio/split_native_method_parser.dart';
 import 'package:splitio/split_result.dart';
 
 class SplitClient {
@@ -11,7 +12,13 @@ class SplitClient {
   final String _matchingKey;
   final String? _bucketingKey;
 
-  const SplitClient(this._matchingKey, this._bucketingKey);
+  late final SplitEventCallbackManager nativeMethodParser;
+
+  SplitClient(this._matchingKey, this._bucketingKey,
+      SplitEventCallbackManager callbackManager) {
+    nativeMethodParser = callbackManager;
+    nativeMethodParser.register(_matchingKey, _bucketingKey);
+  }
 
   /// Performs an evaluation for the [splitName] feature.
   ///
@@ -214,6 +221,22 @@ class SplitClient {
   /// Removes the client from memory and stops its synchronization tasks.
   Future<void> destroy() async {
     return _channel.invokeMethod('destroy', _buildParameters());
+  }
+
+  Future<SplitClient> onReady() {
+    return nativeMethodParser.onReady(_matchingKey, _bucketingKey);
+  }
+
+  Future<SplitClient> onReadyFromCache() {
+    return nativeMethodParser.onReadyFromCache(_matchingKey, _bucketingKey);
+  }
+
+  Future<SplitClient> onUpdated() {
+    return nativeMethodParser.onUpdated(_matchingKey, _bucketingKey);
+  }
+
+  Future<SplitClient> onTimeout() {
+    return nativeMethodParser.onTimeout(_matchingKey, _bucketingKey);
   }
 
   Map<String, String> _getKeysMap() {
