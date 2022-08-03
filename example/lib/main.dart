@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:splitio/split_client.dart';
-import 'package:splitio/split_configuration.dart';
 import 'package:splitio/splitio.dart';
 
 /// Replace these with valid values
