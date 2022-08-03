@@ -24,6 +24,10 @@ class SplitEventCallbackManagerImpl extends SplitEventsCallbackManager {
   static const String _eventClientTimeout = 'clientTimeout';
   static const String _eventClientUpdated = 'clientUpdated';
 
+  bool _readyFromCacheTriggered = false;
+
+  final SplitClient _splitClient;
+
   final Map<String, Map<String, Completer<SplitClient>?>>
       _clientEventCallbacks = {
     _eventClientReady: {},
@@ -32,7 +36,7 @@ class SplitEventCallbackManagerImpl extends SplitEventsCallbackManager {
     _eventClientUpdated: {},
   };
 
-  SplitEventCallbackManagerImpl() {
+  SplitEventCallbackManagerImpl(this._splitClient) {
     _channel.setMethodCallHandler((call) => _methodCallHandler(call));
   }
 
@@ -44,6 +48,10 @@ class SplitEventCallbackManagerImpl extends SplitEventsCallbackManager {
   @override
   Future<SplitClient> onReadyFromCache(
       String matchingKey, String? bucketingKey) {
+    if (_readyFromCacheTriggered) {
+      return Future.value(_splitClient);
+    }
+
     return _onEvent(_eventClientReadyFromCache, matchingKey, bucketingKey);
   }
 
@@ -84,8 +92,11 @@ class SplitEventCallbackManagerImpl extends SplitEventsCallbackManager {
       String key = _buildKeyForCallbackMap(matchingKey, bucketingKey ?? 'null');
 
       if (_clientEventCallbacks[call.method]?.containsKey(key) == true) {
-        _clientEventCallbacks[call.method]?[key]
-            ?.complete(SplitClient(matchingKey, bucketingKey, this));
+        _clientEventCallbacks[call.method]?[key]?.complete(_splitClient);
+
+        if (call.method == _eventClientReadyFromCache) {
+          _readyFromCacheTriggered = true;
+        }
       }
     }
   }

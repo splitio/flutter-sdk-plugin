@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
-import 'package:splitio/split_native_method_parser.dart';
 
 export 'package:splitio/split_client.dart';
 export 'package:splitio/split_configuration.dart';
@@ -18,7 +17,6 @@ class Splitio {
   final String _defaultMatchingKey;
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
-  late final SplitEventCallbackManagerImpl _nativeMethodParser;
 
   /// SDK instance constructor.
   ///
@@ -34,7 +32,6 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
-    _nativeMethodParser = SplitEventCallbackManagerImpl();
 
     _init();
   }
@@ -61,13 +58,36 @@ class Splitio {
   /// new splits or modifying segments.
   ///
   /// [onTimeout] is executed if the SDK has not been able to get ready in time.
-  SplitClient client({String? matchingKey, String? bucketingKey}) {
+  SplitClient client(
+      {String? matchingKey,
+      String? bucketingKey,
+      ClientReadinessCallback? onReady,
+      ClientReadinessCallback? onReadyFromCache,
+      ClientReadinessCallback? onUpdated,
+      ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
+
+    var client = SplitClientImpl(key, bucketingKey);
+    if (onReady != null) {
+      client.onReady().then((client) => onReady.call(client));
+    }
+
+    if (onReadyFromCache != null) {
+      client.onReadyFromCache().then((client) => onReadyFromCache.call(client));
+    }
+
+    if (onTimeout != null) {
+      client.onTimeout().then((client) => onTimeout.call(client));
+    }
+
+    if (onUpdated != null) {
+      client.onUpdated().then((client) => onUpdated.call(client));
+    }
 
     _channel.invokeMethod(
         'getClient', _buildGetClientArguments(key, bucketingKey));
 
-    return SplitClient(key, bucketingKey, _nativeMethodParser);
+    return client;
   }
 
   Future<void> _init() {
