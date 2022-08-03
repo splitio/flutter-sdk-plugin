@@ -31,9 +31,8 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
 
   final Splitio _split = Splitio(_apiKey, _matchingKey,
       configuration: SplitConfiguration(
-          enableDebug: true,
-          trafficType: "user",
-          persistentAttributesEnabled: true));
+        trafficType: "user",
+      ));
 
   @override
   void initState() {
