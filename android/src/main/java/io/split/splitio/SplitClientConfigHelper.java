@@ -83,14 +83,13 @@ class SplitClientConfigHelper {
         }
 
         Boolean enableDebug = getBoolean(configurationMap, ENABLE_DEBUG);
-        if (enableDebug) {
+        if (enableDebug != null && enableDebug) {
             builder.enableDebug();
         }
 
         Boolean streamingEnabled = getBoolean(configurationMap, STREAMING_ENABLED);
         if (streamingEnabled != null) {
             builder.streamingEnabled(streamingEnabled);
-
         }
 
         Boolean persistentAttributesEnabled = getBoolean(configurationMap, PERSISTENT_ATTRIBUTES_ENABLED);
