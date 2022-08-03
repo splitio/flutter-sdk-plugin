@@ -1,6 +1,5 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/split_configuration.dart';
 import 'package:splitio/splitio.dart';
 
 void main() {

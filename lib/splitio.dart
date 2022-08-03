@@ -4,6 +4,10 @@ import 'package:flutter/services.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 
+export 'package:splitio/split_client.dart';
+export 'package:splitio/split_configuration.dart';
+export 'package:splitio/split_result.dart';
+
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
 class Splitio {
