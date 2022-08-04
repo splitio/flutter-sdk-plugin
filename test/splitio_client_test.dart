@@ -11,7 +11,12 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  SplitClient _getClient() {
+  SplitClient _getClient([SplitEventsListener? splitEventsListener]) {
+    if (splitEventsListener != null) {
+      return SplitClientImpl.withEventListener(
+          'matching-key', 'bucketing-key', splitEventsListener);
+    }
+
     return SplitClientImpl('matching-key', 'bucketing-key');
   }
 
@@ -309,21 +314,93 @@ void main() {
       });
     });
   });
+
+  group('events', () {
+    test('onReady is returned from events listener', () {
+      var splitEventsListenerStub = SplitEventsListenerStub();
+      SplitClient client = _getClient(splitEventsListenerStub);
+      splitEventsListenerStub.attachClient(client);
+
+      var future = client.onReady().then((value) => client == value);
+      assert(splitEventsListenerStub.calledMethods['onReady'] == 1);
+      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
+      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
+      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(future, completion(equals(true)));
+    });
+
+    test('onReadyFromCache is returned from events listener', () {
+      var splitEventsListenerStub = SplitEventsListenerStub();
+      SplitClient client = _getClient(splitEventsListenerStub);
+      splitEventsListenerStub.attachClient(client);
+
+      var future = client.onReadyFromCache().then((value) => client == value);
+      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
+      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == 1);
+      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
+      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(future, completion(equals(true)));
+    });
+
+    test('onTimeout is returned from events listener', () {
+      var splitEventsListenerStub = SplitEventsListenerStub();
+      SplitClient client = _getClient(splitEventsListenerStub);
+      splitEventsListenerStub.attachClient(client);
+
+      var future = client.onTimeout().then((value) => client == value);
+      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
+      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
+      assert(splitEventsListenerStub.calledMethods['onTimeout'] == 1);
+      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(future, completion(equals(true)));
+    });
+
+    test('onUpdated is returned from events listener', () {
+      var splitEventsListenerStub = SplitEventsListenerStub();
+      SplitClient client = _getClient(splitEventsListenerStub);
+      splitEventsListenerStub.attachClient(client);
+
+      var future = client.onUpdated().then((value) => client == value);
+      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
+      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
+      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
+      assert(splitEventsListenerStub.calledMethods['onUpdated'] == 1);
+      expect(future, completion(equals(true)));
+    });
+  });
 }
 
 class SplitEventsListenerStub extends SplitEventsListener {
-  final _clientFuture =
-      Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
+  Map<String, int> calledMethods = {};
+
+  late final Future<SplitClient> _clientFuture;
+
+  void attachClient(SplitClient splitClient) {
+    _clientFuture = Future.value(splitClient);
+  }
 
   @override
-  Future<SplitClient> onReady() => _clientFuture;
+  Future<SplitClient> onReady() {
+    calledMethods.update('onReady', (value) => value + 1, ifAbsent: () => 1);
+    return _clientFuture;
+  }
 
   @override
-  Future<SplitClient> onReadyFromCache() => _clientFuture;
+  Future<SplitClient> onReadyFromCache() {
+    calledMethods.update('onReadyFromCache', (value) => value + 1,
+        ifAbsent: () => 1);
+    return _clientFuture;
+  }
 
   @override
-  Future<SplitClient> onTimeout() => _clientFuture;
+  Future<SplitClient> onTimeout() {
+    calledMethods.update('onTimeout', (value) => value + 1, ifAbsent: () => 1);
+    return _clientFuture;
+  }
 
   @override
-  Future<SplitClient> onUpdated() => _clientFuture;
+  Future<SplitClient> onUpdated() {
+    calledMethods.update('onUpdated', (value) => value + 1, ifAbsent: () => 1);
+    return _clientFuture;
+  }
 }
