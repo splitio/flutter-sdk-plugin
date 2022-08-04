@@ -24,7 +24,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   String _splitName = '';
   bool _sdkReady = false;
   bool _sdkReadyFromCache = false;
-  bool _sdkTimeout = false;
   late SplitClient _client;
 
   final Splitio _split = Splitio(_apiKey, _matchingKey,
@@ -39,13 +38,13 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   }
 
   void _initClients() {
-    _client = _split.client(matchingKey: _matchingKey);
-
-    _client.onReady().then((value) {
-      setState(() {
-        _sdkReady = true;
-      });
-    });
+    _client = _split.client(
+        matchingKey: _matchingKey,
+        onReady: (client) {
+          setState(() {
+            _sdkReady = true;
+          });
+        });
 
     _client.onReadyFromCache().then((value) {
       setState(() {
@@ -124,9 +123,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
                           onPressed: flush, child: const Text('Flush')),
                       ElevatedButton(
                           onPressed: destroy, child: const Text('Destroy')),
-                      ElevatedButton(
-                          onPressed: addExtraListener,
-                          child: const Text('Add extra listener')),
                     ],
                   )),
               Visibility(
@@ -137,12 +133,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
         )),
       ),
     );
-  }
-
-  void addExtraListener() async {
-    _client
-        .onReadyFromCache()
-        .then((value) => print('NEW SDK READY FROM CACHE'));
   }
 
   void performEvaluation() async {
