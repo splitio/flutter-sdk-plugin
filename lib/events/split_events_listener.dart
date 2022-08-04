@@ -23,6 +23,8 @@ class SplitEventsListenerImpl extends SplitEventsListener {
     _channel.setMethodCallHandler((call) => _methodCallHandler.handle(call));
   }
 
+  SplitEventsListenerImpl.forTest(this._channel, this._methodCallHandler);
+
   @override
   Future<SplitClient> onReady() {
     return _methodCallHandler.onReady();

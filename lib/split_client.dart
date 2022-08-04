@@ -1,5 +1,5 @@
 import 'package:flutter/services.dart';
-import 'package:splitio/events/split_events_callback_manager.dart';
+import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 

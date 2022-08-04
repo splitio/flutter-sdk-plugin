@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:splitio/events/split_events_callback_manager.dart';
+import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_client.dart';
 
 abstract class MethodCallHandler extends SplitEventsListener {

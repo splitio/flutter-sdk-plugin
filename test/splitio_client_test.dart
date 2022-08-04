@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/events/split_events_callback_manager.dart';
+import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_client.dart';
 
 void main() {
@@ -312,23 +312,18 @@ void main() {
 }
 
 class SplitEventsListenerStub extends SplitEventsListener {
-  @override
-  Future<SplitClient> onReady() {
-    return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
-  }
+  final _clientFuture =
+      Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
 
   @override
-  Future<SplitClient> onReadyFromCache() {
-    return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
-  }
+  Future<SplitClient> onReady() => _clientFuture;
 
   @override
-  Future<SplitClient> onTimeout() {
-    return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
-  }
+  Future<SplitClient> onReadyFromCache() => _clientFuture;
 
   @override
-  Future<SplitClient> onUpdated() {
-    return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
-  }
+  Future<SplitClient> onTimeout() => _clientFuture;
+
+  @override
+  Future<SplitClient> onUpdated() => _clientFuture;
 }

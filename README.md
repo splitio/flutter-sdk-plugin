@@ -17,7 +17,6 @@ Add `splitio` as a [dependency in your pubspec.yaml file](https://flutter.dev/us
 Here is a small example of how to perform an evaluation.
 
 ```dart
-import 'package:splitio/split_client.dart';
 import 'package:splitio/splitio.dart';
 
 final Splitio _split = Splitio('YOUR_API_KEY', 'KEY');
