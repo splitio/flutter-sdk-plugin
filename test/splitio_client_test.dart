@@ -1,13 +1,13 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splitio/events/split_events_callback_manager.dart';
 import 'package:splitio/split_client.dart';
-import 'package:splitio/split_events_callback_manager.dart';
 
 void main() {
   const MethodChannel channel = MethodChannel('splitio');
 
-  var methodArguments;
-  var methodName;
+  String methodName = '';
+  dynamic methodArguments;
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -311,30 +311,24 @@ void main() {
   });
 }
 
-class SplitEventsCallbackManagerStub extends SplitEventsCallbackManager {
+class SplitEventsListenerStub extends SplitEventsListener {
   @override
-  Future<SplitClient> onReady(String matchingKey, String? bucketingKey) {
+  Future<SplitClient> onReady() {
     return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
   }
 
   @override
-  Future<SplitClient> onReadyFromCache(
-      String matchingKey, String? bucketingKey) {
+  Future<SplitClient> onReadyFromCache() {
     return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
   }
 
   @override
-  Future<SplitClient> onTimeout(String matchingKey, String? bucketingKey) {
+  Future<SplitClient> onTimeout() {
     return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
   }
 
   @override
-  Future<SplitClient> onUpdated(String matchingKey, String? bucketingKey) {
+  Future<SplitClient> onUpdated() {
     return Future.value(SplitClientImpl('matchingKey', 'bucketingKey'));
-  }
-
-  @override
-  void register(String matchingKey, String? bucketingKey) {
-    // TODO: implement register
   }
 }

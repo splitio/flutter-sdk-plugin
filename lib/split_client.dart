@@ -1,5 +1,6 @@
 import 'package:flutter/services.dart';
-import 'package:splitio/split_events_callback_manager.dart';
+import 'package:splitio/events/split_events_callback_manager.dart';
+import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
@@ -149,11 +150,11 @@ class SplitClientImpl extends SplitClient {
   final String _matchingKey;
   final String? _bucketingKey;
 
-  late final SplitEventsCallbackManager _splitEventsCallbackManager;
+  late final SplitEventsListener _splitEventsListener;
 
   SplitClientImpl(this._matchingKey, this._bucketingKey) {
-    _splitEventsCallbackManager = SplitEventCallbackManagerImpl(this);
-    _splitEventsCallbackManager.register(_matchingKey, _bucketingKey);
+    _splitEventsListener = SplitEventsListenerImpl(_channel,
+        SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this));
   }
 
   @override
@@ -289,23 +290,22 @@ class SplitClientImpl extends SplitClient {
 
   @override
   Future<SplitClient> onReady() {
-    return _splitEventsCallbackManager.onReady(_matchingKey, _bucketingKey);
+    return _splitEventsListener.onReady();
   }
 
   @override
   Future<SplitClient> onReadyFromCache() {
-    return _splitEventsCallbackManager.onReadyFromCache(
-        _matchingKey, _bucketingKey);
+    return _splitEventsListener.onReadyFromCache();
   }
 
   @override
   Future<SplitClient> onUpdated() {
-    return _splitEventsCallbackManager.onUpdated(_matchingKey, _bucketingKey);
+    return _splitEventsListener.onUpdated();
   }
 
   @override
   Future<SplitClient> onTimeout() {
-    return _splitEventsCallbackManager.onTimeout(_matchingKey, _bucketingKey);
+    return _splitEventsListener.onTimeout();
   }
 
   Map<String, String> _getKeysMap() {
