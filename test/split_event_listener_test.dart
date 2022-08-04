@@ -27,9 +27,8 @@ void main() {
 
   group('client events', () {
     test('test client ready', () async {
-      SplitEventsListener eventListener =
-          SplitEventsListenerImpl.withoutHandler(
-              _channel, splitEventMethodCallHandler);
+      SplitEventsListener eventListener = DefaultEventsListener.withoutHandler(
+          _channel, splitEventMethodCallHandler);
       Future<bool> future = eventListener.onReady().then((value) => true);
       _simulateMethodInvocation('clientReady');
 
@@ -37,9 +36,8 @@ void main() {
     });
 
     test('test client ready from cache', () async {
-      SplitEventsListener eventListener =
-          SplitEventsListenerImpl.withoutHandler(
-              _channel, splitEventMethodCallHandler);
+      SplitEventsListener eventListener = DefaultEventsListener.withoutHandler(
+          _channel, splitEventMethodCallHandler);
       Future<bool> future =
           eventListener.onReadyFromCache().then((value) => true);
       _simulateMethodInvocation('clientReadyFromCache');
@@ -48,9 +46,8 @@ void main() {
     });
 
     test('test client timeout', () async {
-      SplitEventsListener eventListener =
-          SplitEventsListenerImpl.withoutHandler(
-              _channel, splitEventMethodCallHandler);
+      SplitEventsListener eventListener = DefaultEventsListener.withoutHandler(
+          _channel, splitEventMethodCallHandler);
       Future<bool> future = eventListener.onTimeout().then((value) => true);
       _simulateMethodInvocation('clientTimeout');
 
@@ -58,9 +55,8 @@ void main() {
     });
 
     test('test client updated', () async {
-      SplitEventsListener eventListener =
-          SplitEventsListenerImpl.withoutHandler(
-              _channel, splitEventMethodCallHandler);
+      SplitEventsListener eventListener = DefaultEventsListener.withoutHandler(
+          _channel, splitEventMethodCallHandler);
       Future<bool> future = eventListener.onTimeout().then((value) => true);
       _simulateMethodInvocation('clientUpdated');
 

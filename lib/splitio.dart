@@ -67,7 +67,7 @@ class Splitio {
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
 
-    var client = SplitClientImpl(key, bucketingKey);
+    var client = DefaultSplitClient(key, bucketingKey);
     if (onReady != null) {
       client.onReady().then((client) => onReady.call(client));
     }

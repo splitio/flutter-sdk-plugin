@@ -15,18 +15,17 @@ abstract class SplitEventsListener {
   Future<SplitClient> onTimeout();
 }
 
-class SplitEventsListenerImpl extends SplitEventsListener {
+class DefaultEventsListener extends SplitEventsListener {
   final MethodChannel _channel;
 
   final MethodCallHandler _methodCallHandler;
 
-  SplitEventsListenerImpl(this._channel, this._methodCallHandler) {
+  DefaultEventsListener(this._channel, this._methodCallHandler) {
     _channel.setMethodCallHandler((call) => _methodCallHandler.handle(call));
   }
 
   @visibleForTesting
-  SplitEventsListenerImpl.withoutHandler(
-      this._channel, this._methodCallHandler);
+  DefaultEventsListener.withoutHandler(this._channel, this._methodCallHandler);
 
   @override
   Future<SplitClient> onReady() {

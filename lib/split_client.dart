@@ -141,7 +141,7 @@ abstract class SplitClient {
   Future<SplitClient> onTimeout();
 }
 
-class SplitClientImpl extends SplitClient {
+class DefaultSplitClient extends SplitClient {
   static const MethodChannel _channel = MethodChannel('splitio');
 
   static const String _controlTreatment = 'control';
@@ -153,13 +153,13 @@ class SplitClientImpl extends SplitClient {
 
   late final SplitEventsListener _splitEventsListener;
 
-  SplitClientImpl(this._matchingKey, this._bucketingKey) {
-    _splitEventsListener = SplitEventsListenerImpl(_channel,
+  DefaultSplitClient(this._matchingKey, this._bucketingKey) {
+    _splitEventsListener = DefaultEventsListener(_channel,
         SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this));
   }
 
   @visibleForTesting
-  SplitClientImpl.withEventListener(
+  DefaultSplitClient.withEventListener(
       this._matchingKey, this._bucketingKey, this._splitEventsListener);
 
   @override

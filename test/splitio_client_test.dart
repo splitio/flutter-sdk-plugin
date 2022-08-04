@@ -13,11 +13,11 @@ void main() {
 
   SplitClient _getClient([SplitEventsListener? splitEventsListener]) {
     if (splitEventsListener != null) {
-      return SplitClientImpl.withEventListener(
+      return DefaultSplitClient.withEventListener(
           'matching-key', 'bucketing-key', splitEventsListener);
     }
 
-    return SplitClientImpl('matching-key', 'bucketing-key');
+    return DefaultSplitClient('matching-key', 'bucketing-key');
   }
 
   setUp(() {
