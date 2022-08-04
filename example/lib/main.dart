@@ -84,11 +84,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),
-              Text(
-                'SDK timeout: $_sdkTimeout',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
               Padding(
                 padding: const EdgeInsets.fromLTRB(32, 8, 32, 8),
                 child: TextField(
