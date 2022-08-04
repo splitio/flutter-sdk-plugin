@@ -5,8 +5,8 @@ on:
       - '*'
 
 jobs:
-  build-android:
-    name: Build Android
+  test-dart:
+    name: Test dart
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
