@@ -119,6 +119,17 @@ class DefaultSplitMethodParser: SplitMethodParser {
                               bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments))
                 result(nil)
                 break
+            case .splitNames:
+                result(splitWrapper?.splitNames())
+                break
+            case .splits:
+                result(splitWrapper?.splits().map({
+                    getSplitViewAsMap(splitView: $0)
+                }))
+                break
+            case.split:
+                result(getSplitViewAsMap(splitView: splitWrapper?.split(splitName: argumentParser.getStringArgument(argumentName: .splitName, arguments: arguments) ?? "")))
+                break
             default:
                 result(FlutterMethodNotImplemented)
                 break
@@ -288,5 +299,13 @@ class DefaultSplitMethodParser: SplitMethodParser {
         }
 
         return splitWrapper
+    }
+
+    private func getSplitViewAsMap(splitView: SplitView?) -> [String: Any?] {
+        if let splitView = splitView {
+            return ["name": splitView.name, "trafficType": splitView.trafficType as? String, "killed": splitView.killed, "treatments": splitView.treatments, "changeNumber": splitView.changeNumber, "configs": splitView.configs]
+        } else {
+            return [:]
+        }
     }
 }

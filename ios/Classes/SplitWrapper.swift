@@ -10,6 +10,12 @@ protocol SplitWrapper: EvaluationWrapper, AttributesWrapper {
     func flush(matchingKey: String, bucketingKey: String?)
 
     func destroy(matchingKey: String, bucketingKey: String?)
+
+    func splitNames() -> [String]
+
+    func splits() -> [SplitView]
+
+    func split(splitName: String) -> SplitView?
 }
 
 protocol EvaluationWrapper {
@@ -196,5 +202,29 @@ class DefaultSplitWrapper: SplitWrapper {
         client.destroy()
 
         usedKeys.remove(requestedKey)
+    }
+
+    func splitNames() -> [String] {
+        if let splitFactory = splitFactory {
+            return splitFactory.manager.splitNames
+        } else {
+            return []
+        }
+    }
+
+    func splits() -> [SplitView] {
+        if let splitFactory = splitFactory {
+            return splitFactory.manager.splits
+        } else {
+            return []
+        }
+    }
+
+    func split(splitName: String) -> SplitView? {
+        if let splitFactory = splitFactory {
+            return splitFactory.manager.split(featureName: splitName)
+        } else {
+            return nil
+        }
     }
 }
