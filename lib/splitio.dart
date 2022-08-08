@@ -102,12 +102,13 @@ class Splitio {
   }
 
   Future<List<SplitView>> splits() async {
-    var callResult =
-        (await _channel.invokeListMethod<Map<String, dynamic>>('splits') ?? []);
+    List<Map> callResult =
+        (await _channel.invokeListMethod<Map<dynamic, dynamic>>('splits') ??
+            []);
 
     List<SplitView> splits = [];
-    for (Map<String, dynamic> element in callResult) {
-      SplitView? splitView = SplitView.fromEntry(element.entries.first);
+    for (var element in callResult) {
+      SplitView? splitView = SplitView.fromEntry(element);
       if (splitView != null) {
         splits.add(splitView);
       }
@@ -117,14 +118,14 @@ class Splitio {
   }
 
   Future<SplitView?> split(String splitName) async {
-    var mapResult = await _channel.invokeMapMethod('split');
-    var entry = mapResult?.entries.first;
+    Map? mapResult =
+        await _channel.invokeMapMethod('split', {'splitName': splitName});
 
-    if (entry == null) {
+    if (mapResult == null) {
       return null;
     }
 
-    return SplitView.fromEntry(entry);
+    return SplitView.fromEntry(mapResult);
   }
 
   Future<void> _init() {
