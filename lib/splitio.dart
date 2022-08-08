@@ -3,10 +3,12 @@ import 'dart:async';
 import 'package:flutter/services.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
+import 'package:splitio/split_view.dart';
 
 export 'package:splitio/split_client.dart';
 export 'package:splitio/split_configuration.dart';
 export 'package:splitio/split_result.dart';
+export 'package:splitio/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
@@ -90,6 +92,39 @@ class Splitio {
         'getClient', _buildGetClientArguments(key, bucketingKey));
 
     return client;
+  }
+
+  Future<List<String>> splitNames() async {
+    List<String> splitNames =
+        await _channel.invokeListMethod<String>('splitNames') ?? [];
+
+    return splitNames;
+  }
+
+  Future<List<SplitView>> splits() async {
+    var callResult =
+        (await _channel.invokeListMethod<Map<String, dynamic>>('splits') ?? []);
+
+    List<SplitView> splits = [];
+    for (Map<String, dynamic> element in callResult) {
+      SplitView? splitView = SplitView.fromEntry(element.entries.first);
+      if (splitView != null) {
+        splits.add(splitView);
+      }
+    }
+
+    return Future.value(splits);
+  }
+
+  Future<SplitView?> split(String splitName) async {
+    var mapResult = await _channel.invokeMapMethod('split');
+    var entry = mapResult?.entries.first;
+
+    if (entry == null) {
+      return null;
+    }
+
+    return SplitView.fromEntry(entry);
   }
 
   Future<void> _init() {
