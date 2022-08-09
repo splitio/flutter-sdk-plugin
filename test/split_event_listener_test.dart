@@ -14,9 +14,10 @@ void main() {
   SplitEventMethodCallHandler splitEventMethodCallHandler =
       SplitEventMethodCallHandler('key', 'bucketing', splitClientMock);
 
-  void _simulateMethodInvocation(String methodName) {
+  void _simulateMethodInvocation(String methodName,
+      {String key = 'key', String bucketingKey = 'bucketing'}) {
     _channel.invokeMethod(
-        methodName, {'matchingKey': 'key', 'bucketingKey': 'bucketing'});
+        methodName, {'matchingKey': key, 'bucketingKey': bucketingKey});
   }
 
   setUp(() {
