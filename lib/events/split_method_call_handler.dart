@@ -18,45 +18,31 @@ class SplitEventMethodCallHandler extends MethodCallHandler {
   final String? _bucketingKey;
   final SplitClient _splitClient;
 
-  final Map<String, Map<String, Completer<SplitClient>?>>
-      _clientEventCallbacks = {
-    _eventClientReady: {},
-    _eventClientReadyFromCache: {},
-    _eventClientTimeout: {},
-    _eventClientUpdated: {},
+  final Map<String, Completer<SplitClient>> _clientEventCallbacks = {
+    _eventClientReady: Completer(),
+    _eventClientReadyFromCache: Completer(),
+    _eventClientTimeout: Completer(),
+    _eventClientUpdated: Completer(),
   };
 
-  final Map<String, Map<String, bool>> _triggeredClientEvents = {
-    _eventClientReady: {},
-    _eventClientReadyFromCache: {},
-    _eventClientTimeout: {},
+  final Map<String, bool> _triggeredClientEvents = {
+    _eventClientReady: false,
+    _eventClientReadyFromCache: false,
+    _eventClientTimeout: false,
   };
 
   SplitEventMethodCallHandler(
-      this._matchingKey, this._bucketingKey, this._splitClient) {
-    _clientEventCallbacks.forEach((key, value) {
-      _clientEventCallbacks[key]
-          ?[_buildKeyForCallbackMap(_matchingKey, _bucketingKey)] = Completer();
-    });
-
-    _triggeredClientEvents.forEach((key, value) {
-      _triggeredClientEvents[key]
-          ?[_buildKeyForCallbackMap(_matchingKey, _bucketingKey)] = false;
-    });
-  }
+      this._matchingKey, this._bucketingKey, this._splitClient);
 
   @override
   Future<void> handle(MethodCall call) async {
     if (_clientEventCallbacks.containsKey(call.method)) {
-      var matchingKey = call.arguments['matchingKey'];
-      var bucketingKey = call.arguments['bucketingKey'];
-      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey ?? 'null');
+      if (_matchingKey == call.arguments['matchingKey'] &&
+          _bucketingKey == call.arguments['bucketingKey']) {
+        _clientEventCallbacks[call.method]?.complete(_splitClient);
 
-      if (_clientEventCallbacks[call.method]?.containsKey(key) == true) {
-        _clientEventCallbacks[call.method]?[key]?.complete(_splitClient);
-
-        if (_triggeredClientEvents[call.method]?.containsKey(key) == true) {
-          _triggeredClientEvents[call.method]?[key] = true;
+        if (_triggeredClientEvents.containsKey(call.method)) {
+          _triggeredClientEvents[call.method] = true;
         }
       }
     }
@@ -84,19 +70,10 @@ class SplitEventMethodCallHandler extends MethodCallHandler {
 
   Future<SplitClient> _onEvent(String sdkEvent) {
     if (_triggeredClientEvents.containsKey(sdkEvent) &&
-        _triggeredClientEvents[sdkEvent]
-                ?[_buildKeyForCallbackMap(_matchingKey, _bucketingKey)] ==
-            true) {
+        _triggeredClientEvents[sdkEvent] == true) {
       return Future.value(_splitClient);
     }
 
-    return (_clientEventCallbacks[sdkEvent]
-                ?[_buildKeyForCallbackMap(_matchingKey, _bucketingKey)])
-            ?.future ??
-        Future.error(Object());
-  }
-
-  String _buildKeyForCallbackMap(String matchingKey, String? bucketingKey) {
-    return matchingKey + '_' + (bucketingKey ?? 'null');
+    return (_clientEventCallbacks[sdkEvent])?.future ?? Future.error(Object());
   }
 }
