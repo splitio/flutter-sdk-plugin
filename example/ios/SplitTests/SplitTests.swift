@@ -157,12 +157,50 @@ class SplitTests: XCTestCase {
         splitWrapper.destroy(matchingKey: "key", bucketingKey: "bucketing")
         XCTAssert(client.destroyCalled)
     }
+
+    func testSplitNames() {
+        let manager = SplitManagerStub()
+        let factoryProvider = SplitFactoryProviderStub(manager: manager)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+        _ = splitWrapper.splitNames()
+        XCTAssert(manager.splitNamesCalled == true)
+    }
+
+    func testSplits() {
+        let manager = SplitManagerStub()
+        let factoryProvider = SplitFactoryProviderStub(manager: manager)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+        _ = splitWrapper.splits()
+        XCTAssert(manager.splitsCalled == true)
+    }
+
+    func testSplit() {
+        let manager = SplitManagerStub()
+        let factoryProvider = SplitFactoryProviderStub(manager: manager)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+        let split = splitWrapper.split(splitName: "my-split")
+        XCTAssert(manager.splitNameValue == "my-split")
+    }
 }
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
 
+    var manager: SplitManagerStub?
+
+    init(manager: SplitManagerStub?) {
+        self.manager = manager
+    }
+
+    convenience init() {
+        self.init(manager: nil)
+    }
+
     func getFactory() -> SplitFactory? {
-        return SplitFactoryStub(apiKey: "dummy-key")
+        if let manager = manager {
+            return SplitFactoryStub(apiKey: "dummy-key", manager: manager)
+        } else {
+            return SplitFactoryStub(apiKey: "dummy-key")
+        }
     }
 }
 
@@ -185,7 +223,7 @@ class SplitFactoryStub: SplitFactory {
 
     var nilBucketingKeyClient: SplitClient
 
-    var manager: SplitManager
+    var manager: SplitManager = SplitManagerStub()
 
     var version: String
 
@@ -201,6 +239,11 @@ class SplitFactoryStub: SplitFactory {
 
     convenience init(apiKey: String) {
         self.init(apiKey: apiKey, client: SplitClientStub())
+    }
+
+    convenience init(apiKey: String, manager: SplitManagerStub) {
+        self.init(apiKey: apiKey)
+        self.manager = manager
     }
 
     func client(key: Key) -> SplitClient {
@@ -363,15 +406,29 @@ class SplitClientStub: SplitClient {
 }
 
 class SplitManagerStub: SplitManager, Destroyable {
-    var splits: [SplitView]
-    var splitNames: [String]
 
-    init() {
-        splits = []
-        splitNames = []
+    var splitNamesCalled = false
+
+    var splitsCalled = false
+
+    var splitNameValue = ""
+
+    var splits: [SplitView] {
+        get {
+            splitsCalled = true
+            return []
+        }
+    }
+
+    var splitNames: [String] {
+        get {
+            splitNamesCalled = true
+            return []
+        }
     }
 
     func split(featureName: String) -> SplitView? {
+        splitNameValue = featureName
         return nil
     }
 
