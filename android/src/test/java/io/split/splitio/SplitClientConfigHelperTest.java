@@ -30,7 +30,7 @@ public class SplitClientConfigHelperTest {
         configValues.put("persistentAttributesEnabled", true);
         configValues.put("sdkEndpoint", "apiEndpoint.split.io");
         configValues.put("eventsEndpoint", "eventsEndpoint.split.io");
-        configValues.put("sseAuthServiceEndpoint", "sseAuthServiceEndpoint.split.io");
+        configValues.put("authServiceEndpoint", "sseAuthServiceEndpoint.split.io");
         configValues.put("streamingServiceEndpoint", "streamingServiceEndpoint.split.io");
         configValues.put("telemetryServiceEndpoint", "telemetryServiceEndpoint.split.io");
 
