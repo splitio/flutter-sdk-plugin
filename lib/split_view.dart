@@ -12,12 +12,12 @@ class SplitView {
       this.changeNumber, this.configs);
 
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
-    if (entry == null) {
+    if (entry == null || entry.isEmpty) {
       return null;
     }
 
     final Map<String, String> mappedConfig = {};
-    entry['configs'].entries.forEach((MapEntry<dynamic, dynamic> entry) => {
+    entry['configs']?.entries.forEach((MapEntry<dynamic, dynamic> entry) => {
           mappedConfig.addAll({entry.key.toString(): entry.value.toString()})
         });
 
