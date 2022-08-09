@@ -69,19 +69,21 @@ class Splitio {
 
     var client = DefaultSplitClient(key, bucketingKey);
     if (onReady != null) {
-      client.onReady().then((client) => onReady.call(client));
+      client.whenReady().then((client) => onReady.call(client));
     }
 
     if (onReadyFromCache != null) {
-      client.onReadyFromCache().then((client) => onReadyFromCache.call(client));
+      client
+          .whenReadyFromCache()
+          .then((client) => onReadyFromCache.call(client));
     }
 
     if (onTimeout != null) {
-      client.onTimeout().then((client) => onTimeout.call(client));
+      client.whenTimeout().then((client) => onTimeout.call(client));
     }
 
     if (onUpdated != null) {
-      client.onUpdated().then((client) => onUpdated.call(client));
+      client.whenUpdated().then((client) => onUpdated.call(client));
     }
 
     _channel.invokeMethod(

@@ -135,26 +135,26 @@ class SplitClientMock extends SplitClient {
   }
 
   @override
-  Future<SplitClient> onReady() {
+  Future<SplitClient> whenReady() {
     calledMethods.update('onReady', (value) => value + 1, ifAbsent: () => 1);
     return Future.value(this);
   }
 
   @override
-  Future<SplitClient> onReadyFromCache() {
+  Future<SplitClient> whenReadyFromCache() {
     calledMethods.update('onReadyFromCache', (value) => value + 1,
         ifAbsent: () => 1);
     return Future.value(this);
   }
 
   @override
-  Future<SplitClient> onTimeout() {
+  Future<SplitClient> whenTimeout() {
     calledMethods.update('onTimeout', (value) => value + 1, ifAbsent: () => 1);
     return Future.value(this);
   }
 
   @override
-  Future<SplitClient> onUpdated() {
+  Future<SplitClient> whenUpdated() {
     calledMethods.update('onUpdated', (value) => value + 1, ifAbsent: () => 1);
     return Future.value(this);
   }

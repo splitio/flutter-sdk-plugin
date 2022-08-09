@@ -321,7 +321,7 @@ void main() {
       SplitClient client = _getClient(splitEventsListenerStub);
       splitEventsListenerStub.attachClient(client);
 
-      var future = client.onReady().then((value) => client == value);
+      var future = client.whenReady().then((value) => client == value);
       assert(splitEventsListenerStub.calledMethods['onReady'] == 1);
       assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
       assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
@@ -334,7 +334,7 @@ void main() {
       SplitClient client = _getClient(splitEventsListenerStub);
       splitEventsListenerStub.attachClient(client);
 
-      var future = client.onReadyFromCache().then((value) => client == value);
+      var future = client.whenReadyFromCache().then((value) => client == value);
       assert(splitEventsListenerStub.calledMethods['onReady'] == null);
       assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == 1);
       assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
@@ -347,7 +347,7 @@ void main() {
       SplitClient client = _getClient(splitEventsListenerStub);
       splitEventsListenerStub.attachClient(client);
 
-      var future = client.onTimeout().then((value) => client == value);
+      var future = client.whenTimeout().then((value) => client == value);
       assert(splitEventsListenerStub.calledMethods['onReady'] == null);
       assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
       assert(splitEventsListenerStub.calledMethods['onTimeout'] == 1);
@@ -360,7 +360,7 @@ void main() {
       SplitClient client = _getClient(splitEventsListenerStub);
       splitEventsListenerStub.attachClient(client);
 
-      var future = client.onUpdated().then((value) => client == value);
+      var future = client.whenUpdated().then((value) => client == value);
       assert(splitEventsListenerStub.calledMethods['onReady'] == null);
       assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
       assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);

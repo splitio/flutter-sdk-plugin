@@ -46,7 +46,7 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
           });
         });
 
-    _client.onReadyFromCache().then((value) {
+    _client.whenReadyFromCache().then((value) {
       setState(() {
         _sdkReadyFromCache = true;
       });

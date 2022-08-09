@@ -126,19 +126,19 @@ abstract class SplitClient {
 
   /// Returns Future that is completed when the most up-to-date information has been
   /// retrieved from the Split cloud.
-  Future<SplitClient> onReady();
+  Future<SplitClient> whenReady();
 
   /// Returns Future that is completed once the SDK has been able to load
   /// definitions from cache. This information is not guaranteed to be the most
   /// up-to-date, but all the functionality will be available.
-  Future<SplitClient> onReadyFromCache();
+  Future<SplitClient> whenReadyFromCache();
 
   /// Returns Future that is completed when changes have been made, such as creating
   /// new splits or modifying segments.
-  Future<SplitClient> onUpdated();
+  Future<SplitClient> whenUpdated();
 
   /// Returns Future that is completed if the SDK has not been able to get ready in time.
-  Future<SplitClient> onTimeout();
+  Future<SplitClient> whenTimeout();
 }
 
 class DefaultSplitClient extends SplitClient {
@@ -294,22 +294,22 @@ class DefaultSplitClient extends SplitClient {
   }
 
   @override
-  Future<SplitClient> onReady() {
+  Future<SplitClient> whenReady() {
     return _splitEventsListener.onReady();
   }
 
   @override
-  Future<SplitClient> onReadyFromCache() {
+  Future<SplitClient> whenReadyFromCache() {
     return _splitEventsListener.onReadyFromCache();
   }
 
   @override
-  Future<SplitClient> onUpdated() {
+  Future<SplitClient> whenUpdated() {
     return _splitEventsListener.onUpdated();
   }
 
   @override
-  Future<SplitClient> onTimeout() {
+  Future<SplitClient> whenTimeout() {
     return _splitEventsListener.onTimeout();
   }
 
