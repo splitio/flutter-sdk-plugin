@@ -1,5 +1,6 @@
 package io.split.splitio;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Map;
@@ -33,9 +34,10 @@ class SplitClientConfigHelper {
      * Creates a {@link SplitClientConfig} object from a map.
      *
      * @param configurationMap Map of config values.
+     * @param impressionListener Optional ImpressionListener.
      * @return {@link SplitClientConfig} object.
      */
-    static SplitClientConfig fromMap(Map<String, Object> configurationMap, ImpressionListener impressionListener) {
+    static SplitClientConfig fromMap(@NonNull Map<String, Object> configurationMap, @Nullable ImpressionListener impressionListener) {
         SplitClientConfig.Builder builder = SplitClientConfig.builder();
 
         Integer featuresRefreshRate = getInteger(configurationMap, FEATURES_REFRESH_RATE);
@@ -126,12 +128,16 @@ class SplitClientConfigHelper {
             serviceEndpointsBuilder.telemetryServiceEndpoint(telemetryServiceEndpoint);
         }
 
-        Boolean enableImpressionListener = getBoolean(configurationMap, ENABLE_DEBUG);
-        if (enableImpressionListener != null && enableImpressionListener) {
+        if (impressionListener != null) {
             builder.impressionListener(impressionListener);
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
+    }
+
+    static boolean impressionListenerEnabled(@NonNull Map<String, Object> configurationMap) {
+        Boolean impressionListenerEnabled = getBoolean(configurationMap, IMPRESSION_LISTENER);
+        return impressionListenerEnabled != null && impressionListenerEnabled;
     }
 
     @Nullable
