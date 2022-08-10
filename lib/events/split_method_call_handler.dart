@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:splitio/events/split_events_listener.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
 
-abstract class MethodCallHandler extends SplitEventsListener {
-  Future<void> handle(MethodCall call);
-}
-
-class SplitEventMethodCallHandler extends MethodCallHandler {
+class SplitEventMethodCallHandler extends MethodCallHandler
+    with SplitEventsListener {
   static const String _eventClientReady = 'clientReady';
   static const String _eventClientReadyFromCache = 'clientReadyFromCache';
   static const String _eventClientTimeout = 'clientTimeout';
