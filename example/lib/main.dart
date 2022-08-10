@@ -24,7 +24,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   String _splitName = '';
   bool _sdkReady = false;
   bool _sdkReadyFromCache = false;
-  bool _sdkTimeout = false;
   late SplitClient _client;
 
   final Splitio _split = Splitio(_apiKey, _matchingKey,
@@ -38,24 +37,20 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
     _initClients();
   }
 
-  void _initClients() async {
+  void _initClients() {
     _client = _split.client(
         matchingKey: _matchingKey,
-        onReady: (value) => {
-              setState(() {
-                _sdkReady = true;
-              })
-            },
-        onReadyFromCache: (value) => {
-              setState(() {
-                _sdkReadyFromCache = true;
-              })
-            },
-        onTimeout: (value) => {
-              setState(() {
-                _sdkTimeout = true;
-              })
-            });
+        onReady: (client) {
+          setState(() {
+            _sdkReady = true;
+          });
+        });
+
+    _client.whenReadyFromCache().then((value) {
+      setState(() {
+        _sdkReadyFromCache = true;
+      });
+    });
 
     _client.setAttributes({
       'name': 'splitio',
@@ -86,11 +81,6 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
               ),
               Text(
                 'SDK ready from cache: $_sdkReadyFromCache',
-                style:
-                    const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
-              ),
-              Text(
-                'SDK timeout: $_sdkTimeout',
                 style:
                     const TextStyle(fontWeight: FontWeight.bold, fontSize: 24),
               ),

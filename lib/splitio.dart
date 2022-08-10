@@ -17,11 +17,6 @@ class Splitio {
   final String _defaultMatchingKey;
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
-  final Map<String, ClientReadinessCallback?> _clientReadyCallbacks = {};
-  final Map<String, ClientReadinessCallback?> _clientReadyFromCacheCallbacks =
-      {};
-  final Map<String, ClientReadinessCallback?> _clientTimeoutCallbacks = {};
-  final Map<String, ClientReadinessCallback?> _clientUpdateCallbacks = {};
 
   /// SDK instance constructor.
   ///
@@ -37,8 +32,6 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
-
-    _channel.setMethodCallHandler(_methodCallHandler);
 
     _init();
   }
@@ -74,30 +67,29 @@ class Splitio {
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
 
+    var client = DefaultSplitClient(key, bucketingKey);
     if (onReady != null) {
-      _clientReadyCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
-          onReady;
+      client.whenReady().then((client) => onReady.call(client));
     }
 
     if (onReadyFromCache != null) {
-      _clientReadyFromCacheCallbacks[
-          _buildKeyForCallbackMap(key, bucketingKey)] = onReadyFromCache;
+      client
+          .whenReadyFromCache()
+          .then((client) => onReadyFromCache.call(client));
     }
 
     if (onTimeout != null) {
-      _clientTimeoutCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
-          onTimeout;
+      client.whenTimeout().then((client) => onTimeout.call(client));
     }
 
     if (onUpdated != null) {
-      _clientUpdateCallbacks[_buildKeyForCallbackMap(key, bucketingKey)] =
-          onUpdated;
+      client.whenUpdated().then((client) => onUpdated.call(client));
     }
 
     _channel.invokeMethod(
         'getClient', _buildGetClientArguments(key, bucketingKey));
 
-    return SplitClient(key, bucketingKey);
+    return client;
   }
 
   Future<void> _init() {
@@ -111,40 +103,6 @@ class Splitio {
       arguments.addAll({'bucketingKey': _defaultBucketingKey});
     }
     return _channel.invokeMethod('init', arguments);
-  }
-
-  /// Call handler for calls coming from the native side
-  Future<void> _methodCallHandler(MethodCall call) async {
-    if (call.method == 'clientReady' ||
-        call.method == 'clientReadyFromCache' ||
-        call.method == 'clientTimeout' ||
-        call.method == 'clientUpdated') {
-      var matchingKey = call.arguments['matchingKey'];
-      var bucketingKey = call.arguments['bucketingKey'];
-      String key = _buildKeyForCallbackMap(matchingKey, bucketingKey ?? 'null');
-
-      if (call.method == 'clientReady' &&
-          _clientReadyCallbacks.containsKey(key)) {
-        _clientReadyCallbacks[key]
-            ?.call(SplitClient(matchingKey, bucketingKey));
-      } else if (call.method == 'clientReadyFromCache' &&
-          _clientReadyFromCacheCallbacks.containsKey(key)) {
-        _clientReadyFromCacheCallbacks[key]
-            ?.call(SplitClient(matchingKey, bucketingKey));
-      } else if (call.method == 'clientTimeout' &&
-          _clientTimeoutCallbacks.containsKey(key)) {
-        _clientTimeoutCallbacks[key]
-            ?.call(SplitClient(matchingKey, bucketingKey));
-      } else if (call.method == 'clientUpdated' &&
-          _clientUpdateCallbacks.containsKey(key)) {
-        _clientUpdateCallbacks[key]
-            ?.call(SplitClient(matchingKey, bucketingKey));
-      }
-    }
-  }
-
-  String _buildKeyForCallbackMap(String matchingKey, String? bucketingKey) {
-    return matchingKey + '_' + (bucketingKey ?? 'null');
   }
 
   Map<String, Object> _buildGetClientArguments(
