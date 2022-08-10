@@ -10,8 +10,12 @@ class ImpressionsMethodCallHandler extends StreamMethodCallHandler<Impression> {
   @override
   Future<void> handle(MethodCall call) async {
     if (call.method == 'impressionLog') {
-      _streamController.add(
-          Impression.fromMap(Map<String, dynamic>.from(call.arguments ?? {})));
+      if (_streamController.hasListener &&
+          !_streamController.isPaused &&
+          !_streamController.isClosed) {
+        _streamController.add(Impression.fromMap(
+            Map<String, dynamic>.from(call.arguments ?? {})));
+      }
     }
   }
 
