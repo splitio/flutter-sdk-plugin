@@ -44,7 +44,6 @@ class ImpressionListenerImp implements ImpressionListener {
         impressionMap.put("time", impression.time());
         impressionMap.put("appliedRule", impression.appliedRule());
         impressionMap.put("changeNumber", impression.changeNumber());
-        impressionMap.put("previousTime", impression.previousTime());
         impressionMap.put("attributes", impression.attributes());
 
         return impressionMap;
