@@ -8,7 +8,7 @@ This is the official Flutter plugin designed to work with Split, the platform fo
 ## Compatibility
 |                | Android | iOS      |
 |----------------|---------|----------|
-| **Support**    | SDK 21+ | iOS 9+*  |
+| **Support**    | SDK 21+ | iOS 9+   |
 
 ## Getting started
 
@@ -17,7 +17,6 @@ Add `splitio` as a [dependency in your pubspec.yaml file](https://flutter.dev/us
 Here is a small example of how to perform an evaluation.
 
 ```dart
-import 'package:splitio/split_client.dart';
 import 'package:splitio/splitio.dart';
 
 final Splitio _split = Splitio('YOUR_API_KEY', 'KEY');
