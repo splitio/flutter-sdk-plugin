@@ -199,8 +199,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
 
     private void initializeSplit(String apiKey, String matchingKey, String bucketingKey, Map<String, Object> mapArgument) {
         mSplitWrapper = new SplitWrapperImpl(new SplitFactoryProviderImpl(
-                mContext, apiKey, matchingKey, bucketingKey, SplitClientConfigHelper.fromMap(mapArgument)
-        ));
+                mContext, apiKey, matchingKey, bucketingKey, SplitClientConfigHelper.fromMap(mapArgument, new ImpressionListenerImp(mMethodChannel))));
     }
 
     private SplitClient getClient(String matchingKey, String bucketingKey) {

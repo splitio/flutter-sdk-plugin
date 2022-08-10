@@ -25,6 +25,7 @@ class Constants {
         static final String SPLITS = "splits";
         static final String SPLIT_NAMES = "splitNames";
         static final String SPLIT = "split";
+        static final String IMPRESSION_LOG = "impressionLog";
     }
 
     static class Argument {

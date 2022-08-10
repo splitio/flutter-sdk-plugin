@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
@@ -9,6 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import io.split.android.client.SplitClientConfig;
+import io.split.android.client.impressions.ImpressionListener;
 
 public class SplitClientConfigHelperTest {
 
@@ -34,7 +36,7 @@ public class SplitClientConfigHelperTest {
         configValues.put("streamingServiceEndpoint", "streamingServiceEndpoint.split.io");
         configValues.put("telemetryServiceEndpoint", "telemetryServiceEndpoint.split.io");
 
-        SplitClientConfig splitClientConfig = SplitClientConfigHelper.fromMap(configValues);
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper.fromMap(configValues, mock(ImpressionListener.class));
 
         assertEquals(80000, splitClientConfig.featuresRefreshRate());
         assertEquals(70000, splitClientConfig.segmentsRefreshRate());

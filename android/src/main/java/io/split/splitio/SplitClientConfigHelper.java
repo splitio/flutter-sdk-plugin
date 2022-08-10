@@ -6,6 +6,7 @@ import java.util.Map;
 
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
+import io.split.android.client.impressions.ImpressionListener;
 
 class SplitClientConfigHelper {
 
@@ -26,6 +27,7 @@ class SplitClientConfigHelper {
     private static final String SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint";
     private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
+    private static final String IMPRESSION_LISTENER = "impressionListener";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -33,9 +35,8 @@ class SplitClientConfigHelper {
      * @param configurationMap Map of config values.
      * @return {@link SplitClientConfig} object.
      */
-    static SplitClientConfig fromMap(Map<String, Object> configurationMap) {
+    static SplitClientConfig fromMap(Map<String, Object> configurationMap, ImpressionListener impressionListener) {
         SplitClientConfig.Builder builder = SplitClientConfig.builder();
-        ServiceEndpoints.Builder serviceEndpoints = ServiceEndpoints.builder();
 
         Integer featuresRefreshRate = getInteger(configurationMap, FEATURES_REFRESH_RATE);
         if (featuresRefreshRate != null) {
@@ -123,6 +124,11 @@ class SplitClientConfigHelper {
         String telemetryServiceEndpoint = getString(configurationMap, TELEMETRY_SERVICE_ENDPOINT);
         if (telemetryServiceEndpoint != null) {
             serviceEndpointsBuilder.telemetryServiceEndpoint(telemetryServiceEndpoint);
+        }
+
+        Boolean enableImpressionListener = getBoolean(configurationMap, ENABLE_DEBUG);
+        if (enableImpressionListener != null && enableImpressionListener) {
+            builder.impressionListener(impressionListener);
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
