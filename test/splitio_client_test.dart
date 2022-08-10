@@ -1,27 +1,31 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splitio/channel/method_channel_wrapper.dart';
 import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_client.dart';
 
 void main() {
-  const MethodChannel channel = MethodChannel('splitio');
+  const MethodChannel _channel = MethodChannel('splitio');
 
   String methodName = '';
   dynamic methodArguments;
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
+  MethodChannelWrapper _methodChannelWrapper = MethodChannelWrapper(_channel);
+
   SplitClient _getClient([SplitEventsListener? splitEventsListener]) {
     if (splitEventsListener != null) {
-      return DefaultSplitClient.withEventListener(
+      return DefaultSplitClient.withEventListener(_methodChannelWrapper,
           'matching-key', 'bucketing-key', splitEventsListener);
     }
 
-    return DefaultSplitClient('matching-key', 'bucketing-key');
+    return DefaultSplitClient(
+        _methodChannelWrapper, 'matching-key', 'bucketing-key');
   }
 
   setUp(() {
-    channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    _channel.setMockMethodCallHandler((MethodCall methodCall) async {
       methodName = methodCall.method;
       methodArguments = methodCall.arguments;
 
@@ -322,10 +326,10 @@ void main() {
       splitEventsListenerStub.attachClient(client);
 
       var future = client.whenReady().then((value) => client == value);
-      assert(splitEventsListenerStub.calledMethods['onReady'] == 1);
-      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
-      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
-      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(splitEventsListenerStub.calledMethods['onReady'], 1);
+      expect(splitEventsListenerStub.calledMethods['onReadyFromCache'], null);
+      expect(splitEventsListenerStub.calledMethods['onTimeout'], null);
+      expect(splitEventsListenerStub.calledMethods['onUpdated'], null);
       expect(future, completion(equals(true)));
     });
 
@@ -335,10 +339,10 @@ void main() {
       splitEventsListenerStub.attachClient(client);
 
       var future = client.whenReadyFromCache().then((value) => client == value);
-      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
-      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == 1);
-      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
-      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(splitEventsListenerStub.calledMethods['onReady'], null);
+      expect(splitEventsListenerStub.calledMethods['onReadyFromCache'], 1);
+      expect(splitEventsListenerStub.calledMethods['onTimeout'], null);
+      expect(splitEventsListenerStub.calledMethods['onUpdated'], null);
       expect(future, completion(equals(true)));
     });
 
@@ -348,10 +352,10 @@ void main() {
       splitEventsListenerStub.attachClient(client);
 
       var future = client.whenTimeout().then((value) => client == value);
-      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
-      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
-      assert(splitEventsListenerStub.calledMethods['onTimeout'] == 1);
-      assert(splitEventsListenerStub.calledMethods['onUpdated'] == null);
+      expect(splitEventsListenerStub.calledMethods['onReady'], null);
+      expect(splitEventsListenerStub.calledMethods['onReadyFromCache'], null);
+      expect(splitEventsListenerStub.calledMethods['onTimeout'], 1);
+      expect(splitEventsListenerStub.calledMethods['onUpdated'], null);
       expect(future, completion(equals(true)));
     });
 
@@ -361,10 +365,10 @@ void main() {
       splitEventsListenerStub.attachClient(client);
 
       var future = client.whenUpdated().then((value) => client == value);
-      assert(splitEventsListenerStub.calledMethods['onReady'] == null);
-      assert(splitEventsListenerStub.calledMethods['onReadyFromCache'] == null);
-      assert(splitEventsListenerStub.calledMethods['onTimeout'] == null);
-      assert(splitEventsListenerStub.calledMethods['onUpdated'] == 1);
+      expect(splitEventsListenerStub.calledMethods['onReady'], null);
+      expect(splitEventsListenerStub.calledMethods['onReadyFromCache'], null);
+      expect(splitEventsListenerStub.calledMethods['onTimeout'], null);
+      expect(splitEventsListenerStub.calledMethods['onUpdated'], 1);
       expect(future, completion(equals(true)));
     });
   });

@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/foundation.dart';
 import 'package:splitio/channel/method_channel_wrapper.dart';
 import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_client.dart';
@@ -23,10 +22,6 @@ class DefaultEventsListener extends SplitEventsListener {
   DefaultEventsListener(this._methodChannelWrapper, this._methodCallHandler) {
     _methodChannelWrapper.addHandler(_methodCallHandler);
   }
-
-  @visibleForTesting
-  DefaultEventsListener.withoutHandler(
-      this._methodChannelWrapper, this._methodCallHandler);
 
   @override
   Future<SplitClient> onReady() {

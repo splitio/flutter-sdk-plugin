@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:splitio/channel/method_channel_wrapper.dart';
 import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/events/split_method_call_handler.dart';
@@ -156,6 +157,10 @@ class DefaultSplitClient extends SplitClient {
     _splitEventsListener = DefaultEventsListener(_methodChannelWrapper,
         SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this));
   }
+
+  @visibleForTesting
+  DefaultSplitClient.withEventListener(this._methodChannelWrapper,
+      this._matchingKey, this._bucketingKey, this._splitEventsListener);
 
   @override
   Future<String> getTreatment(String splitName,
