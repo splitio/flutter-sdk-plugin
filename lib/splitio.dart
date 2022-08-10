@@ -125,6 +125,8 @@ class Splitio {
     return Future.value(splits);
   }
 
+  /// If the impressionListener configuration has been enabled,
+  /// generated impressions will be streamed here.
   Stream<Impression> impressionsStream() {
     return _impressionsMethodCallHandler.stream();
   }

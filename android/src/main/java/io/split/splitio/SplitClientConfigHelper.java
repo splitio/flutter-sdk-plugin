@@ -137,7 +137,11 @@ class SplitClientConfigHelper {
 
     static boolean impressionListenerEnabled(@NonNull Map<String, Object> configurationMap) {
         Boolean impressionListenerEnabled = getBoolean(configurationMap, IMPRESSION_LISTENER);
-        return impressionListenerEnabled != null && impressionListenerEnabled;
+        if (impressionListenerEnabled != null && impressionListenerEnabled) {
+            return true;
+        }
+
+        return false;
     }
 
     @Nullable
