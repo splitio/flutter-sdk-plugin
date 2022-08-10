@@ -2,9 +2,6 @@ package io.split.splitio;
 
 import static io.split.splitio.Constants.Method.IMPRESSION_LOG;
 
-import android.os.Handler;
-import android.os.Looper;
-
 import androidx.annotation.NonNull;
 
 import java.util.HashMap;
@@ -18,18 +15,15 @@ import io.split.android.client.utils.logger.Logger;
 class ImpressionListenerImp implements ImpressionListener {
 
     private final MethodChannel mMethodChannel;
-    private final Handler mMainThreadHandler;
 
     ImpressionListenerImp(@NonNull MethodChannel methodChannel) {
         mMethodChannel = methodChannel;
-        mMainThreadHandler = new Handler(Looper.getMainLooper());
     }
 
     @Override
     public void log(Impression impression) {
         try {
-            Logger.i("Logging impression");
-            mMainThreadHandler.post(() -> mMethodChannel.invokeMethod(IMPRESSION_LOG, impressionToMap(impression)));
+            mMethodChannel.invokeMethod(IMPRESSION_LOG, impressionToMap(impression));
         } catch (Exception exception) {
             Logger.i("Failed to return impression log");
         }

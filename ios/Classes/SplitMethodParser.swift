@@ -148,9 +148,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
     private func getImpressionListener(impressionListenerEnabled: Bool) -> SplitImpressionListener? {
         if impressionListenerEnabled {
             return { impression in
-                DispatchQueue.global().sync {
-                    self.methodChannel.invokeMethod("impressionLog", arguments: impression.toMap())
-                }
+                self.methodChannel.invokeMethod(Method.impressionLog.rawValue, arguments: impression.toMap())
             }
         }
 
