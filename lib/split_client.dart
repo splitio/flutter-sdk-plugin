@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:splitio/channel/method_channel_wrapper.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
-import 'package:splitio/events/split_method_call_handler.dart';
+import 'package:splitio/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
@@ -146,7 +146,7 @@ class DefaultSplitClient extends SplitClient {
   static const SplitResult _controlResult =
       SplitResult(_controlTreatment, null);
 
-  final MethodChannelWrapper _methodChannelWrapper;
+  final MethodChannelManager _methodChannelWrapper;
   final String _matchingKey;
   final String? _bucketingKey;
 

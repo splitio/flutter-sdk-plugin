@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/channel/method_channel_wrapper.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
-import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_client.dart';
+import 'package:splitio/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 
 void main() {
@@ -14,8 +14,8 @@ void main() {
   SplitClientMock splitClientMock = SplitClientMock();
   SplitEventMethodCallHandler splitEventMethodCallHandler =
       SplitEventMethodCallHandler('key', 'bucketing', splitClientMock);
-  late final MethodChannelWrapper _methodChannelWrapper =
-      MethodChannelWrapper(_channel);
+  late final MethodChannelManager _methodChannelWrapper =
+      MethodChannelManager(_channel);
 
   void _simulateMethodInvocation(String methodName,
       {String key = 'key', String bucketingKey = 'bucketing'}) {

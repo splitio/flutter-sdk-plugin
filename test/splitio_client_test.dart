@@ -1,6 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/channel/method_channel_wrapper.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_client.dart';
 
@@ -12,7 +12,7 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelWrapper _methodChannelWrapper = MethodChannelWrapper(_channel);
+  MethodChannelManager _methodChannelWrapper = MethodChannelManager(_channel);
 
   SplitClient _getClient([SplitEventsListener? splitEventsListener]) {
     if (splitEventsListener != null) {

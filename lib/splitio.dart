@@ -1,13 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
-import 'package:splitio/channel/method_channel_wrapper.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/impressions/impressions_method_call_handler.dart';
+import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_view.dart';
 
+export 'package:splitio/impressions/split_impression.dart';
 export 'package:splitio/split_client.dart';
 export 'package:splitio/split_configuration.dart';
 export 'package:splitio/split_result.dart';
@@ -21,8 +23,8 @@ class Splitio {
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
   late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
-  final MethodChannelWrapper _methodChannelWrapper =
-      MethodChannelWrapper(const MethodChannel('splitio'));
+  final MethodChannelManager _methodChannelWrapper =
+      MethodChannelManager(const MethodChannel('splitio'));
 
   /// SDK instance constructor.
   ///

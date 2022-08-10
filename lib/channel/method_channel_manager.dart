@@ -1,7 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:splitio/method_call_handler.dart';
 
-class MethodChannelWrapper {
+class MethodChannelManager {
   final MethodChannel _channel;
 
   final Set<MethodCallHandler> _handlers = {};
@@ -10,7 +10,7 @@ class MethodChannelWrapper {
     _handlers.add(handler);
   }
 
-  MethodChannelWrapper(this._channel) {
+  MethodChannelManager(this._channel) {
     _channel.setMethodCallHandler((call) => handle(call));
   }
 
