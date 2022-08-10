@@ -22,7 +22,7 @@ class SplitClientConfigHelperTests: XCTestCase {
         "streamingEnabled": true,
         "persistentAttributesEnabled": true]
 
-        let splitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues)
+        let splitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
 
         XCTAssert(80000 == splitClientConfig.featuresRefreshRate)
         XCTAssert(70000 == splitClientConfig.segmentsRefreshRate)
