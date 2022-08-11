@@ -313,4 +313,18 @@ class DefaultSplitMethodParser: SplitMethodParser {
 
         return splitWrapper
     }
+
+    private func getSplitViewAsMap(splitView: SplitView?) -> [String: Any?] {
+        if let splitView = splitView {
+            return [
+                "name": splitView.name,
+                "trafficType": splitView.trafficType,
+                "killed": splitView.killed,
+                "treatments": splitView.treatments,
+                "changeNumber": splitView.changeNumber,
+                "configs": splitView.configs]
+        } else {
+            return [:]
+        }
+    }
 }

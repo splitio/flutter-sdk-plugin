@@ -42,6 +42,7 @@ class Splitio {
     _splitConfiguration = configuration;
     _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
     _methodChannelWrapper.addHandler(_impressionsMethodCallHandler);
+
     _init();
   }
 
@@ -152,6 +153,7 @@ class Splitio {
     if (_defaultBucketingKey != null) {
       arguments.addAll({'bucketingKey': _defaultBucketingKey});
     }
+
     return _methodChannelWrapper.invokeMethod('init', arguments);
   }
 
