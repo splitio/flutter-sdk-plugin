@@ -23,6 +23,7 @@ enum Method: String {
     case splitNames = "splitNames"
     case splits = "splits"
     case split = "split"
+    case impressionLog = "impressionLog"
 }
 
 enum Argument: String {

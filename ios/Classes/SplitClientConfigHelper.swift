@@ -20,8 +20,9 @@ class SplitClientConfigHelper {
     static private let SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint"
     static private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint"
     static private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint"
+    static private let IMPRESSION_LISTENER = "impressionListener"
 
-    static func fromMap(configurationMap: [String: Any?]) -> SplitClientConfig {
+    static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
 
         if configurationMap[FEATURES_REFRESH_RATE] != nil {
@@ -128,8 +129,22 @@ class SplitClientConfigHelper {
             }
         }
 
+        if let impressionListener = impressionListener {
+            config.impressionListener = impressionListener
+        }
+
         config.serviceEndpoints = serviceEndpointsBuilder.build()
 
         return config
+    }
+
+    static func impressionListenerEnabled(configurationMap: [String: Any?]) -> Bool {
+        if configurationMap[IMPRESSION_LISTENER] != nil {
+            if let impressionListenerEnabled = configurationMap[IMPRESSION_LISTENER] as? Bool {
+                return true
+            }
+        }
+
+        return false
     }
 }

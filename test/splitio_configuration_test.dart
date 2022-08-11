@@ -15,6 +15,7 @@ void main() {
         segmentsRefreshRate: 5000,
         streamingEnabled: true,
         telemetryRefreshRate: 6000,
+        impressionListener: true,
         trafficType: 'traffic-type',
         sdkEndpoint: 'sdkEndpoint.split.io',
         eventsEndpoint: 'eventsEndpoint.split.io',
@@ -42,6 +43,7 @@ void main() {
         'streamingServiceEndpoint.split.io');
     expect(config.configurationMap['telemetryServiceEndpoint'],
         'telemetryServiceEndpoint.split.io');
+    expect(config.configurationMap['impressionListener'], true);
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {

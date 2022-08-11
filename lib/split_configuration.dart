@@ -26,6 +26,8 @@ class SplitConfiguration {
   /// [streamingEnabled] Boolean flag to enable the streaming service as default synchronization mechanism when in foreground. In the event of an issue with streaming, the SDK will fallback to the polling mechanism. If false, the SDK will poll for changes as usual without attempting to use streaming.
   ///
   /// [persistentAttributesEnabled] Enables saving attributes on persistent cache which is loaded as part of the SDK_READY_FROM_CACHE flow. All functions that mutate the stored attributes map affect the persistent cache.
+  ///
+  /// [impressionListener] Enables impression listener. If true, generated impressions will be streamed in the impressionsStream() method of Splitio.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -39,6 +41,7 @@ class SplitConfiguration {
     bool? enableDebug,
     bool? streamingEnabled,
     bool? persistentAttributesEnabled,
+    bool? impressionListener,
     String? sdkEndpoint,
     String? eventsEndpoint,
     String? authServiceEndpoint,
@@ -112,6 +115,10 @@ class SplitConfiguration {
 
     if (telemetryServiceEndpoint != null) {
       configurationMap['telemetryServiceEndpoint'] = telemetryServiceEndpoint;
+    }
+
+    if (impressionListener != null) {
+      configurationMap['impressionListener'] = impressionListener;
     }
   }
 }

@@ -1,10 +1,15 @@
 import 'dart:async';
 
 import 'package:flutter/services.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/impressions/impressions_method_call_handler.dart';
+import 'package:splitio/impressions/split_impression.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_view.dart';
 
+export 'package:splitio/impressions/split_impression.dart';
 export 'package:splitio/split_client.dart';
 export 'package:splitio/split_configuration.dart';
 export 'package:splitio/split_result.dart';
@@ -13,12 +18,13 @@ export 'package:splitio/split_view.dart';
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
 class Splitio {
-  static const MethodChannel _channel = MethodChannel('splitio');
-
   final String _apiKey;
   final String _defaultMatchingKey;
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
+  late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
+  final MethodChannelManager _methodChannelWrapper =
+      MethodChannelManager(const MethodChannel('splitio'));
 
   /// SDK instance constructor.
   ///
@@ -34,6 +40,8 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
+    _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
+    _methodChannelWrapper.addHandler(_impressionsMethodCallHandler);
 
     _init();
   }
@@ -69,7 +77,7 @@ class Splitio {
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
 
-    var client = DefaultSplitClient(key, bucketingKey);
+    var client = DefaultSplitClient(_methodChannelWrapper, key, bucketingKey);
     if (onReady != null) {
       client.whenReady().then((client) => onReady.call(client));
     }
@@ -88,7 +96,7 @@ class Splitio {
       client.whenUpdated().then((client) => onUpdated.call(client));
     }
 
-    _channel.invokeMethod(
+    _methodChannelWrapper.invokeMethod(
         'getClient', _buildGetClientArguments(key, bucketingKey));
 
     return client;
@@ -96,15 +104,16 @@ class Splitio {
 
   Future<List<String>> splitNames() async {
     List<String> splitNames =
-        await _channel.invokeListMethod<String>('splitNames') ?? [];
+        await _methodChannelWrapper.invokeListMethod<String>('splitNames') ??
+            [];
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    List<Map> callResult =
-        (await _channel.invokeListMethod<Map<dynamic, dynamic>>('splits') ??
-            []);
+    List<Map> callResult = (await _methodChannelWrapper
+            .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
+        []);
 
     List<SplitView> splits = [];
     for (var element in callResult) {
@@ -117,9 +126,15 @@ class Splitio {
     return Future.value(splits);
   }
 
+  /// If the impressionListener configuration has been enabled,
+  /// generated impressions will be streamed here.
+  Stream<Impression> impressionsStream() {
+    return _impressionsMethodCallHandler.stream();
+  }
+
   Future<SplitView?> split(String splitName) async {
-    Map? mapResult =
-        await _channel.invokeMapMethod('split', {'splitName': splitName});
+    Map? mapResult = await _methodChannelWrapper
+        .invokeMapMethod('split', {'splitName': splitName});
 
     if (mapResult == null) {
       return null;
@@ -138,7 +153,8 @@ class Splitio {
     if (_defaultBucketingKey != null) {
       arguments.addAll({'bucketingKey': _defaultBucketingKey});
     }
-    return _channel.invokeMethod('init', arguments);
+
+    return _methodChannelWrapper.invokeMethod('init', arguments);
   }
 
   Map<String, Object> _buildGetClientArguments(
