@@ -22,6 +22,9 @@ class Constants {
         static final String SET_ATTRIBUTES = "setAttributes";
         static final String REMOVE_ATTRIBUTE = "removeAttribute";
         static final String CLEAR_ATTRIBUTES = "clearAttributes";
+        static final String SPLITS = "splits";
+        static final String SPLIT_NAMES = "splitNames";
+        static final String SPLIT = "split";
     }
 
     static class Argument {

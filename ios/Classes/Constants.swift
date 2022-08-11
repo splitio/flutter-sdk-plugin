@@ -20,6 +20,9 @@ enum Method: String {
     case setAttributes = "setAttributes"
     case removeAttribute = "removeAttribute"
     case clearAttributes = "clearAttributes"
+    case splitNames = "splitNames"
+    case splits = "splits"
+    case split = "split"
 }
 
 enum Argument: String {

@@ -14,6 +14,7 @@ import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
+import io.split.android.client.api.SplitView;
 import io.split.android.client.utils.ConcurrentSet;
 import io.split.android.grammar.Treatments;
 
@@ -204,5 +205,21 @@ class SplitWrapperImpl implements SplitWrapper {
             client.destroy();
             mUsedKeys.remove(requestedKey);
         }
+    }
+
+    @Override
+    public List<String> splitNames() {
+        return mSplitFactory.manager().splitNames();
+    }
+
+    @Override
+    public List<SplitView> splits() {
+        return mSplitFactory.manager().splits();
+    }
+
+    @Nullable
+    @Override
+    public SplitView split(String splitName) {
+        return mSplitFactory.manager().split(splitName);
     }
 }

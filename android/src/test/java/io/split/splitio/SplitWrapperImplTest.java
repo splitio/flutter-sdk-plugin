@@ -20,6 +20,7 @@ import java.util.Set;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
+import io.split.android.client.SplitManager;
 import io.split.android.client.api.Key;
 
 public class SplitWrapperImplTest {
@@ -245,5 +246,35 @@ public class SplitWrapperImplTest {
         mSplitWrapper.destroy("key", null);
 
         verify(clientMock).destroy();
+    }
+
+    @Test
+    public void testSplitNames() {
+        SplitManager managerMock = mock(SplitManager.class);
+
+        when(mSplitFactory.manager()).thenReturn(managerMock);
+        mSplitWrapper.splitNames();
+
+        verify(managerMock).splitNames();
+    }
+
+    @Test
+    public void testSplits() {
+        SplitManager managerMock = mock(SplitManager.class);
+
+        when(mSplitFactory.manager()).thenReturn(managerMock);
+        mSplitWrapper.splits();
+
+        verify(managerMock).splits();
+    }
+
+    @Test
+    public void testSplit() {
+        SplitManager managerMock = mock(SplitManager.class);
+
+        when(mSplitFactory.manager()).thenReturn(managerMock);
+        mSplitWrapper.split("my_split");
+
+        verify(managerMock).split("my_split");
     }
 }

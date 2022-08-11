@@ -31,6 +31,9 @@ import static io.split.splitio.Constants.Method.INIT;
 import static io.split.splitio.Constants.Method.REMOVE_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.SET_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.SET_ATTRIBUTES;
+import static io.split.splitio.Constants.Method.SPLIT;
+import static io.split.splitio.Constants.Method.SPLITS;
+import static io.split.splitio.Constants.Method.SPLIT_NAMES;
 import static io.split.splitio.Constants.Method.TRACK;
 
 import android.content.Context;
@@ -39,6 +42,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -47,6 +51,7 @@ import java.util.Map;
 import io.flutter.plugin.common.MethodChannel;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
+import io.split.android.client.api.SplitView;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
 
@@ -176,6 +181,15 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments));
                 result.success(null);
+                break;
+            case SPLIT_NAMES:
+                result.success(mSplitWrapper.splitNames());
+                break;
+            case SPLITS:
+                result.success(getSplitViewsAsMap(mSplitWrapper.splits()));
+                break;
+            case SPLIT:
+                result.success(getSplitViewAsMap(mSplitWrapper.split(mArgumentParser.getStringArgument(SPLIT_NAME, arguments))));
                 break;
             default:
                 result.notImplemented();
@@ -327,5 +341,35 @@ class SplitMethodParserImpl implements SplitMethodParser {
         splitResultMap.put("config", splitResult.config());
 
         return splitResultMap;
+    }
+
+    private static List<Map<String, Object>> getSplitViewsAsMap(List<SplitView> splitViews) {
+        List<Map<String, Object>> splitViewsResultMap = new ArrayList<>();
+
+        for (SplitView splitView : splitViews) {
+            Map<String, Object> splitViewMap = getSplitViewAsMap(splitView);
+            if (splitViewMap != null) {
+                splitViewsResultMap.add(splitViewMap);
+            }
+        }
+
+        return splitViewsResultMap;
+    }
+
+    @Nullable
+    private static Map<String, Object> getSplitViewAsMap(@Nullable SplitView splitView) {
+        if (splitView == null) {
+            return null;
+        }
+
+        Map<String, Object> splitViewMap = new HashMap<>();
+        splitViewMap.put("name", splitView.name);
+        splitViewMap.put("trafficType", splitView.trafficType);
+        splitViewMap.put("killed", splitView.killed);
+        splitViewMap.put("treatments", splitView.treatments);
+        splitViewMap.put("changeNumber", splitView.changeNumber);
+        splitViewMap.put("configs", splitView.configs);
+
+        return splitViewMap;
     }
 }

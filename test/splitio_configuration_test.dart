@@ -22,31 +22,31 @@ void main() {
         streamingServiceEndpoint: 'streamingServiceEndpoint.split.io',
         telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io');
 
-    assert(config.configurationMap['eventFlushInterval'] == 2000);
-    assert(config.configurationMap['eventsPerPush'] == 300);
-    assert(config.configurationMap['eventsQueueSize'] == 250);
-    assert(config.configurationMap['featuresRefreshRate'] == 3000);
-    assert(config.configurationMap['impressionsQueueSize'] == 150);
-    assert(config.configurationMap['persistentAttributesEnabled'] == true);
-    assert(config.configurationMap['impressionsRefreshRate'] == 4000);
-    assert(config.configurationMap['segmentsRefreshRate'] == 5000);
-    assert(config.configurationMap['streamingEnabled'] == true);
-    assert(config.configurationMap['telemetryRefreshRate'] == 6000);
-    assert(config.configurationMap['trafficType'] == 'traffic-type');
-    assert(config.configurationMap['sdkEndpoint'] == 'sdkEndpoint.split.io');
-    assert(
-        config.configurationMap['eventsEndpoint'] == 'eventsEndpoint.split.io');
-    assert(config.configurationMap['authServiceEndpoint'] ==
+    expect(config.configurationMap['eventFlushInterval'], 2000);
+    expect(config.configurationMap['eventsPerPush'], 300);
+    expect(config.configurationMap['eventsQueueSize'], 250);
+    expect(config.configurationMap['featuresRefreshRate'], 3000);
+    expect(config.configurationMap['impressionsQueueSize'], 150);
+    expect(config.configurationMap['persistentAttributesEnabled'], true);
+    expect(config.configurationMap['impressionsRefreshRate'], 4000);
+    expect(config.configurationMap['segmentsRefreshRate'], 5000);
+    expect(config.configurationMap['streamingEnabled'], true);
+    expect(config.configurationMap['telemetryRefreshRate'], 6000);
+    expect(config.configurationMap['trafficType'], 'traffic-type');
+    expect(config.configurationMap['sdkEndpoint'], 'sdkEndpoint.split.io');
+    expect(
+        config.configurationMap['eventsEndpoint'], 'eventsEndpoint.split.io');
+    expect(config.configurationMap['authServiceEndpoint'],
         'authServiceEndpoint.split.io');
-    assert(config.configurationMap['streamingServiceEndpoint'] ==
+    expect(config.configurationMap['streamingServiceEndpoint'],
         'streamingServiceEndpoint.split.io');
-    assert(config.configurationMap['telemetryServiceEndpoint'] ==
+    expect(config.configurationMap['telemetryServiceEndpoint'],
         'telemetryServiceEndpoint.split.io');
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {
     final SplitConfiguration config = SplitConfiguration();
 
-    assert(config.configurationMap.isEmpty);
+    expect(config.configurationMap.isEmpty, true);
   });
 }
