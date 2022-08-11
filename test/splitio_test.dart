@@ -94,4 +94,28 @@ void main() {
           {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'});
     });
   });
+
+  group('manager', () {
+    test('get split names', () {
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.splitNames();
+
+      expect(methodName, 'splitNames');
+    });
+
+    test('get splits', () {
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.splits();
+
+      expect(methodName, 'splits');
+    });
+
+    test('get split', () {
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.split('my_split');
+
+      expect(methodName, 'split');
+      expect(methodArguments, {'splitName': 'my_split'});
+    });
+  });
 }

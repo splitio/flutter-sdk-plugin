@@ -244,6 +244,39 @@ class SplitMethodParserTests: XCTestCase {
 
         XCTAssert(wrapper.flushCalled)
     }
+
+    func testSplitNames() {
+        methodParser?.onMethodCall(methodName: "splitNames", arguments: [], result: { (_: Any?) in return })
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.splitNamesCalled)
+    }
+
+    func testSplits() {
+        methodParser?.onMethodCall(methodName: "splits", arguments: [], result: { (_: Any?) in return })
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.splitsCalled)
+    }
+
+    func testSplit() {
+        methodParser?.onMethodCall(methodName: "split", arguments: ["splitName": "my-split"], result: { (_: Any?) in return })
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.splitNameValue == "my-split")
+    }
 }
 
 class SplitWrapperStub: SplitWrapper {
@@ -261,6 +294,8 @@ class SplitWrapperStub: SplitWrapper {
     var attributeValue: Any?
     var trafficTypeValue: String = ""
     var attributeNameValue: String = ""
+    var splitsCalled = false
+    var splitNamesCalled = false
 
     func getClient(matchingKey: String, bucketingKey: String?) -> SplitClient? {
         matchingKeyValue = matchingKey
@@ -369,5 +404,20 @@ class SplitWrapperStub: SplitWrapper {
 
     func flush(matchingKey: String, bucketingKey: String?) {
         flushCalled = true
+    }
+
+    func splitNames() -> [String] {
+        splitNamesCalled = true
+        return []
+    }
+
+    func splits() -> [SplitView] {
+        splitsCalled = true
+        return []
+    }
+
+    func split(splitName: String) -> SplitView? {
+        splitNameValue = splitName
+        return nil
     }
 }

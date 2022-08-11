@@ -1,6 +1,7 @@
 package io.split.splitio;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
@@ -422,5 +423,34 @@ public class SplitMethodParserImplTest {
 
         verify(mSplitWrapper).destroy("user-key", "bucketing-key");
         verify(mResult).success(null);
+    }
+
+    @Test
+    public void splitNames() {
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
+
+        mMethodParser.onMethodCall("splitNames", Collections.emptyMap(), mResult);
+
+        verify(mSplitWrapper).splitNames();
+    }
+
+    @Test
+    public void splits() {
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
+
+        mMethodParser.onMethodCall("splits", Collections.emptyMap(), mResult);
+
+        verify(mSplitWrapper).splits();
+    }
+
+    @Test
+    public void split() {
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
+
+        when(mArgumentParser.getStringArgument(eq("splitName"), any())).thenReturn("my_split");
+
+        mMethodParser.onMethodCall("split", Collections.singletonMap("splitName", "my_split"), mResult);
+
+        verify(mSplitWrapper).split("my_split");
     }
 }
