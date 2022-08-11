@@ -1,7 +1,7 @@
 import Split
 
 extension Impression {
-    func toMap() -> [String: Any?] {
+    public func toMap() -> [String: Any?] {
         ["key": keyName,
          "bucketingKey": bucketingKey,
          "split": feature,
