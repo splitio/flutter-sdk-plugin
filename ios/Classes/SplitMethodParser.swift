@@ -12,16 +12,19 @@ class DefaultSplitMethodParser: SplitMethodParser {
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
+    private var providerHelper: SplitProviderHelper
 
     init(methodChannel: FlutterMethodChannel) {
         self.argumentParser = DefaultArgumentParser()
         self.methodChannel = methodChannel
+        self.providerHelper = DefaultSplitProviderHelper()
     }
 
-    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel) {
+    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel, providerHelper: SplitProviderHelper) {
         self.splitWrapper = splitWrapper
         self.argumentParser = argumentParser
         self.methodChannel = methodChannel
+        self.providerHelper = providerHelper
     }
 
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
@@ -137,7 +140,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
     }
 
     private func initializeSplit(apiKey: String, matchingKey: String, bucketingKey: String?, configurationMap: [String: Any?]) {
-        let factoryProvider = DefaultSplitFactoryProvider(
+        let factoryProvider = providerHelper.getProvider(
                 apiKey: apiKey,
                 matchingKey: matchingKey,
                 bucketingKey: bucketingKey,

@@ -34,7 +34,7 @@ class ImpressionListenerImp implements ImpressionListener {
 
     }
 
-    private Map<String, Object> impressionToMap(final Impression impression) {
+    private static Map<String, Object> impressionToMap(final Impression impression) {
         final Map<String, Object> impressionMap = new HashMap<>();
 
         impressionMap.put("key", impression.key());
