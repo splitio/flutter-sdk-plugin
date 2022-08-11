@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter/services.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
-import 'package:splitio/events/split_method_call_handler.dart';
+import 'package:splitio/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
@@ -142,30 +142,30 @@ abstract class SplitClient {
 }
 
 class DefaultSplitClient extends SplitClient {
-  static const MethodChannel _channel = MethodChannel('splitio');
-
   static const String _controlTreatment = 'control';
   static const SplitResult _controlResult =
       SplitResult(_controlTreatment, null);
 
+  final MethodChannelManager _methodChannelWrapper;
   final String _matchingKey;
   final String? _bucketingKey;
 
   late final SplitEventsListener _splitEventsListener;
 
-  DefaultSplitClient(this._matchingKey, this._bucketingKey) {
-    _splitEventsListener = DefaultEventsListener(_channel,
+  DefaultSplitClient(
+      this._methodChannelWrapper, this._matchingKey, this._bucketingKey) {
+    _splitEventsListener = DefaultEventsListener(_methodChannelWrapper,
         SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this));
   }
 
   @visibleForTesting
-  DefaultSplitClient.withEventListener(
+  DefaultSplitClient.withEventListener(this._methodChannelWrapper,
       this._matchingKey, this._bucketingKey, this._splitEventsListener);
 
   @override
   Future<String> getTreatment(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return await _channel.invokeMethod(
+    return await _methodChannelWrapper.invokeMethod(
             'getTreatment',
             _buildParameters(
                 {'splitName': splitName, 'attributes': attributes})) ??
@@ -175,7 +175,7 @@ class DefaultSplitClient extends SplitClient {
   @override
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatment = (await _channel.invokeMapMethod(
+    Map? treatment = (await _methodChannelWrapper.invokeMapMethod(
             'getTreatmentWithConfig',
             _buildParameters(
                 {'splitName': splitName, 'attributes': attributes})))
@@ -192,7 +192,8 @@ class DefaultSplitClient extends SplitClient {
   @override
   Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatments = await _channel.invokeMapMethod('getTreatments',
+    Map? treatments = await _methodChannelWrapper.invokeMapMethod(
+        'getTreatments',
         _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
     return treatments
@@ -204,7 +205,8 @@ class DefaultSplitClient extends SplitClient {
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatments = await _channel.invokeMapMethod('getTreatmentsWithConfig',
+    Map? treatments = await _methodChannelWrapper.invokeMapMethod(
+        'getTreatmentsWithConfig',
         _buildParameters({'splitName': splitNames, 'attributes': attributes}));
 
     return treatments?.map((key, value) =>
@@ -228,7 +230,8 @@ class DefaultSplitClient extends SplitClient {
     }
 
     try {
-      return await _channel.invokeMethod("track", parameters) as bool;
+      return await _methodChannelWrapper.invokeMethod("track", parameters)
+          as bool;
     } on Exception catch (_) {
       return false;
     }
@@ -236,7 +239,7 @@ class DefaultSplitClient extends SplitClient {
 
   @override
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    var result = await _channel.invokeMethod('setAttribute',
+    var result = await _methodChannelWrapper.invokeMethod('setAttribute',
         _buildParameters({'attributeName': attributeName, 'value': value}));
 
     if (result is bool) {
@@ -248,13 +251,13 @@ class DefaultSplitClient extends SplitClient {
 
   @override
   Future<dynamic> getAttribute(String attributeName) async {
-    return _channel.invokeMethod(
+    return _methodChannelWrapper.invokeMethod(
         'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    var result = await _channel.invokeMethod(
+    var result = await _methodChannelWrapper.invokeMethod(
         'setAttributes', _buildParameters({'attributes': attributes}));
 
     if (result is bool) {
@@ -266,7 +269,7 @@ class DefaultSplitClient extends SplitClient {
 
   @override
   Future<Map<String, dynamic>> getAttributes() async {
-    return (await _channel.invokeMapMethod(
+    return (await _methodChannelWrapper.invokeMapMethod(
                 'getAllAttributes', _buildParameters()))
             ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
         {};
@@ -274,23 +277,24 @@ class DefaultSplitClient extends SplitClient {
 
   @override
   Future<bool> removeAttribute(String attributeName) async {
-    return await _channel.invokeMethod(
+    return await _methodChannelWrapper.invokeMethod(
         'removeAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
   Future<bool> clearAttributes() async {
-    return await _channel.invokeMethod('clearAttributes', _buildParameters());
+    return await _methodChannelWrapper.invokeMethod(
+        'clearAttributes', _buildParameters());
   }
 
   @override
   Future<void> flush() async {
-    return _channel.invokeMethod('flush', _buildParameters());
+    return _methodChannelWrapper.invokeMethod('flush', _buildParameters());
   }
 
   @override
   Future<void> destroy() async {
-    return _channel.invokeMethod('destroy', _buildParameters());
+    return _methodChannelWrapper.invokeMethod('destroy', _buildParameters());
   }
 
   @override

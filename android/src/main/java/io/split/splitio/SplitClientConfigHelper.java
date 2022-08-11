@@ -1,11 +1,13 @@
 package io.split.splitio;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.Map;
 
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
+import io.split.android.client.impressions.ImpressionListener;
 
 class SplitClientConfigHelper {
 
@@ -26,16 +28,17 @@ class SplitClientConfigHelper {
     private static final String SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint";
     private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
+    private static final String IMPRESSION_LISTENER = "impressionListener";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
      *
      * @param configurationMap Map of config values.
+     * @param impressionListener Optional ImpressionListener.
      * @return {@link SplitClientConfig} object.
      */
-    static SplitClientConfig fromMap(Map<String, Object> configurationMap) {
+    static SplitClientConfig fromMap(@NonNull Map<String, Object> configurationMap, @Nullable ImpressionListener impressionListener) {
         SplitClientConfig.Builder builder = SplitClientConfig.builder();
-        ServiceEndpoints.Builder serviceEndpoints = ServiceEndpoints.builder();
 
         Integer featuresRefreshRate = getInteger(configurationMap, FEATURES_REFRESH_RATE);
         if (featuresRefreshRate != null) {
@@ -125,7 +128,20 @@ class SplitClientConfigHelper {
             serviceEndpointsBuilder.telemetryServiceEndpoint(telemetryServiceEndpoint);
         }
 
+        if (impressionListener != null) {
+            builder.impressionListener(impressionListener);
+        }
+
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
+    }
+
+    static boolean impressionListenerEnabled(@NonNull Map<String, Object> configurationMap) {
+        Boolean impressionListenerEnabled = getBoolean(configurationMap, IMPRESSION_LISTENER);
+        if (impressionListenerEnabled != null && impressionListenerEnabled) {
+            return true;
+        }
+
+        return false;
     }
 
     @Nullable
