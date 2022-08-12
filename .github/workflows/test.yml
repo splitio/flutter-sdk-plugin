@@ -21,3 +21,5 @@ jobs:
         run: flutter pub get
       - name: Run flutter test
         run: flutter test
+      - name: Build example app APK
+        run: cd example/android/; gradle :splitio:testReleaseUnitTest;
