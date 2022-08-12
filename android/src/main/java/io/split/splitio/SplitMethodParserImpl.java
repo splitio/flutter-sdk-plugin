@@ -61,20 +61,24 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private SplitWrapper mSplitWrapper;
     private final ArgumentParser mArgumentParser;
     private final MethodChannel mMethodChannel;
+    private final SplitProviderHelper mProviderHelper;
 
     public SplitMethodParserImpl(@NonNull Context context, MethodChannel channel) {
         mContext = context;
         mArgumentParser = new ArgumentParserImpl();
         mMethodChannel = channel;
+        mProviderHelper = new SplitProviderHelperImpl();
     }
 
     @VisibleForTesting
     public SplitMethodParserImpl(@NonNull SplitWrapper splitWrapper,
                                  @NonNull ArgumentParser argumentParser,
-                                 @NonNull MethodChannel channel) {
+                                 @NonNull MethodChannel channel,
+                                 @NonNull SplitProviderHelper providerHelper) {
         mSplitWrapper = splitWrapper;
         mArgumentParser = argumentParser;
         mMethodChannel = channel;
+        mProviderHelper = providerHelper;
     }
 
     @Override
@@ -198,7 +202,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
     }
 
     private void initializeSplit(String apiKey, String matchingKey, String bucketingKey, Map<String, Object> mapArgument) {
-        mSplitWrapper = new SplitWrapperImpl(new SplitFactoryProviderImpl(
+        mSplitWrapper = new SplitWrapperImpl(mProviderHelper.getProvider(
                 mContext,
                 apiKey,
                 matchingKey,

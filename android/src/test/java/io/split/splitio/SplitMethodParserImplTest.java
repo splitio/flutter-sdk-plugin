@@ -1,6 +1,7 @@
 package io.split.splitio;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -32,11 +33,13 @@ public class SplitMethodParserImplTest {
     private MethodChannel.Result mResult;
     @Mock
     private MethodChannel mMethodChannel;
+    @Mock
+    private SplitProviderHelper mProviderFactory;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, mProviderFactory);
     }
 
     @Test
@@ -57,7 +60,7 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void failingGetClient() {
-        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel);
+        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel, mProviderFactory);
 
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
@@ -336,7 +339,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("setAttribute", map, mResult);
 
-        verify(mSplitWrapper).setAttribute("user-key", "bucketing-key","my_attr", "attr_value");
+        verify(mSplitWrapper).setAttribute("user-key", "bucketing-key", "my_attr", "attr_value");
     }
 
     @Test
@@ -374,7 +377,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("removeAttribute", map, mResult);
 
-        verify(mSplitWrapper).removeAttribute("user-key", "bucketing-key","my_attr");
+        verify(mSplitWrapper).removeAttribute("user-key", "bucketing-key", "my_attr");
     }
 
     @Test
@@ -400,8 +403,6 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
 
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
-
         mMethodParser.onMethodCall("flush", map, mResult);
 
         verify(mSplitWrapper).flush("user-key", "bucketing-key");
@@ -417,8 +418,6 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
 
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
-
         mMethodParser.onMethodCall("destroy", map, mResult);
 
         verify(mSplitWrapper).destroy("user-key", "bucketing-key");
@@ -427,8 +426,6 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void splitNames() {
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
-
         mMethodParser.onMethodCall("splitNames", Collections.emptyMap(), mResult);
 
         verify(mSplitWrapper).splitNames();
@@ -436,8 +433,6 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void splits() {
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
-
         mMethodParser.onMethodCall("splits", Collections.emptyMap(), mResult);
 
         verify(mSplitWrapper).splits();
@@ -445,12 +440,39 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void split() {
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel);
-
         when(mArgumentParser.getStringArgument(eq("splitName"), any())).thenReturn("my_split");
 
         mMethodParser.onMethodCall("split", Collections.singletonMap("splitName", "my_split"), mResult);
 
         verify(mSplitWrapper).split("my_split");
+    }
+
+    @Test
+    public void initialization() {
+        Map<String, Object> configurationMap = new HashMap<>();
+        configurationMap.put("streamingEnabled", false);
+        configurationMap.put("impressionListener", true);
+
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("apiKey", "key");
+        arguments.put("matchingKey", "matching-key");
+        arguments.put("bucketingKey", "bucketing-key");
+        arguments.put("sdkConfiguration", configurationMap);
+
+        when(mArgumentParser.getStringArgument("apiKey", arguments)).thenReturn("key");
+        when(mArgumentParser.getStringArgument("matchingKey", arguments)).thenReturn("matching-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", arguments)).thenReturn("bucketing-key");
+        when(mArgumentParser.getMapArgument("sdkConfiguration", arguments)).thenReturn(configurationMap);
+
+        SplitFactoryProvider splitFactoryProvider = mock(SplitFactoryProvider.class);
+        when(mProviderFactory.getProvider(any(), any(), any(), any(), any())).thenReturn(splitFactoryProvider);
+
+        mMethodParser.onMethodCall("init", arguments, mResult);
+
+        verify(mProviderFactory).getProvider(any(),
+                eq("key"),
+                eq("matching-key"),
+                eq("bucketing-key"),
+                argThat(splitClientConfig -> splitClientConfig.impressionListener() != null && !splitClientConfig.streamingEnabled()));
     }
 }

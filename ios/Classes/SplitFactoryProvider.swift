@@ -6,6 +6,11 @@ protocol SplitFactoryProvider {
     func getFactory() -> SplitFactory?
 }
 
+protocol SplitProviderHelper {
+
+    func getProvider(apiKey: String, matchingKey: String, bucketingKey: String?, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider
+}
+
 class DefaultSplitFactoryProvider: SplitFactoryProvider {
 
     private let splitFactory: SplitFactory?
@@ -20,5 +25,13 @@ class DefaultSplitFactoryProvider: SplitFactoryProvider {
 
     func getFactory() -> SplitFactory? {
         return splitFactory
+    }
+}
+
+class DefaultSplitProviderHelper: SplitProviderHelper {
+
+    func getProvider(apiKey: String, matchingKey: String, bucketingKey: String? = nil, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider {
+
+        return DefaultSplitFactoryProvider(apiKey: apiKey, matchingKey: matchingKey, splitClientConfig: splitClientConfig)
     }
 }

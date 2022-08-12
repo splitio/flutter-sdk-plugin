@@ -1,0 +1,25 @@
+package io.split.splitio;
+
+import android.content.Context;
+
+import androidx.annotation.Nullable;
+
+import io.split.android.client.SplitClientConfig;
+
+interface SplitProviderHelper {
+
+    SplitFactoryProvider getProvider(
+            Context context,
+            String apiKey,
+            String matchingKey,
+            @Nullable String bucketingKey,
+            SplitClientConfig splitClientConfig);
+}
+
+class SplitProviderHelperImpl implements SplitProviderHelper {
+
+    @Override
+    public SplitFactoryProvider getProvider(Context context, String apiKey, String matchingKey, @Nullable String bucketingKey, SplitClientConfig splitClientConfig) {
+        return new SplitFactoryProviderImpl(context, apiKey, matchingKey, bucketingKey, splitClientConfig);
+    }
+}
