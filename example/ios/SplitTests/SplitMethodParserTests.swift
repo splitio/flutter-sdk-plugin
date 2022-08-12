@@ -8,12 +8,14 @@ class SplitMethodParserTests: XCTestCase {
     private var splitWrapper: SplitWrapper?
     private var argumentParser: ArgumentParser?
     private var methodChannel: FlutterMethodChannel?
+    private var providerHelper: SplitProviderHelper?
 
     override func setUpWithError() throws {
         splitWrapper = SplitWrapperStub()
         argumentParser = DefaultArgumentParser()
         methodChannel = MethodChannelStub()
-        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!)
+        providerHelper = SplitProviderHelperStub()
+        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!, providerHelper: providerHelper!)
     }
 
     func testSuccessfulGetClient() throws {
@@ -277,6 +279,24 @@ class SplitMethodParserTests: XCTestCase {
 
         XCTAssert(wrapper.splitNameValue == "my-split")
     }
+
+    func testInit() {
+        methodParser?.onMethodCall(methodName: "init", arguments: [
+            "apiKey": "api-key", "matchingKey": "matching-key", "bucketingKey": "bucketing-key",
+            "sdkConfiguration": ["streamingEnabled": false, "impressionListener": true]
+        ], result: { (_: Any?) in })
+
+        guard let providerHelper = providerHelper as? SplitProviderHelperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(providerHelper.apiKeyValue == "api-key")
+        XCTAssert(providerHelper.matchingKeyValue == "matching-key")
+        XCTAssert(providerHelper.bucketingKeyValue == "bucketing-key")
+        XCTAssert(providerHelper.splitClientConfigValue?.impressionListener != nil)
+        XCTAssert(providerHelper.splitClientConfigValue?.streamingEnabled == false)
+    }
 }
 
 class SplitWrapperStub: SplitWrapper {
@@ -419,5 +439,22 @@ class SplitWrapperStub: SplitWrapper {
     func split(splitName: String) -> SplitView? {
         splitNameValue = splitName
         return nil
+    }
+}
+
+class SplitProviderHelperStub: SplitProviderHelper {
+
+    var apiKeyValue = ""
+    var matchingKeyValue = ""
+    var bucketingKeyValue: String? = ""
+    var splitClientConfigValue: SplitClientConfig? = nil
+
+    func getProvider(apiKey: String, matchingKey: String, bucketingKey: String?, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider {
+        apiKeyValue = apiKey
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        splitClientConfigValue = splitClientConfig
+
+        return SplitFactoryProviderStub()
     }
 }
