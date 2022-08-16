@@ -61,10 +61,16 @@ void main() {
     test('test client updated', () async {
       SplitEventsListener eventListener = DefaultEventsListener(
           _methodChannelWrapper, splitEventMethodCallHandler);
-      Future<bool> future = eventListener.onTimeout().then((value) => true);
-      _simulateMethodInvocation('clientUpdated');
+      var count = 0;
+      eventListener
+          .onUpdated()
+          .map((event) => ++count)
+          .take(3)
+          .toList()
+          .then((value) => expect(value, [1, 2]));
 
-      expect(future, completion(equals(true)));
+      _simulateMethodInvocation('clientUpdated');
+      _simulateMethodInvocation('clientUpdated');
     });
   });
 }

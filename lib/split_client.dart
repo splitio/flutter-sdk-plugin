@@ -297,6 +297,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<void> destroy() async {
+    _splitEventsListener.destroy();
     return _methodChannelManager.invokeMethod('destroy', _buildParameters());
   }
 

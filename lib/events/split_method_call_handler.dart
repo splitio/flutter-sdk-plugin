@@ -72,6 +72,11 @@ class SplitEventMethodCallHandler
     return _onEvent(_eventClientTimeout);
   }
 
+  @override
+  void destroy() {
+    _updateStreamCompleter.close();
+  }
+
   Future<SplitClient> _onEvent(String sdkEvent) {
     if (_triggeredClientEvents.containsKey(sdkEvent) &&
         _triggeredClientEvents[sdkEvent] == true) {

@@ -308,7 +308,12 @@ void main() {
     });
 
     test('destroy', () async {
-      SplitClient client = _getClient();
+      var splitEventsListenerStub = SplitEventsListenerStub();
+      SplitClient client = _getClient(splitEventsListenerStub);
+
+      client.destroy();
+
+      expect(splitEventsListenerStub.calledMethods['destroy'], 1);
 
       client.destroy();
       expect(methodName, 'destroy');
@@ -407,5 +412,10 @@ class SplitEventsListenerStub extends SplitEventsListener {
   Stream<SplitClient> onUpdated() {
     calledMethods.update('onUpdated', (value) => value + 1, ifAbsent: () => 1);
     return Stream.fromFuture(_clientFuture);
+  }
+
+  @override
+  void destroy() {
+    calledMethods.update('destroy', (value) => value + 1, ifAbsent: () => 1);
   }
 }

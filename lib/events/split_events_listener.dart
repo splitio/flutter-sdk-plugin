@@ -12,15 +12,17 @@ abstract class SplitEventsListener {
   Stream<SplitClient> onUpdated();
 
   Future<SplitClient> onTimeout();
+
+  void destroy();
 }
 
 class DefaultEventsListener implements SplitEventsListener {
-  final MethodChannelManager _methodChannelWrapper;
+  final MethodChannelManager _methodChannelManager;
 
   final SplitEventMethodCallHandler _methodCallHandler;
 
-  DefaultEventsListener(this._methodChannelWrapper, this._methodCallHandler) {
-    _methodChannelWrapper.addHandler(_methodCallHandler);
+  DefaultEventsListener(this._methodChannelManager, this._methodCallHandler) {
+    _methodChannelManager.addHandler(_methodCallHandler);
   }
 
   @override
@@ -41,5 +43,11 @@ class DefaultEventsListener implements SplitEventsListener {
   @override
   Future<SplitClient> onTimeout() {
     return _methodCallHandler.onTimeout();
+  }
+
+  @override
+  void destroy() {
+    _methodCallHandler.destroy();
+    _methodChannelManager.removeHandler(_methodCallHandler);
   }
 }
