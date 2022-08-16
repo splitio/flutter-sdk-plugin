@@ -2,13 +2,11 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:splitio/events/split_events_listener.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
 
-abstract class MethodCallHandler extends SplitEventsListener {
-  Future<void> handle(MethodCall call);
-}
-
-class SplitEventMethodCallHandler extends MethodCallHandler {
+class SplitEventMethodCallHandler
+    implements MethodCallHandler, SplitEventsListener {
   static const String _eventClientReady = 'clientReady';
   static const String _eventClientReadyFromCache = 'clientReadyFromCache';
   static const String _eventClientTimeout = 'clientTimeout';
@@ -17,12 +15,13 @@ class SplitEventMethodCallHandler extends MethodCallHandler {
   final String _matchingKey;
   final String? _bucketingKey;
   final SplitClient _splitClient;
+  final StreamController<SplitClient> _updateStreamCompleter =
+      StreamController();
 
   final Map<String, Completer<SplitClient>> _clientEventCallbacks = {
     _eventClientReady: Completer(),
     _eventClientReadyFromCache: Completer(),
     _eventClientTimeout: Completer(),
-    _eventClientUpdated: Completer(),
   };
 
   final Map<String, bool> _triggeredClientEvents = {
@@ -45,6 +44,11 @@ class SplitEventMethodCallHandler extends MethodCallHandler {
           _triggeredClientEvents[call.method] = true;
         }
       }
+    } else if (call.method == _eventClientUpdated &&
+        _updateStreamCompleter.hasListener &&
+        !_updateStreamCompleter.isPaused &&
+        !_updateStreamCompleter.isClosed) {
+      _updateStreamCompleter.add(_splitClient);
     }
   }
 
@@ -59,8 +63,8 @@ class SplitEventMethodCallHandler extends MethodCallHandler {
   }
 
   @override
-  Future<SplitClient> onUpdated() {
-    return _onEvent(_eventClientUpdated);
+  Stream<SplitClient> onUpdated() {
+    return _updateStreamCompleter.stream;
   }
 
   @override
