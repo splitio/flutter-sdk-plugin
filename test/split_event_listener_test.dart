@@ -2,8 +2,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
+import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_client.dart';
-import 'package:splitio/split_method_call_handler.dart';
 import 'package:splitio/split_result.dart';
 
 void main() {
@@ -158,9 +158,9 @@ class SplitClientMock extends SplitClient {
   }
 
   @override
-  Future<SplitClient> whenUpdated() {
+  Stream<SplitClient> whenUpdated() {
     calledMethods.update('onUpdated', (value) => value + 1, ifAbsent: () => 1);
-    return Future.value(this);
+    return Stream.value(this);
   }
 
   @override

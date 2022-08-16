@@ -364,7 +364,8 @@ void main() {
       SplitClient client = _getClient(splitEventsListenerStub);
       splitEventsListenerStub.attachClient(client);
 
-      var future = client.whenUpdated().then((value) => client == value);
+      var future =
+          client.whenUpdated().first.then(((value) => client == value));
       expect(splitEventsListenerStub.calledMethods['onReady'], null);
       expect(splitEventsListenerStub.calledMethods['onReadyFromCache'], null);
       expect(splitEventsListenerStub.calledMethods['onTimeout'], null);
@@ -403,8 +404,8 @@ class SplitEventsListenerStub extends SplitEventsListener {
   }
 
   @override
-  Future<SplitClient> onUpdated() {
+  Stream<SplitClient> onUpdated() {
     calledMethods.update('onUpdated', (value) => value + 1, ifAbsent: () => 1);
-    return _clientFuture;
+    return Stream.fromFuture(_clientFuture);
   }
 }
