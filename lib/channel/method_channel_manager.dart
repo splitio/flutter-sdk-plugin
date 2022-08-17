@@ -6,12 +6,16 @@ class MethodChannelManager {
 
   final Set<MethodCallHandler> _handlers = {};
 
+  MethodChannelManager(this._channel) {
+    _channel.setMethodCallHandler((call) => handle(call));
+  }
+
   void addHandler(MethodCallHandler handler) {
     _handlers.add(handler);
   }
 
-  MethodChannelManager(this._channel) {
-    _channel.setMethodCallHandler((call) => handle(call));
+  void removeHandler(MethodCallHandler handler) {
+    _handlers.remove(handler);
   }
 
   Future<void> handle(MethodCall call) async {

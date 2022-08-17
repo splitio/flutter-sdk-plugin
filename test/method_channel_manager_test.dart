@@ -23,27 +23,44 @@ void main() {
 
     _methodChannelManager.handle(const MethodCall('test-method'));
 
-    expect({'test-method'}, mockMethodHandler1.handledCalls);
-    expect({'test-method'}, mockMethodHandler2.handledCalls);
-    expect({'test-method'}, mockMethodHandler3.handledCalls);
+    expect(mockMethodHandler1.handledCalls, {'test-method'});
+    expect(mockMethodHandler2.handledCalls, {'test-method'});
+    expect(mockMethodHandler3.handledCalls, {'test-method'});
   });
 
   test('invokeMethod calls are delegated to channel', () {
     _methodChannelManager.invokeMethod('any-method');
 
-    expect({'invokeMethod'}, _channel.calledMethods);
+    expect(_channel.calledMethods, {'invokeMethod'});
   });
 
   test('invokeMapMethod calls are delegated to channel', () {
     _methodChannelManager.invokeMapMethod('any-method');
 
-    expect({'invokeMapMethod'}, _channel.calledMethods);
+    expect(_channel.calledMethods, {'invokeMapMethod'});
   });
 
   test('invokeListMethod calls are delegated to channel', () {
     _methodChannelManager.invokeListMethod('any-method');
 
-    expect({'invokeListMethod'}, _channel.calledMethods);
+    expect(_channel.calledMethods, {'invokeListMethod'});
+  });
+
+  test('removed call handlers do not handle methods', () {
+    final MethodCallHandlerStub handler1 = MethodCallHandlerStub();
+    final MethodCallHandlerStub handler2 = MethodCallHandlerStub();
+    final MethodCallHandlerStub handler3 = MethodCallHandlerStub();
+    _methodChannelManager.addHandler(handler1);
+    _methodChannelManager.addHandler(handler2);
+    _methodChannelManager.addHandler(handler3);
+
+    _methodChannelManager.removeHandler(handler2);
+
+    _methodChannelManager.handle(const MethodCall('test-method'));
+
+    expect(handler1.handledCalls, {'test-method'});
+    expect(handler2.handledCalls, isEmpty);
+    expect(handler3.handledCalls, {'test-method'});
   });
 }
 

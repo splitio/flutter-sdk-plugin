@@ -23,7 +23,7 @@ class Splitio {
   late final String? _defaultBucketingKey;
   late final SplitConfiguration? _splitConfiguration;
   late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
-  final MethodChannelManager _methodChannelWrapper =
+  final MethodChannelManager _methodChannelManager =
       MethodChannelManager(const MethodChannel('splitio'));
 
   /// SDK instance constructor.
@@ -41,7 +41,7 @@ class Splitio {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
     _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
-    _methodChannelWrapper.addHandler(_impressionsMethodCallHandler);
+    _methodChannelManager.addHandler(_impressionsMethodCallHandler);
 
     _init();
   }
@@ -77,7 +77,7 @@ class Splitio {
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
 
-    var client = DefaultSplitClient(_methodChannelWrapper, key, bucketingKey);
+    var client = DefaultSplitClient(_methodChannelManager, key, bucketingKey);
     if (onReady != null) {
       client.whenReady().then((client) => onReady.call(client));
     }
@@ -93,10 +93,10 @@ class Splitio {
     }
 
     if (onUpdated != null) {
-      client.whenUpdated().then((client) => onUpdated.call(client));
+      client.whenUpdated().listen((client) => onUpdated.call(client));
     }
 
-    _methodChannelWrapper.invokeMethod(
+    _methodChannelManager.invokeMethod(
         'getClient', _buildGetClientArguments(key, bucketingKey));
 
     return client;
@@ -104,14 +104,14 @@ class Splitio {
 
   Future<List<String>> splitNames() async {
     List<String> splitNames =
-        await _methodChannelWrapper.invokeListMethod<String>('splitNames') ??
+        await _methodChannelManager.invokeListMethod<String>('splitNames') ??
             [];
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    List<Map> callResult = (await _methodChannelWrapper
+    List<Map> callResult = (await _methodChannelManager
             .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
         []);
 
@@ -133,7 +133,7 @@ class Splitio {
   }
 
   Future<SplitView?> split(String splitName) async {
-    Map? mapResult = await _methodChannelWrapper
+    Map? mapResult = await _methodChannelManager
         .invokeMapMethod('split', {'splitName': splitName});
 
     if (mapResult == null) {
@@ -154,7 +154,7 @@ class Splitio {
       arguments.addAll({'bucketingKey': _defaultBucketingKey});
     }
 
-    return _methodChannelWrapper.invokeMethod('init', arguments);
+    return _methodChannelManager.invokeMethod('init', arguments);
   }
 
   Map<String, Object> _buildGetClientArguments(
