@@ -1,26 +1,28 @@
 import 'dart:async';
 
 import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/split_client.dart';
-import 'package:splitio/split_method_call_handler.dart';
 
 abstract class SplitEventsListener {
   Future<SplitClient> onReady();
 
   Future<SplitClient> onReadyFromCache();
 
-  Future<SplitClient> onUpdated();
+  Stream<SplitClient> onUpdated();
 
   Future<SplitClient> onTimeout();
+
+  void destroy();
 }
 
-class DefaultEventsListener extends SplitEventsListener {
-  final MethodChannelManager _methodChannelWrapper;
+class DefaultEventsListener implements SplitEventsListener {
+  final MethodChannelManager _methodChannelManager;
 
-  late final SplitEventMethodCallHandler _methodCallHandler;
+  final SplitEventMethodCallHandler _methodCallHandler;
 
-  DefaultEventsListener(this._methodChannelWrapper, this._methodCallHandler) {
-    _methodChannelWrapper.addHandler(_methodCallHandler);
+  DefaultEventsListener(this._methodChannelManager, this._methodCallHandler) {
+    _methodChannelManager.addHandler(_methodCallHandler);
   }
 
   @override
@@ -34,12 +36,18 @@ class DefaultEventsListener extends SplitEventsListener {
   }
 
   @override
-  Future<SplitClient> onUpdated() {
+  Stream<SplitClient> onUpdated() {
     return _methodCallHandler.onUpdated();
   }
 
   @override
   Future<SplitClient> onTimeout() {
     return _methodCallHandler.onTimeout();
+  }
+
+  @override
+  void destroy() {
+    _methodCallHandler.destroy();
+    _methodChannelManager.removeHandler(_methodCallHandler);
   }
 }
