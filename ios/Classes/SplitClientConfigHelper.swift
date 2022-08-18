@@ -144,7 +144,7 @@ class SplitClientConfigHelper {
                 }
 
                 if let syncPrefixes = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
-                    syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncPrefixes))
+                    syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(syncPrefixes))
                 }
 
                 config.sync = syncConfigBuilder.build()
