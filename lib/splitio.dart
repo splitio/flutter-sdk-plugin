@@ -13,6 +13,7 @@ export 'package:splitio/impressions/split_impression.dart';
 export 'package:splitio/split_client.dart';
 export 'package:splitio/split_configuration.dart';
 export 'package:splitio/split_result.dart';
+export 'package:splitio/split_sync_config.dart';
 export 'package:splitio/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);

@@ -1,3 +1,5 @@
+import 'package:splitio/split_sync_config.dart';
+
 class SplitConfiguration {
   final Map<String, dynamic> configurationMap = {};
 
@@ -47,6 +49,7 @@ class SplitConfiguration {
     String? authServiceEndpoint,
     String? streamingServiceEndpoint,
     String? telemetryServiceEndpoint,
+    SyncConfig? syncConfig,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -119,6 +122,13 @@ class SplitConfiguration {
 
     if (impressionListener != null) {
       configurationMap['impressionListener'] = impressionListener;
+    }
+
+    if (syncConfig != null) {
+      configurationMap['syncConfig'] = {
+        'syncConfigNames': syncConfig.names,
+        'syncConfigPrefixes': syncConfig.prefixes
+      };
     }
   }
 }
