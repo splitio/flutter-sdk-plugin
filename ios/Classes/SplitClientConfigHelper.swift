@@ -137,13 +137,13 @@ class SplitClientConfigHelper {
         }
 
         if configurationMap[SYNC_CONFIG] != nil {
-            if let syncConfig = configurationMap[SYNC_CONFIG] as? [String: String] {
+            if let syncConfig = configurationMap[SYNC_CONFIG] as? [String: [String]] {
                 let syncConfigBuilder = SyncConfig.builder()
-                if let syncNames = configurationMap[SYNC_CONFIG_NAMES] as? [String] {
+                if let syncNames = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
                     syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncNames))
                 }
 
-                if let syncPrefixes = configurationMap[SYNC_CONFIG_NAMES] as? [String] {
+                if let syncPrefixes = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
                     syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncPrefixes))
                 }
 
@@ -164,7 +164,7 @@ class SplitClientConfigHelper {
 
     static func impressionListenerEnabled(configurationMap: [String: Any?]) -> Bool {
         if configurationMap[IMPRESSION_LISTENER] != nil {
-            if let impressionListenerEnabled = configurationMap[IMPRESSION_LISTENER] as? Bool {
+            if configurationMap[IMPRESSION_LISTENER] is Bool {
                 return true
             }
         }
