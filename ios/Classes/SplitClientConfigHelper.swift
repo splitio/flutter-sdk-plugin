@@ -164,7 +164,7 @@ class SplitClientConfigHelper {
 
     static func impressionListenerEnabled(configurationMap: [String: Any?]) -> Bool {
         if configurationMap[IMPRESSION_LISTENER] != nil {
-            if configurationMap[IMPRESSION_LISTENER] is Bool {
+            if (configurationMap[IMPRESSION_LISTENER] as? Bool) == true {
                 return true
             }
         }
