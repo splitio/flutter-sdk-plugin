@@ -20,7 +20,8 @@ class SplitClientConfigHelperTests: XCTestCase {
         "proxyHost": "https://proxy",
         "ready": 25,
         "streamingEnabled": true,
-        "persistentAttributesEnabled": true]
+        "persistentAttributesEnabled": true,
+        "syncConfig": ["syncConfigNames": ["split1", "split2"], "syncConfigPrefixes": ["split_", "my_split_"]]]
 
         let splitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
 

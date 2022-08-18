@@ -21,6 +21,9 @@ class SplitClientConfigHelper {
     static private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint"
     static private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint"
     static private let IMPRESSION_LISTENER = "impressionListener"
+    static private let SYNC_CONFIG = "syncConfig"
+    static private let SYNC_CONFIG_NAMES = "syncConfigNames"
+    static private let SYNC_CONFIG_PREFIXES = "syncConfigPrefixes"
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -131,6 +134,21 @@ class SplitClientConfigHelper {
 
         if let impressionListener = impressionListener {
             config.impressionListener = impressionListener
+        }
+
+        if configurationMap[SYNC_CONFIG] != nil {
+            if let syncConfig = configurationMap[SYNC_CONFIG] as? [String: String] {
+                let syncConfigBuilder = SyncConfig.builder()
+                if let syncNames = configurationMap[SYNC_CONFIG_NAMES] as? [String] {
+                    syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncNames))
+                }
+
+                if let syncPrefixes = configurationMap[SYNC_CONFIG_NAMES] as? [String] {
+                    syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncPrefixes))
+                }
+
+                config.sync = syncConfigBuilder.build()
+            }
         }
 
         config.serviceEndpoints = serviceEndpointsBuilder

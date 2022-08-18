@@ -447,7 +447,7 @@ class SplitProviderHelperStub: SplitProviderHelper {
     var apiKeyValue = ""
     var matchingKeyValue = ""
     var bucketingKeyValue: String? = ""
-    var splitClientConfigValue: SplitClientConfig? = nil
+    var splitClientConfigValue: SplitClientConfig?
 
     func getProvider(apiKey: String, matchingKey: String, bucketingKey: String?, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider {
         apiKeyValue = apiKey
