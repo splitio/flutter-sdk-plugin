@@ -150,7 +150,7 @@ class SplitClientConfigHelper {
             }
 
             if (prefixes != null && !prefixes.isEmpty()) {
-                syncConfigBuilder.addSplitFilter(SplitFilter.byName(prefixes));
+                syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(prefixes));
             }
 
             builder.syncConfig(syncConfigBuilder.build());

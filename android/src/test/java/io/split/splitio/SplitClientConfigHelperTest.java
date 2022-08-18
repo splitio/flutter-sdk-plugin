@@ -65,6 +65,8 @@ public class SplitClientConfigHelperTest {
         assertEquals("streamingServiceEndpoint.split.io", splitClientConfig.streamingServiceUrl());
         assertEquals("telemetryServiceEndpoint.split.io", splitClientConfig.telemetryEndpoint());
         assertEquals(Arrays.asList("split1", "split2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
+        assertEquals(SplitFilter.Type.BY_NAME, splitClientConfig.syncConfig().getFilters().get(0).getType());
         assertEquals(Arrays.asList("split_", "my_split_"), splitClientConfig.syncConfig().getFilters().get(1).getValues());
+        assertEquals(SplitFilter.Type.BY_PREFIX, splitClientConfig.syncConfig().getFilters().get(1).getType());
     }
 }
