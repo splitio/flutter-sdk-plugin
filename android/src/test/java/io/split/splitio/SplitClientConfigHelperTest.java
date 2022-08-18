@@ -1,15 +1,20 @@
 package io.split.splitio;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 
 import org.junit.Test;
 
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.split.android.client.SplitClientConfig;
+import io.split.android.client.SplitFilter;
 import io.split.android.client.impressions.ImpressionListener;
 
 public class SplitClientConfigHelperTest {
@@ -35,6 +40,10 @@ public class SplitClientConfigHelperTest {
         configValues.put("authServiceEndpoint", "sseAuthServiceEndpoint.split.io");
         configValues.put("streamingServiceEndpoint", "streamingServiceEndpoint.split.io");
         configValues.put("telemetryServiceEndpoint", "telemetryServiceEndpoint.split.io");
+        Map<String, List<String>> syncConfigMap = new HashMap<>();
+        syncConfigMap.put("syncConfigNames", Arrays.asList("split1", "split2"));
+        syncConfigMap.put("syncConfigPrefixes", Arrays.asList("split_", "my_split_"));
+        configValues.put("syncConfig", syncConfigMap);
 
         SplitClientConfig splitClientConfig = SplitClientConfigHelper.fromMap(configValues, mock(ImpressionListener.class));
 
@@ -55,5 +64,7 @@ public class SplitClientConfigHelperTest {
         assertEquals("sseAuthServiceEndpoint.split.io", splitClientConfig.authServiceUrl());
         assertEquals("streamingServiceEndpoint.split.io", splitClientConfig.streamingServiceUrl());
         assertEquals("telemetryServiceEndpoint.split.io", splitClientConfig.telemetryEndpoint());
+        assertEquals(Arrays.asList("split1", "split2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
+        assertEquals(Arrays.asList("split_", "my_split_"), splitClientConfig.syncConfig().getFilters().get(1).getValues());
     }
 }
