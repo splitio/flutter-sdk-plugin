@@ -128,14 +128,6 @@ class SplitClientConfigHelper {
             }
         }
 
-        config.serviceEndpoints = serviceEndpointsBuilder
-            .set(sdkEndpoint: "https://sdk.split-stage.io/api")
-            .set(eventsEndpoint: "https://events.split-stage.io/api")
-            .set(authServiceEndpoint: "https://auth.split-stage.io/api/v2")
-            .set(streamingServiceEndpoint: "https://streaming.split.io/sse")
-            .set(telemetryServiceEndpoint: "https://telemetry.split-stage.io/api/v1")
-            .build()
-
         return config
     }
 }
