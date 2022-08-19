@@ -1,3 +1,5 @@
+import 'package:splitio/split_sync_config.dart';
+
 class SplitConfiguration {
   final Map<String, dynamic> configurationMap = {};
 
@@ -28,6 +30,8 @@ class SplitConfiguration {
   /// [persistentAttributesEnabled] Enables saving attributes on persistent cache which is loaded as part of the SDK_READY_FROM_CACHE flow. All functions that mutate the stored attributes map affect the persistent cache.
   ///
   /// [impressionListener] Enables impression listener. If true, generated impressions will be streamed in the impressionsStream() method of Splitio.
+  ///
+  /// [syncConfig] Use it to filter specific splits to be synced and evaluated by the SDK. If not set, all splits will be downloaded.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -47,6 +51,7 @@ class SplitConfiguration {
     String? authServiceEndpoint,
     String? streamingServiceEndpoint,
     String? telemetryServiceEndpoint,
+    SyncConfig? syncConfig,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -119,6 +124,13 @@ class SplitConfiguration {
 
     if (impressionListener != null) {
       configurationMap['impressionListener'] = impressionListener;
+    }
+
+    if (syncConfig != null) {
+      configurationMap['syncConfig'] = {
+        'syncConfigNames': syncConfig.names.toList(growable: false),
+        'syncConfigPrefixes': syncConfig.prefixes.toList(growable: false)
+      };
     }
   }
 }

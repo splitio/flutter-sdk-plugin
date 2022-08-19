@@ -3,10 +3,14 @@ package io.split.splitio;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
+import io.split.android.client.SplitFilter;
+import io.split.android.client.SyncConfig;
 import io.split.android.client.impressions.ImpressionListener;
 
 class SplitClientConfigHelper {
@@ -29,6 +33,9 @@ class SplitClientConfigHelper {
     private static final String STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint";
     private static final String TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint";
     private static final String IMPRESSION_LISTENER = "impressionListener";
+    private static final String SYNC_CONFIG = "syncConfig";
+    private static final String SYNC_CONFIG_NAMES = "syncConfigNames";
+    private static final String SYNC_CONFIG_PREFIXES = "syncConfigPrefixes";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -132,16 +139,29 @@ class SplitClientConfigHelper {
             builder.impressionListener(impressionListener);
         }
 
+        Map<String, List<String>> syncConfig = getListMap(configurationMap, SYNC_CONFIG);
+        if (syncConfig != null) {
+            List<String> names = syncConfig.get(SYNC_CONFIG_NAMES);
+            List<String> prefixes = syncConfig.get(SYNC_CONFIG_PREFIXES);
+
+            SyncConfig.Builder syncConfigBuilder = SyncConfig.builder();
+            if (names != null && !names.isEmpty()) {
+                syncConfigBuilder.addSplitFilter(SplitFilter.byName(names));
+            }
+
+            if (prefixes != null && !prefixes.isEmpty()) {
+                syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(prefixes));
+            }
+
+            builder.syncConfig(syncConfigBuilder.build());
+        }
+
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
     }
 
     static boolean impressionListenerEnabled(@NonNull Map<String, Object> configurationMap) {
         Boolean impressionListenerEnabled = getBoolean(configurationMap, IMPRESSION_LISTENER);
-        if (impressionListenerEnabled != null && impressionListenerEnabled) {
-            return true;
-        }
-
-        return false;
+        return impressionListenerEnabled != null && impressionListenerEnabled;
     }
 
     @Nullable
@@ -174,6 +194,18 @@ class SplitClientConfigHelper {
             Object value = map.get(key);
             if (value != null && value.getClass().isAssignableFrom(Boolean.class)) {
                 return (Boolean) value;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static Map<String, List<String>> getListMap(Map<String, Object> map, String key) {
+        if (map.containsKey(key)) {
+            Object value = map.get(key);
+            if (value != null && value.getClass().isAssignableFrom(HashMap.class)) {
+                return (HashMap<String, List<String>>) value;
             }
         }
 
