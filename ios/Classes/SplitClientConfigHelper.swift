@@ -17,7 +17,7 @@ class SplitClientConfigHelper {
     static private let PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled"
     static private let SDK_ENDPOINT = "sdkEndpoint"
     static private let EVENTS_ENDPOINT = "eventsEndpoint"
-    static private let SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint"
+    static private let SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint"
     static private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint"
     static private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint"
 
@@ -127,6 +127,8 @@ class SplitClientConfigHelper {
                 serviceEndpointsBuilder.set(telemetryServiceEndpoint: telemetryServiceEndpoint)
             }
         }
+
+        config.serviceEndpoints = serviceEndpointsBuilder.build()
 
         return config
     }
