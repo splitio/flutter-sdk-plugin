@@ -17,7 +17,7 @@ class SplitClientConfigHelper {
     static private let PERSISTENT_ATTRIBUTES_ENABLED = "persistentAttributesEnabled"
     static private let SDK_ENDPOINT = "sdkEndpoint"
     static private let EVENTS_ENDPOINT = "eventsEndpoint"
-    static private let SSE_AUTH_SERVICE_ENDPOINT = "sseAuthServiceEndpoint"
+    static private let SSE_AUTH_SERVICE_ENDPOINT = "authServiceEndpoint"
     static private let STREAMING_SERVICE_ENDPOINT = "streamingServiceEndpoint"
     static private let TELEMETRY_SERVICE_ENDPOINT = "telemetryServiceEndpoint"
     static private let IMPRESSION_LISTENER = "impressionListener"
@@ -151,20 +151,14 @@ class SplitClientConfigHelper {
             }
         }
 
-        config.serviceEndpoints = serviceEndpointsBuilder
-            .set(sdkEndpoint: "https://sdk.split-stage.io/api")
-            .set(eventsEndpoint: "https://events.split-stage.io/api")
-            .set(authServiceEndpoint: "https://auth.split-stage.io/api/v2")
-            .set(streamingServiceEndpoint: "https://streaming.split.io/sse")
-            .set(telemetryServiceEndpoint: "https://telemetry.split-stage.io/api/v1")
-            .build()
+        config.serviceEndpoints = serviceEndpointsBuilder.build()
 
         return config
     }
 
     static func impressionListenerEnabled(configurationMap: [String: Any?]) -> Bool {
         if configurationMap[IMPRESSION_LISTENER] != nil {
-            if (configurationMap[IMPRESSION_LISTENER] as? Bool) == true {
+            if let impressionListenerEnabled = configurationMap[IMPRESSION_LISTENER] as? Bool {
                 return true
             }
         }
