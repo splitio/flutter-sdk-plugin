@@ -8,7 +8,7 @@ This is the official Flutter plugin designed to work with Split, the platform fo
 ## Compatibility
 |                | Android | iOS      |
 |----------------|---------|----------|
-| **Support**    | SDK 21+ | iOS 9+*  |
+| **Support**    | SDK 21+ | iOS 9+  |
 
 ## Getting started
 
