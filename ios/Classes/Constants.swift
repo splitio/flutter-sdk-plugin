@@ -26,7 +26,7 @@ enum Argument: String {
     case apiKey = "apiKey"
     case matchingKey = "matchingKey"
     case bucketingKey = "bucketingKey"
-    case config = "config"
+    case config = "sdkConfiguration"
     case splitName = "splitName"
     case attributes = "attributes"
     case eventType = "eventType"
