@@ -39,6 +39,18 @@ void main() {
       expect(future, completion(equals(true)));
     });
 
+    test('test multiple client ready', () async {
+      SplitEventsListener eventListener = DefaultEventsListener(
+          _methodChannelWrapper, splitEventMethodCallHandler);
+      Future<bool> future = eventListener.onReady().then((value) => true);
+      _simulateMethodInvocation('clientReady');
+
+      expect(future, completion(equals(true)));
+
+      _simulateMethodInvocation('clientReady');
+      expect(future, completion(equals(true)));
+    });
+
     test('test client ready from cache', () async {
       SplitEventsListener eventListener = DefaultEventsListener(
           _methodChannelWrapper, splitEventMethodCallHandler);
@@ -49,12 +61,36 @@ void main() {
       expect(future, completion(equals(true)));
     });
 
+    test('test multiple client ready from cache', () async {
+      SplitEventsListener eventListener = DefaultEventsListener(
+          _methodChannelWrapper, splitEventMethodCallHandler);
+      Future<bool> future = eventListener.onReady().then((value) => true);
+      _simulateMethodInvocation('clientReadyFromCache');
+
+      expect(future, completion(equals(true)));
+
+      _simulateMethodInvocation('clientReadyFromCache');
+      expect(future, completion(equals(true)));
+    });
+
     test('test client timeout', () async {
       SplitEventsListener eventListener = DefaultEventsListener(
           _methodChannelWrapper, splitEventMethodCallHandler);
       Future<bool> future = eventListener.onTimeout().then((value) => true);
       _simulateMethodInvocation('clientTimeout');
 
+      expect(future, completion(equals(true)));
+    });
+
+    test('test multiple client timeout', () async {
+      SplitEventsListener eventListener = DefaultEventsListener(
+          _methodChannelWrapper, splitEventMethodCallHandler);
+      Future<bool> future = eventListener.onReady().then((value) => true);
+      _simulateMethodInvocation('clientTimeout');
+
+      expect(future, completion(equals(true)));
+
+      _simulateMethodInvocation('clientTimeout');
       expect(future, completion(equals(true)));
     });
 

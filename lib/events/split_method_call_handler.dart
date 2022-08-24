@@ -39,8 +39,9 @@ class SplitEventMethodCallHandler
       if (_matchingKey == call.arguments['matchingKey'] &&
           _bucketingKey == call.arguments['bucketingKey']) {
         var clientEventCallback = _clientEventCallbacks[call.method];
-        if (clientEventCallback?.isCompleted == false) {
-          clientEventCallback?.complete(_splitClient);
+        if (clientEventCallback != null &&
+            clientEventCallback.isCompleted == false) {
+          clientEventCallback.complete(_splitClient);
         }
 
         if (_triggeredClientEvents.containsKey(call.method)) {
