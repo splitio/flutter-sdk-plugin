@@ -5,41 +5,41 @@ on:
       - '*'
 
 jobs:
-  test-dart:
-    name: Test dart
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '11'
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - name: Run Pub Get
-        run: flutter pub get
-      - name: Run flutter test
-        run: flutter test
-
-  test-android:
-    name: Test Android
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '11'
-      - uses: subosito/flutter-action@v2
-        with:
-          channel: 'stable'
-      - name: Run Pub Get
-        run: flutter pub get
-      - name: Build Android
-        run: flutter build
-      - name: Run Android test
-        run: cd example/android/; gradle :splitio:testReleaseUnitTest;
+#  test-dart:
+#    name: Test dart
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-java@v2
+#        with:
+#          distribution: 'zulu'
+#          java-version: '11'
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          channel: 'stable'
+#      - name: Run Pub Get
+#        run: flutter pub get
+#      - name: Run flutter test
+#        run: flutter test
+#
+#  test-android:
+#    name: Test Android
+#    runs-on: ubuntu-latest
+#    steps:
+#      - uses: actions/checkout@v3
+#      - uses: actions/setup-java@v2
+#        with:
+#          distribution: 'zulu'
+#          java-version: '11'
+#      - uses: subosito/flutter-action@v2
+#        with:
+#          channel: 'stable'
+#      - name: Run Pub Get
+#        run: flutter pub get
+#      - name: Build Android
+#        run: flutter build
+#      - name: Run Android test
+#        run: cd example/android/; gradle :splitio:testReleaseUnitTest;
 
   test-ios:
     name: Test iOS
@@ -47,10 +47,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/setup-java@v2
-        with:
-          distribution: 'zulu'
-          java-version: '11'
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
@@ -63,5 +59,4 @@ jobs:
           xcode-version: 13.2.1
 
       - name: ios
-#        run: xcodebuild clean test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO;
-        run: ls;
+        run: cd example/ios/; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO;
