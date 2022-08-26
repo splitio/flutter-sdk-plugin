@@ -63,4 +63,5 @@ jobs:
           xcode-version: 13.2.1
 
       - name: ios
-        run: xcodebuild clean test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO;
+#        run: xcodebuild clean test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO;
+        run: ls;
