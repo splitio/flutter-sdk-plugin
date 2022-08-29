@@ -2,8 +2,10 @@ package io.split.splitio;
 
 import static io.split.splitio.Constants.Error.METHOD_PARSER_NOT_INITIALIZED;
 
+import android.content.Context;
+
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
+import androidx.annotation.Nullable;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
 import io.flutter.plugin.common.MethodCall;
@@ -16,10 +18,6 @@ import io.split.android.client.utils.logger.Logger;
  * SplitioPlugin
  */
 public class SplitioPlugin implements FlutterPlugin, MethodCallHandler {
-    /// The MethodChannel that will the communication between Flutter and native Android
-    ///
-    /// This local reference serves to register the plugin with the Flutter Engine and unregister it
-    /// when the Flutter Engine is detached from the Activity
     private MethodChannel channel;
     private SplitMethodParser methodParser;
 
@@ -27,7 +25,17 @@ public class SplitioPlugin implements FlutterPlugin, MethodCallHandler {
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
         channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "splitio");
         channel.setMethodCallHandler(this);
-        methodParser = new SplitMethodParserImpl(flutterPluginBinding.getApplicationContext(), channel);
+        SplitFactoryProvider provider = getSplitFactoryProvider(flutterPluginBinding.getApplicationContext());
+        methodParser = new SplitMethodParserImpl(flutterPluginBinding.getApplicationContext(), channel, provider);
+    }
+
+    @Nullable
+    private static SplitFactoryProvider getSplitFactoryProvider(Context applicationContext) {
+        try {
+            return (SplitFactoryProvider) applicationContext;
+        } catch (ClassCastException exception) {
+            return null;
+        }
     }
 
     @Override
