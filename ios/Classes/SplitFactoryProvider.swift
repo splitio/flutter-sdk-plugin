@@ -1,7 +1,7 @@
 import Foundation
 import Split
 
-protocol SplitFactoryProvider {
+public protocol SplitFactoryProvider {
 
     func getFactory() -> SplitFactory?
 }
