@@ -15,7 +15,7 @@ class SplitMethodParserTests: XCTestCase {
         argumentParser = DefaultArgumentParser()
         methodChannel = MethodChannelStub()
         providerHelper = SplitProviderHelperStub()
-        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!, providerHelper: providerHelper!)
+        methodParser = DefaultSplitMethodParser(splitWrapper: splitWrapper!, argumentParser: argumentParser!, methodChannel: methodChannel!, providerHelper: providerHelper!, factoryProvider: nil)
     }
 
     func testSuccessfulGetClient() throws {
