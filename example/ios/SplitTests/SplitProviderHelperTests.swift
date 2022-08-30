@@ -14,9 +14,9 @@ class SplitProviderHelperTests: XCTestCase {
     }
 
     func testHelperReturnsSuppliedProviderWhenExists() throws {
-        let factoryProvider: SplitFactoryProvider? = SplitFactoryProviderStub()
+        let factoryProvider: SplitFactoryProviderStub? = SplitFactoryProviderStub()
         helper = DefaultSplitProviderHelper(splitFactoryProvider: factoryProvider)
-        let provider: SplitFactoryProvider? = helper?.getProvider(apiKey: "", matchingKey: "", bucketingKey: "", splitClientConfig: SplitClientConfig())
+        let provider: SplitFactoryProviderStub? = helper?.getProvider(apiKey: "", matchingKey: "", bucketingKey: "", splitClientConfig: SplitClientConfig()) as? SplitFactoryProviderStub
 
         XCTAssert(factoryProvider?.uuid == provider?.uuid)
     }

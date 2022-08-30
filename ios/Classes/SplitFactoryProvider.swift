@@ -3,8 +3,6 @@ import Split
 
 public protocol SplitFactoryProvider {
 
-    var uuid: Int { get }
-
     func getFactory() -> SplitFactory?
 }
 
