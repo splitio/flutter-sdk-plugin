@@ -1,7 +1,7 @@
 import Foundation
 import Split
 
-protocol SplitFactoryProvider {
+public protocol SplitFactoryProvider {
 
     func getFactory() -> SplitFactory?
 }
@@ -12,6 +12,9 @@ protocol SplitProviderHelper {
 }
 
 class DefaultSplitFactoryProvider: SplitFactoryProvider {
+
+    // For testing purposes only
+    let uuid: Int = Int.random(in: 0..<1000)
 
     private let splitFactory: SplitFactory?
 
@@ -30,8 +33,17 @@ class DefaultSplitFactoryProvider: SplitFactoryProvider {
 
 class DefaultSplitProviderHelper: SplitProviderHelper {
 
-    func getProvider(apiKey: String, matchingKey: String, bucketingKey: String? = nil, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider {
+    let splitFactoryProvider: SplitFactoryProvider?
 
-        return DefaultSplitFactoryProvider(apiKey: apiKey, matchingKey: matchingKey, splitClientConfig: splitClientConfig)
+    init(splitFactoryProvider: SplitFactoryProvider?) {
+        self.splitFactoryProvider = splitFactoryProvider
+    }
+
+    func getProvider(apiKey: String, matchingKey: String, bucketingKey: String? = nil, splitClientConfig: SplitClientConfig) -> SplitFactoryProvider {
+        guard let provider = splitFactoryProvider else {
+            return DefaultSplitFactoryProvider(apiKey: apiKey, matchingKey: matchingKey, splitClientConfig: splitClientConfig)
+        }
+
+        return provider
     }
 }

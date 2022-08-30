@@ -63,11 +63,11 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private final MethodChannel mMethodChannel;
     private final SplitProviderHelper mProviderHelper;
 
-    public SplitMethodParserImpl(@NonNull Context context, MethodChannel channel) {
+    public SplitMethodParserImpl(@NonNull Context context, @NonNull MethodChannel channel, @Nullable SplitFactoryProvider splitFactoryProvider) {
         mContext = context;
         mArgumentParser = new ArgumentParserImpl();
         mMethodChannel = channel;
-        mProviderHelper = new SplitProviderHelperImpl();
+        mProviderHelper = new SplitProviderHelperImpl(splitFactoryProvider);
     }
 
     @VisibleForTesting

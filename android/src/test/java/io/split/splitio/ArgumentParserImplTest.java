@@ -2,6 +2,7 @@ package io.split.splitio;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -107,5 +108,45 @@ public class ArgumentParserImplTest {
         List<String> listArgument = mArgumentParser.getStringListArgument("listArgument", arguments);
 
         assertTrue(listArgument.isEmpty());
+    }
+
+    @Test
+    public void testGetDoubleArgument() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("doubleArgument", 25.25);
+
+        Double doubleArgument = mArgumentParser.getDoubleArgument("doubleArgument", arguments);
+
+        assertEquals(new Double(25.25), doubleArgument);
+    }
+
+    @Test
+    public void testGetDoubleArgumentFailure() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("doubleArgument", "error");
+
+        Double doubleArgument = mArgumentParser.getDoubleArgument("doubleArgument", arguments);
+
+        assertNull(doubleArgument);
+    }
+
+    @Test
+    public void testGetObjectArgument() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("objectArgument", "error");
+
+        Object objectArgument = mArgumentParser.getObjectArgument("objectArgument", arguments);
+
+        assertNotNull(objectArgument);
+    }
+
+    @Test
+    public void testGetObjectArgumentFailure() {
+        Map<String, Object> arguments = new HashMap<>();
+        arguments.put("objectArgument", null);
+
+        Object objectArgument = mArgumentParser.getObjectArgument("objectArgument", arguments);
+
+        assertNull(objectArgument);
     }
 }

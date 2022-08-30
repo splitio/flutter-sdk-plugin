@@ -2,7 +2,7 @@ package io.split.splitio;
 
 import io.split.android.client.SplitFactory;
 
-interface SplitFactoryProvider {
+public interface SplitFactoryProvider {
 
     SplitFactory getSplitFactory();
 }

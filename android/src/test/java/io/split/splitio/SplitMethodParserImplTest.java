@@ -34,12 +34,12 @@ public class SplitMethodParserImplTest {
     @Mock
     private MethodChannel mMethodChannel;
     @Mock
-    private SplitProviderHelper mProviderFactory;
+    private SplitProviderHelper mProviderHelper;
 
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, mProviderFactory);
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, mProviderHelper);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void failingGetClient() {
-        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel, mProviderFactory);
+        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel, mProviderHelper);
 
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
@@ -465,11 +465,11 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getMapArgument("sdkConfiguration", arguments)).thenReturn(configurationMap);
 
         SplitFactoryProvider splitFactoryProvider = mock(SplitFactoryProvider.class);
-        when(mProviderFactory.getProvider(any(), any(), any(), any(), any())).thenReturn(splitFactoryProvider);
+        when(mProviderHelper.getProvider(any(), any(), any(), any(), any())).thenReturn(splitFactoryProvider);
 
         mMethodParser.onMethodCall("init", arguments, mResult);
 
-        verify(mProviderFactory).getProvider(any(),
+        verify(mProviderHelper).getProvider(any(),
                 eq("key"),
                 eq("matching-key"),
                 eq("bucketing-key"),

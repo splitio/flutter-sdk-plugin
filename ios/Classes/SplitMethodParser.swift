@@ -14,10 +14,10 @@ class DefaultSplitMethodParser: SplitMethodParser {
     private var methodChannel: FlutterMethodChannel
     private var providerHelper: SplitProviderHelper
 
-    init(methodChannel: FlutterMethodChannel) {
+    init(methodChannel: FlutterMethodChannel, splitFactoryProvider: SplitFactoryProvider?) {
         self.argumentParser = DefaultArgumentParser()
         self.methodChannel = methodChannel
-        self.providerHelper = DefaultSplitProviderHelper()
+        self.providerHelper = DefaultSplitProviderHelper(splitFactoryProvider: splitFactoryProvider)
     }
 
     init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel, providerHelper: SplitProviderHelper) {
@@ -145,6 +145,7 @@ class DefaultSplitMethodParser: SplitMethodParser {
                 matchingKey: matchingKey,
                 bucketingKey: bucketingKey,
                 splitClientConfig: SplitClientConfigHelper.fromMap(configurationMap: configurationMap, impressionListener: getImpressionListener(impressionListenerEnabled: SplitClientConfigHelper.impressionListenerEnabled(configurationMap: configurationMap))))
+
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
     }
 
