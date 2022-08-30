@@ -185,6 +185,8 @@ class SplitTests: XCTestCase {
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
 
+    let uuid: Int = Int.random(in: 0..<1000)
+
     var manager: SplitManagerStub?
 
     init(manager: SplitManagerStub?) {
@@ -205,6 +207,8 @@ class SplitFactoryProviderStub: SplitFactoryProvider {
 }
 
 class SplitFactoryProviderStubWithClient: SplitFactoryProvider {
+
+    let uuid: Int = Int.random(in: 0..<1000)
 
     let client: SplitClientStub
 

@@ -3,6 +3,8 @@ import Split
 
 public protocol SplitFactoryProvider {
 
+    var uuid: Int { get }
+
     func getFactory() -> SplitFactory?
 }
 
@@ -12,6 +14,8 @@ protocol SplitProviderHelper {
 }
 
 class DefaultSplitFactoryProvider: SplitFactoryProvider {
+
+    let uuid: Int = Int.random(in: 0..<1000)
 
     private let splitFactory: SplitFactory?
 
