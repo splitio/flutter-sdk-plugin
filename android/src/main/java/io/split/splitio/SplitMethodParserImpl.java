@@ -63,33 +63,23 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private final MethodChannel mMethodChannel;
     @Nullable
     private final SplitProviderHelper mProviderHelper;
-    @Nullable
-    private final SplitFactoryProvider mSplitFactoryProvider;
 
     public SplitMethodParserImpl(@NonNull Context context, @NonNull MethodChannel channel, @Nullable SplitFactoryProvider splitFactoryProvider) {
         mContext = context;
         mArgumentParser = new ArgumentParserImpl();
         mMethodChannel = channel;
-        if (splitFactoryProvider != null) {
-            mSplitFactoryProvider = splitFactoryProvider;
-            mProviderHelper = null;
-        } else {
-            mSplitFactoryProvider = null;
-            mProviderHelper = new SplitProviderHelperImpl();
-        }
+        mProviderHelper = new SplitProviderHelperImpl(splitFactoryProvider);
     }
 
     @VisibleForTesting
     public SplitMethodParserImpl(@NonNull SplitWrapper splitWrapper,
                                  @NonNull ArgumentParser argumentParser,
                                  @NonNull MethodChannel channel,
-                                 @Nullable SplitProviderHelper providerHelper,
-                                 @Nullable SplitFactoryProvider factoryProvider) {
+                                 @Nullable SplitProviderHelper providerHelper) {
         mSplitWrapper = splitWrapper;
         mArgumentParser = argumentParser;
         mMethodChannel = channel;
         mProviderHelper = providerHelper;
-        mSplitFactoryProvider = factoryProvider;
     }
 
     @Override
@@ -213,18 +203,13 @@ class SplitMethodParserImpl implements SplitMethodParser {
     }
 
     private void initializeSplit(String apiKey, String matchingKey, String bucketingKey, Map<String, Object> mapArgument) {
-        SplitFactoryProvider provider = null;
-        if (mSplitFactoryProvider != null) {
-            provider = mSplitFactoryProvider;
-        } else if (mProviderHelper != null) {
-            provider = mProviderHelper.getProvider(
-                    mContext,
-                    apiKey,
-                    matchingKey,
-                    bucketingKey,
-                    SplitClientConfigHelper.fromMap(mapArgument,
-                            getImpressionListener(SplitClientConfigHelper.impressionListenerEnabled(mapArgument))));
-        }
+        SplitFactoryProvider provider = mProviderHelper.getProvider(
+                mContext,
+                apiKey,
+                matchingKey,
+                bucketingKey,
+                SplitClientConfigHelper.fromMap(mapArgument,
+                        getImpressionListener(SplitClientConfigHelper.impressionListenerEnabled(mapArgument))));
 
         mSplitWrapper = new SplitWrapperImpl(provider);
     }

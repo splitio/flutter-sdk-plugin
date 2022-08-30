@@ -9,12 +9,7 @@ public class SwiftSplitioPlugin: NSObject, FlutterPlugin {
         let channel = FlutterMethodChannel(name: "splitio", binaryMessenger: registrar.messenger())
         let instance = SwiftSplitioPlugin()
         let externalProvider: SplitFactoryProvider? = UIApplication.shared.delegate as? SplitFactoryProvider
-
-        if let provider = externalProvider {
-            instance.methodParser = DefaultSplitMethodParser(methodChannel: channel, splitFactoryProvider: provider)
-        } else {
-            instance.methodParser = DefaultSplitMethodParser(methodChannel: channel)
-        }
+        instance.methodParser = DefaultSplitMethodParser(methodChannel: channel, splitFactoryProvider: externalProvider)
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
 

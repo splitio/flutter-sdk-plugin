@@ -39,7 +39,7 @@ public class SplitMethodParserImplTest {
     @Before
     public void setUp() {
         MockitoAnnotations.openMocks(this);
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, mProviderHelper, null);
+        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, mProviderHelper);
     }
 
     @Test
@@ -60,7 +60,7 @@ public class SplitMethodParserImplTest {
 
     @Test
     public void failingGetClient() {
-        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel, mProviderHelper, null);
+        mMethodParser = new SplitMethodParserImpl(null, mArgumentParser, mMethodChannel, mProviderHelper);
 
         Map<String, Object> map = new HashMap<>();
         map.put("matchingKey", "user-key");
@@ -474,13 +474,5 @@ public class SplitMethodParserImplTest {
                 eq("matching-key"),
                 eq("bucketing-key"),
                 argThat(splitClientConfig -> splitClientConfig.impressionListener() != null && !splitClientConfig.streamingEnabled()));
-    }
-
-    @Test
-    public void providerHelperIsNotUsedWhenExternalProviderIsSupplied() {
-        SplitFactoryProvider factoryProvider = mock(SplitFactoryProvider.class);
-        mMethodParser = new SplitMethodParserImpl(mSplitWrapper, mArgumentParser, mMethodChannel, null, factoryProvider);
-
-        verifyNoInteractions(mProviderHelper);
     }
 }

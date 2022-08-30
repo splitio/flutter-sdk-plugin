@@ -12,27 +12,19 @@ class DefaultSplitMethodParser: SplitMethodParser {
     private var splitWrapper: SplitWrapper?
     private let argumentParser: ArgumentParser
     private var methodChannel: FlutterMethodChannel
-    private var providerHelper: SplitProviderHelper?
-    private var splitFactoryProvider: SplitFactoryProvider?
+    private var providerHelper: SplitProviderHelper
 
-    init(methodChannel: FlutterMethodChannel) {
+    init(methodChannel: FlutterMethodChannel, splitFactoryProvider: SplitFactoryProvider?) {
         self.argumentParser = DefaultArgumentParser()
         self.methodChannel = methodChannel
-        self.providerHelper = DefaultSplitProviderHelper()
+        self.providerHelper = DefaultSplitProviderHelper(splitFactoryProvider: splitFactoryProvider)
     }
 
-    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel, providerHelper: SplitProviderHelper?, factoryProvider: SplitFactoryProvider?) {
+    init(splitWrapper: SplitWrapper, argumentParser: ArgumentParser, methodChannel: FlutterMethodChannel, providerHelper: SplitProviderHelper) {
         self.splitWrapper = splitWrapper
         self.argumentParser = argumentParser
         self.methodChannel = methodChannel
         self.providerHelper = providerHelper
-        self.splitFactoryProvider = factoryProvider
-    }
-
-    init(methodChannel: FlutterMethodChannel, splitFactoryProvider: SplitFactoryProvider) {
-        self.splitFactoryProvider = splitFactoryProvider
-        self.argumentParser = DefaultArgumentParser()
-        self.methodChannel = methodChannel
     }
 
     func onMethodCall(methodName: String, arguments: Any, result: FlutterResult) {
@@ -148,22 +140,13 @@ class DefaultSplitMethodParser: SplitMethodParser {
     }
 
     private func initializeSplit(apiKey: String, matchingKey: String, bucketingKey: String?, configurationMap: [String: Any?]) {
-        var factoryProvider: SplitFactoryProvider?
-        if let providerHelper = providerHelper {
-            factoryProvider = providerHelper.getProvider(
-                    apiKey: apiKey,
-                    matchingKey: matchingKey,
-                    bucketingKey: bucketingKey,
-                    splitClientConfig: SplitClientConfigHelper.fromMap(configurationMap: configurationMap, impressionListener: getImpressionListener(impressionListenerEnabled: SplitClientConfigHelper.impressionListenerEnabled(configurationMap: configurationMap))))
-        } else {
-            factoryProvider = splitFactoryProvider
-        }
+        let factoryProvider = providerHelper.getProvider(
+                apiKey: apiKey,
+                matchingKey: matchingKey,
+                bucketingKey: bucketingKey,
+                splitClientConfig: SplitClientConfigHelper.fromMap(configurationMap: configurationMap, impressionListener: getImpressionListener(impressionListenerEnabled: SplitClientConfigHelper.impressionListenerEnabled(configurationMap: configurationMap))))
 
-        if let factoryProvider = factoryProvider {
-            splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
-        } else {
-            print("A Factory Provider was not supplied")
-        }
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
     }
 
     private func getImpressionListener(impressionListenerEnabled: Bool) -> SplitImpressionListener? {
