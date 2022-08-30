@@ -13,6 +13,7 @@ protocol SplitProviderHelper {
 
 class DefaultSplitFactoryProvider: SplitFactoryProvider {
 
+    // For testing purposes only
     let uuid: Int = Int.random(in: 0..<1000)
 
     private let splitFactory: SplitFactory?
