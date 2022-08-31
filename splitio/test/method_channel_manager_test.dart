@@ -68,8 +68,8 @@ class MethodCallHandlerStub extends MethodCallHandler {
   final Set<String> handledCalls = {};
 
   @override
-  Future<void> handle(MethodCall call) async {
-    handledCalls.add(call.method);
+  Future<void> handle(String methodName, dynamic methodArguments) async {
+    handledCalls.add(methodName);
   }
 }
 

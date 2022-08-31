@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
@@ -34,20 +33,20 @@ class SplitEventMethodCallHandler
       this._matchingKey, this._bucketingKey, this._splitClient);
 
   @override
-  Future<void> handle(MethodCall call) async {
-    if (_clientEventCallbacks.containsKey(call.method)) {
-      if (_matchingKey == call.arguments['matchingKey'] &&
-          _bucketingKey == call.arguments['bucketingKey']) {
-        var clientEventCallback = _clientEventCallbacks[call.method];
+  Future<void> handle(String methodName, dynamic methodArguments) async {
+    if (_clientEventCallbacks.containsKey(methodName)) {
+      if (_matchingKey == methodArguments['matchingKey'] &&
+          _bucketingKey == methodArguments['bucketingKey']) {
+        var clientEventCallback = _clientEventCallbacks[methodName];
         if (clientEventCallback != null && !clientEventCallback.isCompleted) {
           clientEventCallback.complete(_splitClient);
         }
 
-        if (_triggeredClientEvents.containsKey(call.method)) {
-          _triggeredClientEvents[call.method] = true;
+        if (_triggeredClientEvents.containsKey(methodName)) {
+          _triggeredClientEvents[methodName] = true;
         }
       }
-    } else if (call.method == _eventClientUpdated &&
+    } else if (methodName == _eventClientUpdated &&
         _updateStreamCompleter.hasListener &&
         !_updateStreamCompleter.isPaused &&
         !_updateStreamCompleter.isClosed) {

@@ -34,8 +34,9 @@ void main() {
       }),
     );
 
-    impressionsMethodCallHandler
-        .handle(const MethodCall('impressionLog', sourceMap));
+    const methodCall = MethodCall('impressionLog', sourceMap);
+    impressionsMethodCallHandler.handle(
+        methodCall.method, methodCall.arguments);
   });
 
   test('other method names are ignored', () async {
@@ -47,6 +48,8 @@ void main() {
             expect(event, null);
           }, count: 0),
         );
-    impressionsMethodCallHandler.handle(const MethodCall('clientReady'));
+    const methodCall = MethodCall('clientReady');
+    impressionsMethodCallHandler.handle(
+        methodCall.method, methodCall.arguments);
   });
 }

@@ -20,7 +20,7 @@ class MethodChannelManager {
 
   Future<void> handle(MethodCall call) async {
     for (MethodCallHandler handler in _handlers) {
-      handler.handle(call);
+      handler.handle(call.method, call.arguments);
     }
   }
 
