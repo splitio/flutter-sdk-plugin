@@ -35,7 +35,7 @@ _split.client(onReady: (client) async {
 }
 ```
 
-For a more elaborate usage example see [here](https://github.com/splitio/flutter-sdk-plugin/blob/main/example/lib/main.dart).
+For a more elaborate usage example see [here](https://github.com/splitio/flutter-sdk-plugin/blob/splitio/main/example/lib/main.dart).
 
 For additional information, refer to our docs page.
 
@@ -44,7 +44,7 @@ For additional information, refer to our docs page.
 The Split team monitors all issues submitted to this [issue tracker](https://github.com/splitio/flutter-sdk-plugin/issues). We encourage you to use this issue tracker to submit any bug reports, feedback, and feature enhancements. We'll do our best to respond in a timely manner.
 
 ## Contributing
-Please see [contributors guide](https://github.com/splitio/flutter-sdk-plugin/blob/main/CONTRIBUTORS-GUIDE.md) to find all you need to submit a Pull Request (PR).
+Please see [contributors guide](https://github.com/splitio/flutter-sdk-plugin/blob/splitio/main/CONTRIBUTORS-GUIDE.md) to find all you need to submit a Pull Request (PR).
 
 ## License
 Licensed under the Apache License, Version 2.0. See: [Apache License](https://www.apache.org/licenses/).
