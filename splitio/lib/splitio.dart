@@ -20,10 +20,15 @@ typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
 class Splitio {
   final String _apiKey;
+
   final String _defaultMatchingKey;
+
   late final String? _defaultBucketingKey;
+
   late final SplitConfiguration? _splitConfiguration;
+
   late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
+
   final MethodChannelManager _methodChannelManager =
       MethodChannelManager(SplitioPlatform.instance);
 
@@ -113,19 +118,6 @@ class Splitio {
   Future<List<SplitView>> splits() async {
     return _methodChannelManager.splits(
         matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
-    // TODO List<Map> callResult = (await _methodChannelManager
-    // TODO         .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
-    // TODO     []);
-    // TODO
-    // TODO List<SplitView> splits = [];
-    // TODO for (var element in callResult) {
-    // TODO   SplitView? splitView = SplitView.fromEntry(element);
-    // TODO   if (splitView != null) {
-    // TODO     splits.add(splitView);
-    // TODO   }
-    // TODO }
-    // TODO
-    // TODO return Future.value(splits);
   }
 
   /// If the impressionListener configuration has been enabled,
@@ -139,14 +131,6 @@ class Splitio {
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,
         splitName: splitName);
-    // TODO Map? mapResult = await _methodChannelManager
-    // TODO     .invokeMapMethod('split', {'splitName': splitName});
-    // TODO
-    // TODO if (mapResult == null) {
-    // TODO   return null;
-    // TODO }
-    // TODO
-    // TODO return SplitView.fromEntry(mapResult);
   }
 
   Future<void> _init() {
@@ -155,16 +139,5 @@ class Splitio {
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,
         sdkConfiguration: _splitConfiguration);
-    // TODO Map<String, Object?> arguments = {
-    // TODO   'apiKey': _apiKey,
-    // TODO   'matchingKey': _defaultMatchingKey,
-    // TODO   'sdkConfiguration': _splitConfiguration?.configurationMap ?? {},
-    // TODO };
-    // TODO
-    // TODO if (_defaultBucketingKey != null) {
-    // TODO   arguments.addAll({'bucketingKey': _defaultBucketingKey});
-    // TODO }
-    // TODO
-    // TODO return _methodChannelManager.invokeMethod('init', arguments);
   }
 }
