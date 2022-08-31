@@ -1,10 +1,10 @@
 import 'dart:async';
 
-import 'package:flutter/services.dart';
 import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/impressions/impressions_method_call_handler.dart';
 import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/method_call_handler.dart';
+import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_view.dart';
@@ -25,7 +25,7 @@ class Splitio {
   late final SplitConfiguration? _splitConfiguration;
   late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
   final MethodChannelManager _methodChannelManager =
-      MethodChannelManager(const MethodChannel('splitio'));
+      MethodChannelManager(SplitioPlatform.instance);
 
   /// SDK instance constructor.
   ///
@@ -97,34 +97,35 @@ class Splitio {
       client.whenUpdated().listen((client) => onUpdated.call(client));
     }
 
-    _methodChannelManager.invokeMethod(
-        'getClient', _buildGetClientArguments(key, bucketingKey));
+    _methodChannelManager.getClient(
+        matchingKey: key, bucketingKey: bucketingKey);
 
     return client;
   }
 
   Future<List<String>> splitNames() async {
-    List<String> splitNames =
-        await _methodChannelManager.invokeListMethod<String>('splitNames') ??
-            [];
+    List<String> splitNames = await _methodChannelManager.splitNames(
+        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    List<Map> callResult = (await _methodChannelManager
-            .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
-        []);
-
-    List<SplitView> splits = [];
-    for (var element in callResult) {
-      SplitView? splitView = SplitView.fromEntry(element);
-      if (splitView != null) {
-        splits.add(splitView);
-      }
-    }
-
-    return Future.value(splits);
+    return _methodChannelManager.splits(
+        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
+    // TODO List<Map> callResult = (await _methodChannelManager
+    // TODO         .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
+    // TODO     []);
+    // TODO
+    // TODO List<SplitView> splits = [];
+    // TODO for (var element in callResult) {
+    // TODO   SplitView? splitView = SplitView.fromEntry(element);
+    // TODO   if (splitView != null) {
+    // TODO     splits.add(splitView);
+    // TODO   }
+    // TODO }
+    // TODO
+    // TODO return Future.value(splits);
   }
 
   /// If the impressionListener configuration has been enabled,
@@ -134,40 +135,36 @@ class Splitio {
   }
 
   Future<SplitView?> split(String splitName) async {
-    Map? mapResult = await _methodChannelManager
-        .invokeMapMethod('split', {'splitName': splitName});
-
-    if (mapResult == null) {
-      return null;
-    }
-
-    return SplitView.fromEntry(mapResult);
+    return _methodChannelManager.split(
+        matchingKey: _defaultMatchingKey,
+        bucketingKey: _defaultBucketingKey,
+        splitName: splitName);
+    // TODO Map? mapResult = await _methodChannelManager
+    // TODO     .invokeMapMethod('split', {'splitName': splitName});
+    // TODO
+    // TODO if (mapResult == null) {
+    // TODO   return null;
+    // TODO }
+    // TODO
+    // TODO return SplitView.fromEntry(mapResult);
   }
 
   Future<void> _init() {
-    Map<String, Object?> arguments = {
-      'apiKey': _apiKey,
-      'matchingKey': _defaultMatchingKey,
-      'sdkConfiguration': _splitConfiguration?.configurationMap ?? {},
-    };
-
-    if (_defaultBucketingKey != null) {
-      arguments.addAll({'bucketingKey': _defaultBucketingKey});
-    }
-
-    return _methodChannelManager.invokeMethod('init', arguments);
-  }
-
-  Map<String, Object> _buildGetClientArguments(
-      String key, String? bucketingKey) {
-    var arguments = {
-      'matchingKey': key,
-    };
-
-    if (bucketingKey != null) {
-      arguments.addAll({'bucketingKey': bucketingKey});
-    }
-
-    return arguments;
+    return _methodChannelManager.init(
+        apiKey: _apiKey,
+        matchingKey: _defaultMatchingKey,
+        bucketingKey: _defaultBucketingKey,
+        sdkConfiguration: _splitConfiguration);
+    // TODO Map<String, Object?> arguments = {
+    // TODO   'apiKey': _apiKey,
+    // TODO   'matchingKey': _defaultMatchingKey,
+    // TODO   'sdkConfiguration': _splitConfiguration?.configurationMap ?? {},
+    // TODO };
+    // TODO
+    // TODO if (_defaultBucketingKey != null) {
+    // TODO   arguments.addAll({'bucketingKey': _defaultBucketingKey});
+    // TODO }
+    // TODO
+    // TODO return _methodChannelManager.invokeMethod('init', arguments);
   }
 }

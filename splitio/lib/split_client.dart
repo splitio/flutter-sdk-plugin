@@ -168,53 +168,73 @@ class DefaultSplitClient implements SplitClient {
   @override
   Future<String> getTreatment(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return await _methodChannelManager.invokeMethod(
-            'getTreatment',
-            _buildParameters(
-                {'splitName': splitName, 'attributes': attributes})) ??
-        _controlTreatment;
+    return _methodChannelManager.getTreatment(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        splitName: splitName,
+        attributes: attributes);
+    // TODO return await _methodChannelManager.invokeMethod(
+    // TODO         'getTreatment',
+    // TODO         _buildParameters(
+    // TODO             {'splitName': splitName, 'attributes': attributes})) ??
+    // TODO     _controlTreatment;
   }
 
   @override
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatment = (await _methodChannelManager.invokeMapMethod(
-            'getTreatmentWithConfig',
-            _buildParameters(
-                {'splitName': splitName, 'attributes': attributes})))
-        ?.entries
-        .first
-        .value;
-    if (treatment == null) {
-      return _controlResult;
-    }
-
-    return SplitResult(treatment['treatment'], treatment['config']);
+    return _methodChannelManager.getTreatmentWithConfig(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        splitName: splitName,
+        attributes: attributes);
+    // TODO Map? treatment = (await _methodChannelManager.invokeMapMethod(
+    // TODO         'getTreatmentWithConfig',
+    // TODO         _buildParameters(
+    // TODO             {'splitName': splitName, 'attributes': attributes})))
+    // TODO     ?.entries
+    // TODO     .first
+    // TODO     .value;
+    // TODO if (treatment == null) {
+    // TODO   return _controlResult;
+    // TODO }
+    // TODO
+    // TODO return SplitResult(treatment['treatment'], treatment['config']);
   }
 
   @override
   Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatments = await _methodChannelManager.invokeMapMethod(
-        'getTreatments',
-        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
-
-    return treatments
-            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
-        {for (var item in splitNames) item: _controlTreatment};
+    return _methodChannelManager.getTreatments(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        splitNames: splitNames,
+        attributes: attributes);
+    // TODO Map? treatments = await _methodChannelManager.invokeMapMethod(
+    // TODO     'getTreatments',
+    // TODO     _buildParameters({'splitName': splitNames, 'attributes': attributes}));
+    // TODO
+    // TODO return treatments
+    // TODO         ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+    // TODO     {for (var item in splitNames) item: _controlTreatment};
   }
 
   @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    Map? treatments = await _methodChannelManager.invokeMapMethod(
-        'getTreatmentsWithConfig',
-        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
-
-    return treatments?.map((key, value) =>
-            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
-        {for (var item in splitNames) item: _controlResult};
+    return _methodChannelManager.getTreatmentsWithConfig(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        splitNames: splitNames,
+        attributes: attributes);
+    // TODO Map? treatments = await _methodChannelManager.invokeMapMethod(
+    // TODO     'getTreatmentsWithConfig',
+    // TODO     _buildParameters({'splitName': splitNames, 'attributes': attributes}));
+    // TODO
+    // TODO return treatments?.map((key, value) =>
+    // TODO         MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+    // TODO     {for (var item in splitNames) item: _controlResult};
   }
 
   @override
@@ -222,83 +242,109 @@ class DefaultSplitClient implements SplitClient {
       {String? trafficType,
       double? value,
       Map<String, dynamic> properties = const {}}) async {
-    var parameters = _buildParameters({'eventType': eventType});
-
-    if (trafficType != null) {
-      parameters['trafficType'] = trafficType;
-    }
-
-    if (value != null) {
-      parameters['value'] = value;
-    }
-
-    try {
-      return await _methodChannelManager.invokeMethod("track", parameters)
-          as bool;
-    } on Exception catch (_) {
-      return false;
-    }
+    return _methodChannelManager.track(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        eventType: eventType,
+        trafficType: trafficType,
+        value: value,
+        properties: properties);
+    // TODO var parameters = _buildParameters({'eventType': eventType});
+    // TODO
+    // TODO if (trafficType != null) {
+    // TODO   parameters['trafficType'] = trafficType;
+    // TODO }
+    // TODO
+    // TODO if (value != null) {
+    // TODO   parameters['value'] = value;
+    // TODO }
+    // TODO
+    // TODO try {
+    // TODO   return await _methodChannelManager.invokeMethod("track", parameters)
+    // TODO       as bool;
+    // TODO } on Exception catch (_) {
+    // TODO   return false;
+    // TODO }
   }
 
   @override
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    var result = await _methodChannelManager.invokeMethod('setAttribute',
-        _buildParameters({'attributeName': attributeName, 'value': value}));
-
-    if (result is bool) {
-      return result;
-    }
-
-    return false;
+    return _methodChannelManager.setAttribute(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        attributeName: attributeName,
+        value: value);
+    // TODO var result = await _methodChannelManager.invokeMethod('setAttribute',
+    // TODO     _buildParameters({'attributeName': attributeName, 'value': value}));
+    // TODO
+    // TODO if (result is bool) {
+    // TODO   return result;
+    // TODO }
+    // TODO
+    // TODO return false;
   }
 
   @override
   Future<dynamic> getAttribute(String attributeName) async {
-    return _methodChannelManager.invokeMethod(
-        'getAttribute', _buildParameters({'attributeName': attributeName}));
+    return _methodChannelManager.getAttribute(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        attributeName: attributeName);
+    // TODO return _methodChannelManager.invokeMethod(
+    // TODO     'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    var result = await _methodChannelManager.invokeMethod(
-        'setAttributes', _buildParameters({'attributes': attributes}));
-
-    if (result is bool) {
-      return result;
-    }
-
-    return false;
+    return _methodChannelManager.setAttributes(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        attributes: attributes);
+    // TODO var result = await _methodChannelManager.invokeMethod(
+    // TODO     'setAttributes', _buildParameters({'attributes': attributes}));
+    // TODO
+    // TODO if (result is bool) {
+    // TODO   return result;
+    // TODO }
+    // TODO
+    // TODO return false;
   }
 
   @override
   Future<Map<String, dynamic>> getAttributes() async {
-    return (await _methodChannelManager.invokeMapMethod(
-                'getAllAttributes', _buildParameters()))
-            ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
-        {};
+    return _methodChannelManager.getAllAttributes(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+    // TODO return (await _methodChannelManager.invokeMapMethod(
+    // TODO             'getAllAttributes', _buildParameters()))
+    // TODO         ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
+    // TODO     {};
   }
 
   @override
   Future<bool> removeAttribute(String attributeName) async {
-    return await _methodChannelManager.invokeMethod(
-        'removeAttribute', _buildParameters({'attributeName': attributeName}));
+    return _methodChannelManager.removeAttribute(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        attributeName: attributeName);
   }
 
   @override
   Future<bool> clearAttributes() async {
-    return await _methodChannelManager.invokeMethod(
-        'clearAttributes', _buildParameters());
+    return _methodChannelManager.clearAttributes(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<void> flush() async {
-    return _methodChannelManager.invokeMethod('flush', _buildParameters());
+    return _methodChannelManager.flush(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<void> destroy() async {
     _splitEventsListener.destroy();
-    return _methodChannelManager.invokeMethod('destroy', _buildParameters());
+    return _methodChannelManager.destroy(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
@@ -319,24 +365,5 @@ class DefaultSplitClient implements SplitClient {
   @override
   Future<SplitClient> whenTimeout() {
     return _splitEventsListener.onTimeout();
-  }
-
-  Map<String, String> _getKeysMap() {
-    Map<String, String> result = {'matchingKey': _matchingKey};
-
-    if (_bucketingKey != null) {
-      result.addAll({'bucketingKey': _bucketingKey!});
-    }
-
-    return result;
-  }
-
-  Map<String, dynamic> _buildParameters(
-      [Map<String, dynamic> parameters = const {}]) {
-    Map<String, dynamic> result = {};
-    result.addAll(parameters);
-    result.addAll(_getKeysMap());
-
-    return result;
   }
 }
