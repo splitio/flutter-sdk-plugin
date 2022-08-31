@@ -35,9 +35,9 @@ jobs:
         with:
           channel: 'stable'
       - name: Run Pub Get
-        run: flutter pub get
+        run: cd splitio/; flutter pub get
       - name: Build Android
-        run: flutter build
+        run: cd splitio/; flutter build
       - name: Run Android test
         run: cd splitio/example/android/; gradle :splitio:testReleaseUnitTest;
 
