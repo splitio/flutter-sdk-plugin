@@ -142,10 +142,6 @@ abstract class SplitClient {
 }
 
 class DefaultSplitClient implements SplitClient {
-  static const String _controlTreatment = 'control';
-  static const SplitResult _controlResult =
-      SplitResult(_controlTreatment, null);
-
   final MethodChannelManager _methodChannelManager;
   late final SplitEventMethodCallHandler _methodCallHandler;
   final String _matchingKey;
@@ -173,11 +169,6 @@ class DefaultSplitClient implements SplitClient {
         bucketingKey: _bucketingKey,
         splitName: splitName,
         attributes: attributes);
-    // TODO return await _methodChannelManager.invokeMethod(
-    // TODO         'getTreatment',
-    // TODO         _buildParameters(
-    // TODO             {'splitName': splitName, 'attributes': attributes})) ??
-    // TODO     _controlTreatment;
   }
 
   @override
@@ -188,18 +179,6 @@ class DefaultSplitClient implements SplitClient {
         bucketingKey: _bucketingKey,
         splitName: splitName,
         attributes: attributes);
-    // TODO Map? treatment = (await _methodChannelManager.invokeMapMethod(
-    // TODO         'getTreatmentWithConfig',
-    // TODO         _buildParameters(
-    // TODO             {'splitName': splitName, 'attributes': attributes})))
-    // TODO     ?.entries
-    // TODO     .first
-    // TODO     .value;
-    // TODO if (treatment == null) {
-    // TODO   return _controlResult;
-    // TODO }
-    // TODO
-    // TODO return SplitResult(treatment['treatment'], treatment['config']);
   }
 
   @override
@@ -210,13 +189,6 @@ class DefaultSplitClient implements SplitClient {
         bucketingKey: _bucketingKey,
         splitNames: splitNames,
         attributes: attributes);
-    // TODO Map? treatments = await _methodChannelManager.invokeMapMethod(
-    // TODO     'getTreatments',
-    // TODO     _buildParameters({'splitName': splitNames, 'attributes': attributes}));
-    // TODO
-    // TODO return treatments
-    // TODO         ?.map((key, value) => MapEntry<String, String>(key, value)) ??
-    // TODO     {for (var item in splitNames) item: _controlTreatment};
   }
 
   @override
@@ -228,13 +200,6 @@ class DefaultSplitClient implements SplitClient {
         bucketingKey: _bucketingKey,
         splitNames: splitNames,
         attributes: attributes);
-    // TODO Map? treatments = await _methodChannelManager.invokeMapMethod(
-    // TODO     'getTreatmentsWithConfig',
-    // TODO     _buildParameters({'splitName': splitNames, 'attributes': attributes}));
-    // TODO
-    // TODO return treatments?.map((key, value) =>
-    // TODO         MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
-    // TODO     {for (var item in splitNames) item: _controlResult};
   }
 
   @override
@@ -249,22 +214,6 @@ class DefaultSplitClient implements SplitClient {
         trafficType: trafficType,
         value: value,
         properties: properties);
-    // TODO var parameters = _buildParameters({'eventType': eventType});
-    // TODO
-    // TODO if (trafficType != null) {
-    // TODO   parameters['trafficType'] = trafficType;
-    // TODO }
-    // TODO
-    // TODO if (value != null) {
-    // TODO   parameters['value'] = value;
-    // TODO }
-    // TODO
-    // TODO try {
-    // TODO   return await _methodChannelManager.invokeMethod("track", parameters)
-    // TODO       as bool;
-    // TODO } on Exception catch (_) {
-    // TODO   return false;
-    // TODO }
   }
 
   @override
@@ -274,14 +223,6 @@ class DefaultSplitClient implements SplitClient {
         bucketingKey: _bucketingKey,
         attributeName: attributeName,
         value: value);
-    // TODO var result = await _methodChannelManager.invokeMethod('setAttribute',
-    // TODO     _buildParameters({'attributeName': attributeName, 'value': value}));
-    // TODO
-    // TODO if (result is bool) {
-    // TODO   return result;
-    // TODO }
-    // TODO
-    // TODO return false;
   }
 
   @override
@@ -290,8 +231,6 @@ class DefaultSplitClient implements SplitClient {
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributeName: attributeName);
-    // TODO return _methodChannelManager.invokeMethod(
-    // TODO     'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
@@ -300,24 +239,12 @@ class DefaultSplitClient implements SplitClient {
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributes: attributes);
-    // TODO var result = await _methodChannelManager.invokeMethod(
-    // TODO     'setAttributes', _buildParameters({'attributes': attributes}));
-    // TODO
-    // TODO if (result is bool) {
-    // TODO   return result;
-    // TODO }
-    // TODO
-    // TODO return false;
   }
 
   @override
   Future<Map<String, dynamic>> getAttributes() async {
     return _methodChannelManager.getAllAttributes(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
-    // TODO return (await _methodChannelManager.invokeMapMethod(
-    // TODO             'getAllAttributes', _buildParameters()))
-    // TODO         ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
-    // TODO     {};
   }
 
   @override

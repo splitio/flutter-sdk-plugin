@@ -1,7 +1,6 @@
 import 'package:flutter/services.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
-import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -49,7 +48,7 @@ class MethodChannelManager extends SplitioPlatform {
   }
 
   @override
-  Future<Map<String, String>> getAllAttributes(
+  Future<Map<String, dynamic>> getAllAttributes(
       {required String matchingKey, required String? bucketingKey}) {
     return _platform.getAllAttributes(
         matchingKey: matchingKey, bucketingKey: bucketingKey);
@@ -67,8 +66,7 @@ class MethodChannelManager extends SplitioPlatform {
   }
 
   @override
-  Future<SplitClient> getClient(
-      {required String matchingKey, String? bucketingKey}) {
+  Future<void> getClient({required String matchingKey, String? bucketingKey}) {
     return _platform.getClient(
         matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
