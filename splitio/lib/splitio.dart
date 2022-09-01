@@ -1,9 +1,7 @@
 import 'dart:async';
 
 import 'package:splitio/channel/method_channel_manager.dart';
-import 'package:splitio/impressions/impressions_method_call_handler.dart';
 import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
@@ -27,8 +25,6 @@ class Splitio {
 
   late final SplitConfiguration? _splitConfiguration;
 
-  late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
-
   final MethodChannelManager _methodChannelManager =
       MethodChannelManager(SplitioPlatform.instance);
 
@@ -46,8 +42,6 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
-    _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
-    _methodChannelManager.addNativeCallHandler(_impressionsMethodCallHandler);
 
     _init();
   }
@@ -123,7 +117,7 @@ class Splitio {
   /// If the impressionListener configuration has been enabled,
   /// generated impressions will be streamed here.
   Stream<Impression> impressionsStream() {
-    return _impressionsMethodCallHandler.stream();
+    return _methodChannelManager.impressionsStream();
   }
 
   Future<SplitView?> split(String splitName) async {

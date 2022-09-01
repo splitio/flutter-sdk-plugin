@@ -1,5 +1,7 @@
+import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
+import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -11,12 +13,12 @@ class MethodChannelManager extends SplitioPlatform {
 
   @override
   void addNativeCallHandler(MethodCallHandler handler) {
-    _platform.addNativeCallHandler(handler);
+    _platform.addNativeCallHandler(handler); // TODO
   }
 
   @override
   void removeNativeCallHandler(MethodCallHandler handler) {
-    _platform.removeNativeCallHandler(handler);
+    _platform.removeNativeCallHandler(handler); // TODO
   }
 
   @override
@@ -205,5 +207,34 @@ class MethodChannelManager extends SplitioPlatform {
         trafficType: trafficType,
         value: value,
         properties: properties);
+  }
+
+  @override
+  Future<SplitClient> onReady(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SplitClient> onReadyFromCache(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<SplitClient> onUpdated(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<SplitClient> onTimeout(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  @override
+  Stream<Impression> impressionsStream() {
+    return _platform.impressionsStream();
   }
 }

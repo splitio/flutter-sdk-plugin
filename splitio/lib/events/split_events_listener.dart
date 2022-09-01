@@ -19,9 +19,12 @@ abstract class SplitEventsListener {
 class DefaultEventsListener implements SplitEventsListener {
   final MethodChannelManager _methodChannelManager;
 
-  final SplitEventMethodCallHandler _methodCallHandler;
+  late final SplitEventMethodCallHandler _methodCallHandler;
 
-  DefaultEventsListener(this._methodChannelManager, this._methodCallHandler) {
+  DefaultEventsListener(this._methodChannelManager, String matchingKey,
+      String? bucketingKey, SplitClient splitClient) {
+    _methodCallHandler =
+        SplitEventMethodCallHandler(matchingKey, bucketingKey, splitClient);
     _methodChannelManager.addNativeCallHandler(_methodCallHandler);
   }
 

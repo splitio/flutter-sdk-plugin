@@ -1,6 +1,8 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/method_channel_platform.dart';
+import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -34,6 +36,10 @@ abstract class _FactoryPlatform {
 
   Future<List<SplitView>> splits(
       {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  Stream<Impression> impressionsStream() {
     throw UnimplementedError();
   }
 }
@@ -129,8 +135,35 @@ abstract class _ClientPlatform {
       Map<String, dynamic> properties = const {}}) {
     throw UnimplementedError();
   }
+
+  Future<SplitClient> onReady(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  Future<SplitClient> onReadyFromCache(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  Stream<SplitClient> onUpdated(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
+
+  Future<SplitClient> onTimeout(
+      {required String matchingKey, required String? bucketingKey}) {
+    throw UnimplementedError();
+  }
 }
 
+/// The interface that implementations of splitio must implement.
+///
+/// Platform implementations should extend this class rather than implement it as `splitio`
+/// does not consider newly added methods to be breaking changes. Extending this class
+/// (using `extends`) ensures that the subclass will get the default implementation, while
+/// platform implementations that `implements` this interface will be broken by newly added
+/// [SplitioPlatform] methods.
 abstract class SplitioPlatform extends PlatformInterface
     with _FactoryPlatform, _ClientPlatform {
   SplitioPlatform() : super(token: _token);
