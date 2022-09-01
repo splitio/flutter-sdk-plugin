@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_client.dart';
@@ -25,8 +24,7 @@ class Splitio {
 
   late final SplitConfiguration? _splitConfiguration;
 
-  final MethodChannelManager _methodChannelManager =
-      MethodChannelManager(SplitioPlatform.instance);
+  final SplitioPlatform _platform = SplitioPlatform.instance;
 
   /// SDK instance constructor.
   ///
@@ -76,30 +74,29 @@ class Splitio {
       ClientReadinessCallback? onUpdated,
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
-    _methodChannelManager.getClient(
-        matchingKey: key, bucketingKey: bucketingKey);
+    _platform.getClient(matchingKey: key, bucketingKey: bucketingKey);
 
-    var client = DefaultSplitClient(_methodChannelManager, key, bucketingKey);
+    var client = DefaultSplitClient(_platform, key, bucketingKey);
     if (onReady != null) {
-      _methodChannelManager
+      _platform
           .onReady(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onReady.call(client));
     }
 
     if (onReadyFromCache != null) {
-      _methodChannelManager
+      _platform
           .onReadyFromCache(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onReadyFromCache.call(client));
     }
 
     if (onTimeout != null) {
-      _methodChannelManager
+      _platform
           .onTimeout(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onTimeout.call(client));
     }
 
     if (onUpdated != null) {
-      _methodChannelManager
+      _platform
           .onUpdated(matchingKey: key, bucketingKey: bucketingKey)
           ?.listen((event) => onUpdated.call(client));
     }
@@ -108,32 +105,32 @@ class Splitio {
   }
 
   Future<List<String>> splitNames() async {
-    List<String> splitNames = await _methodChannelManager.splitNames(
+    List<String> splitNames = await _platform.splitNames(
         matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    return _methodChannelManager.splits(
+    return _platform.splits(
         matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
   }
 
   /// If the impressionListener configuration has been enabled,
   /// generated impressions will be streamed here.
   Stream<Impression> impressionsStream() {
-    return _methodChannelManager.impressionsStream();
+    return _platform.impressionsStream();
   }
 
   Future<SplitView?> split(String splitName) async {
-    return _methodChannelManager.split(
+    return _platform.split(
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,
         splitName: splitName);
   }
 
   Future<void> _init() {
-    return _methodChannelManager.init(
+    return _platform.init(
         apiKey: _apiKey,
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,

@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
@@ -140,21 +140,20 @@ abstract class SplitClient {
 }
 
 class DefaultSplitClient implements SplitClient {
-  final MethodChannelManager _methodChannelManager;
+  final SplitioPlatform _platform;
   final String _matchingKey;
   final String? _bucketingKey;
 
-  DefaultSplitClient(
-      this._methodChannelManager, this._matchingKey, this._bucketingKey);
+  DefaultSplitClient(this._platform, this._matchingKey, this._bucketingKey);
 
   @visibleForTesting
   DefaultSplitClient.withEventListener(
-      this._methodChannelManager, this._matchingKey, this._bucketingKey);
+      this._platform, this._matchingKey, this._bucketingKey);
 
   @override
   Future<String> getTreatment(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _methodChannelManager.getTreatment(
+    return _platform.getTreatment(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitName: splitName,
@@ -164,7 +163,7 @@ class DefaultSplitClient implements SplitClient {
   @override
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _methodChannelManager.getTreatmentWithConfig(
+    return _platform.getTreatmentWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitName: splitName,
@@ -174,7 +173,7 @@ class DefaultSplitClient implements SplitClient {
   @override
   Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _methodChannelManager.getTreatments(
+    return _platform.getTreatments(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitNames: splitNames,
@@ -185,7 +184,7 @@ class DefaultSplitClient implements SplitClient {
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _methodChannelManager.getTreatmentsWithConfig(
+    return _platform.getTreatmentsWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitNames: splitNames,
@@ -197,7 +196,7 @@ class DefaultSplitClient implements SplitClient {
       {String? trafficType,
       double? value,
       Map<String, dynamic> properties = const {}}) async {
-    return _methodChannelManager.track(
+    return _platform.track(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         eventType: eventType,
@@ -208,7 +207,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    return _methodChannelManager.setAttribute(
+    return _platform.setAttribute(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributeName: attributeName,
@@ -217,7 +216,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<dynamic> getAttribute(String attributeName) async {
-    return _methodChannelManager.getAttribute(
+    return _platform.getAttribute(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributeName: attributeName);
@@ -225,7 +224,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    return _methodChannelManager.setAttributes(
+    return _platform.setAttributes(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributes: attributes);
@@ -233,13 +232,13 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<Map<String, dynamic>> getAttributes() async {
-    return _methodChannelManager.getAllAttributes(
+    return _platform.getAllAttributes(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<bool> removeAttribute(String attributeName) async {
-    return _methodChannelManager.removeAttribute(
+    return _platform.removeAttribute(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         attributeName: attributeName);
@@ -247,25 +246,25 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<bool> clearAttributes() async {
-    return _methodChannelManager.clearAttributes(
+    return _platform.clearAttributes(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<void> flush() async {
-    return _methodChannelManager.flush(
+    return _platform.flush(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<void> destroy() async {
-    return _methodChannelManager.destroy(
+    return _platform.destroy(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
   Future<SplitClient> whenReady() async {
-    await _methodChannelManager.onReady(
+    await _platform.onReady(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
 
     return Future.value(this);
@@ -273,7 +272,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<SplitClient> whenReadyFromCache() async {
-    await _methodChannelManager.onReadyFromCache(
+    await _platform.onReadyFromCache(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
 
     return Future.value(this);
@@ -281,7 +280,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Stream<SplitClient> whenUpdated() {
-    return _methodChannelManager
+    return _platform
             .onUpdated(matchingKey: _matchingKey, bucketingKey: _bucketingKey)
             ?.map((event) => this) ??
         const Stream.empty();
@@ -289,7 +288,7 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<SplitClient> whenTimeout() async {
-    await _methodChannelManager.onTimeout(
+    await _platform.onTimeout(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
 
     return Future.value(this);

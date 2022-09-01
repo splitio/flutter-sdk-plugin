@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/impressions/impressions_method_call_handler.dart';
@@ -23,6 +24,7 @@ class MethodChannelPlatform extends SplitioPlatform {
     _methodChannel.setMethodCallHandler((call) => handle(call));
   }
 
+  @visibleForTesting
   Future<void> handle(MethodCall call) async {
     _impressionsMethodCallHandler.handle(call.method, call.arguments);
     for (MethodCallHandler handler in _handlers.values) {
@@ -52,7 +54,10 @@ class MethodChannelPlatform extends SplitioPlatform {
   Future<void> getClient(
       {required String matchingKey, required String? bucketingKey}) {
     _handlers.addAll(
-        {'${matchingKey}_$bucketingKey': SplitEventMethodCallHandler(matchingKey, bucketingKey)});
+        {
+          _buildMapKey(matchingKey, bucketingKey): SplitEventMethodCallHandler(
+              matchingKey, bucketingKey)
+        });
 
     return _methodChannel.invokeMethod(
         'getClient', _buildParameters(matchingKey, bucketingKey));
@@ -68,8 +73,10 @@ class MethodChannelPlatform extends SplitioPlatform {
   @override
   Future<void> destroy(
       {required String matchingKey, required String? bucketingKey}) async {
-    _handlers['${matchingKey}_$bucketingKey']?.destroy();
-    _handlers.remove('${matchingKey}_$bucketingKey');
+    var handlerKey = _buildMapKey(matchingKey, bucketingKey);
+    _handlers[handlerKey]?.destroy();
+    _handlers.remove(handlerKey);
+
     return await _methodChannel.invokeMethod(
         'destroy', _buildParameters(matchingKey, bucketingKey));
   }
@@ -291,29 +298,34 @@ class MethodChannelPlatform extends SplitioPlatform {
   @override
   Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) {
-    return _handlers['${matchingKey}_$bucketingKey']?.onReady();
+    return _handlers[_buildMapKey(matchingKey, bucketingKey)]?.onReady();
   }
 
   @override
   Future<void>? onReadyFromCache(
       {required String matchingKey, required String? bucketingKey}) {
-    return _handlers['${matchingKey}_$bucketingKey']?.onReadyFromCache();
+    return _handlers[_buildMapKey(matchingKey, bucketingKey)]
+        ?.onReadyFromCache();
   }
 
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    return _handlers['${matchingKey}_$bucketingKey']?.onUpdated();
+    return _handlers[_buildMapKey(matchingKey, bucketingKey)]?.onUpdated();
   }
 
   @override
   Future<void>? onTimeout(
       {required String matchingKey, required String? bucketingKey}) {
-    return _handlers['${matchingKey}_$bucketingKey']?.onTimeout();
+    return _handlers[_buildMapKey(matchingKey, bucketingKey)]?.onTimeout();
   }
 
   @override
   Stream<Impression> impressionsStream() {
     return _impressionsMethodCallHandler.stream();
+  }
+
+  String _buildMapKey(String matchingKey, String? bucketingKey) {
+    return '${matchingKey}_$bucketingKey';
   }
 }
