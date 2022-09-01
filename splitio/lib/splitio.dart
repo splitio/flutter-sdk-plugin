@@ -76,30 +76,35 @@ class Splitio {
       ClientReadinessCallback? onUpdated,
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
-
-    var client = DefaultSplitClient(_methodChannelManager, key, bucketingKey);
-    if (onReady != null) {
-      client.whenReady().then((client) => onReady.call(client));
-    }
-
-    if (onReadyFromCache != null) {
-      client
-          .whenReadyFromCache()
-          .then((client) => onReadyFromCache.call(client));
-    }
-
-    if (onTimeout != null) {
-      client.whenTimeout().then((client) => onTimeout.call(client));
-    }
-
-    if (onUpdated != null) {
-      client.whenUpdated().listen((client) => onUpdated.call(client));
-    }
+    //
+    // if (onReady != null) {
+    //   _methodChannelManager
+    //       .onReady(matchingKey: key, bucketingKey: bucketingKey)?
+    //       .then((client) => onReady.call(client));
+    // }
+    //
+    // if (onReadyFromCache != null) {
+    //   _methodChannelManager
+    //       .onReadyFromCache(matchingKey: key, bucketingKey: bucketingKey)
+    //       .then((client) => onReadyFromCache.call(client));
+    // }
+    //
+    // if (onTimeout != null) {
+    //   _methodChannelManager
+    //       .onTimeout(matchingKey: key, bucketingKey: bucketingKey)
+    //       .then((client) => onTimeout.call(client));
+    // }
+    //
+    // if (onUpdated != null) {
+    //   _methodChannelManager
+    //       .onUpdated(matchingKey: key, bucketingKey: bucketingKey)
+    //       .listen((client) => onUpdated.call(client));
+    // }
 
     _methodChannelManager.getClient(
         matchingKey: key, bucketingKey: bucketingKey);
 
-    return client;
+    return DefaultSplitClient(_methodChannelManager, key, bucketingKey);
   }
 
   Future<List<String>> splitNames() async {

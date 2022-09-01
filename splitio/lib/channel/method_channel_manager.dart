@@ -1,7 +1,5 @@
 import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
-import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -10,16 +8,6 @@ class MethodChannelManager extends SplitioPlatform {
   final SplitioPlatform _platform;
 
   MethodChannelManager(this._platform);
-
-  @override
-  void addNativeCallHandler(MethodCallHandler handler) {
-    _platform.addNativeCallHandler(handler); // TODO
-  }
-
-  @override
-  void removeNativeCallHandler(MethodCallHandler handler) {
-    _platform.removeNativeCallHandler(handler); // TODO
-  }
 
   @override
   Future<bool> clearAttributes(
@@ -210,27 +198,31 @@ class MethodChannelManager extends SplitioPlatform {
   }
 
   @override
-  Future<SplitClient> onReady(
+  Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _platform.onReady(
+        matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   @override
-  Future<SplitClient> onReadyFromCache(
+  Future<void>? onReadyFromCache(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _platform.onReadyFromCache(
+        matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   @override
-  Stream<SplitClient> onUpdated(
+  Future<void>? onTimeout(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _platform.onTimeout(
+        matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   @override
-  Future<SplitClient> onTimeout(
+  Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _platform.onUpdated(
+        matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   @override

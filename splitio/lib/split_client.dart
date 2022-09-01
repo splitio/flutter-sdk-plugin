@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:splitio/channel/method_channel_manager.dart';
-import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
@@ -145,17 +144,12 @@ class DefaultSplitClient implements SplitClient {
   final String _matchingKey;
   final String? _bucketingKey;
 
-  late final SplitEventsListener _splitEventsListener;
-
   DefaultSplitClient(
-      this._methodChannelManager, this._matchingKey, this._bucketingKey) {
-    _splitEventsListener = DefaultEventsListener(
-        _methodChannelManager, _matchingKey, _bucketingKey, this);
-  }
+      this._methodChannelManager, this._matchingKey, this._bucketingKey);
 
   @visibleForTesting
-  DefaultSplitClient.withEventListener(this._methodChannelManager,
-      this._matchingKey, this._bucketingKey, this._splitEventsListener);
+  DefaultSplitClient.withEventListener(
+      this._methodChannelManager, this._matchingKey, this._bucketingKey);
 
   @override
   Future<String> getTreatment(String splitName,
@@ -265,28 +259,39 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<void> destroy() async {
-    _splitEventsListener.destroy();
     return _methodChannelManager.destroy(
         matchingKey: _matchingKey, bucketingKey: _bucketingKey);
   }
 
   @override
-  Future<SplitClient> whenReady() {
-    return _splitEventsListener.onReady();
+  Future<SplitClient> whenReady() async {
+    await _methodChannelManager.onReady(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+
+    return Future.value(this);
   }
 
   @override
-  Future<SplitClient> whenReadyFromCache() {
-    return _splitEventsListener.onReadyFromCache();
+  Future<SplitClient> whenReadyFromCache() async {
+    await _methodChannelManager.onReadyFromCache(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+
+    return Future.value(this);
   }
 
   @override
   Stream<SplitClient> whenUpdated() {
-    return _splitEventsListener.onUpdated();
+    return _methodChannelManager
+            .onUpdated(matchingKey: _matchingKey, bucketingKey: _bucketingKey)
+            ?.map((event) => this) ??
+        const Stream.empty();
   }
 
   @override
-  Future<SplitClient> whenTimeout() {
-    return _splitEventsListener.onTimeout();
+  Future<SplitClient> whenTimeout() async {
+    await _methodChannelManager.onTimeout(
+        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+
+    return Future.value(this);
   }
 }

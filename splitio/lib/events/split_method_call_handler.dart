@@ -1,11 +1,8 @@
 import 'dart:async';
 
-import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/method_call_handler.dart';
-import 'package:splitio/split_client.dart';
 
-class SplitEventMethodCallHandler
-    implements MethodCallHandler, SplitEventsListener {
+class SplitEventMethodCallHandler implements MethodCallHandler {
   static const String _eventClientReady = 'clientReady';
   static const String _eventClientReadyFromCache = 'clientReadyFromCache';
   static const String _eventClientTimeout = 'clientTimeout';
@@ -13,11 +10,9 @@ class SplitEventMethodCallHandler
 
   final String _matchingKey;
   final String? _bucketingKey;
-  final SplitClient _splitClient;
-  final StreamController<SplitClient> _updateStreamCompleter =
-      StreamController();
+  final StreamController<void> _updateStreamCompleter = StreamController();
 
-  final Map<String, Completer<SplitClient>> _clientEventCallbacks = {
+  final Map<String, Completer<void>> _clientEventCallbacks = {
     _eventClientReady: Completer(),
     _eventClientReadyFromCache: Completer(),
     _eventClientTimeout: Completer(),
@@ -29,8 +24,7 @@ class SplitEventMethodCallHandler
     _eventClientTimeout: false,
   };
 
-  SplitEventMethodCallHandler(
-      this._matchingKey, this._bucketingKey, this._splitClient);
+  SplitEventMethodCallHandler(this._matchingKey, this._bucketingKey);
 
   @override
   Future<void> handle(String methodName, dynamic methodArguments) async {
@@ -39,7 +33,7 @@ class SplitEventMethodCallHandler
           _bucketingKey == methodArguments['bucketingKey']) {
         var clientEventCallback = _clientEventCallbacks[methodName];
         if (clientEventCallback != null && !clientEventCallback.isCompleted) {
-          clientEventCallback.complete(_splitClient);
+          clientEventCallback.complete();
         }
 
         if (_triggeredClientEvents.containsKey(methodName)) {
@@ -50,39 +44,34 @@ class SplitEventMethodCallHandler
         _updateStreamCompleter.hasListener &&
         !_updateStreamCompleter.isPaused &&
         !_updateStreamCompleter.isClosed) {
-      _updateStreamCompleter.add(_splitClient);
+      _updateStreamCompleter.add(null);
     }
   }
 
-  @override
-  Future<SplitClient> onReady() {
+  Future<void> onReady() {
     return _onEvent(_eventClientReady);
   }
 
-  @override
-  Future<SplitClient> onReadyFromCache() {
+  Future<void> onReadyFromCache() {
     return _onEvent(_eventClientReadyFromCache);
   }
 
-  @override
-  Stream<SplitClient> onUpdated() {
+  Stream<void> onUpdated() {
     return _updateStreamCompleter.stream;
   }
 
-  @override
-  Future<SplitClient> onTimeout() {
+  Future<void> onTimeout() {
     return _onEvent(_eventClientTimeout);
   }
 
-  @override
   void destroy() {
     _updateStreamCompleter.close();
   }
 
-  Future<SplitClient> _onEvent(String sdkEvent) {
+  Future<void> _onEvent(String sdkEvent) {
     if (_triggeredClientEvents.containsKey(sdkEvent) &&
         _triggeredClientEvents[sdkEvent] == true) {
-      return Future.value(_splitClient);
+      return Future.value();
     }
 
     return (_clientEventCallbacks[sdkEvent])?.future ?? Future.error(Object());

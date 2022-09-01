@@ -1,8 +1,8 @@
+import 'dart:async';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/method_channel_platform.dart';
-import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -136,22 +136,22 @@ abstract class _ClientPlatform {
     throw UnimplementedError();
   }
 
-  Future<SplitClient> onReady(
+  Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) {
     throw UnimplementedError();
   }
 
-  Future<SplitClient> onReadyFromCache(
+  Future<void>? onReadyFromCache(
       {required String matchingKey, required String? bucketingKey}) {
     throw UnimplementedError();
   }
 
-  Stream<SplitClient> onUpdated(
+  Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
     throw UnimplementedError();
   }
 
-  Future<SplitClient> onTimeout(
+  Future<void>? onTimeout(
       {required String matchingKey, required String? bucketingKey}) {
     throw UnimplementedError();
   }
@@ -180,8 +180,4 @@ abstract class SplitioPlatform extends PlatformInterface
     PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
-
-  void addNativeCallHandler(MethodCallHandler handler); //TODO
-
-  void removeNativeCallHandler(MethodCallHandler handler); //TODO
 }

@@ -1,9 +1,9 @@
 import 'package:flutter/services.dart';
+import 'package:splitio/events/split_method_call_handler.dart';
 import 'package:splitio/impressions/impressions_method_call_handler.dart';
 import 'package:splitio/impressions/split_impression.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
-import 'package:splitio/split_client.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
@@ -15,29 +15,19 @@ class MethodChannelPlatform extends SplitioPlatform {
 
   final MethodChannel _methodChannel = const MethodChannel('splitio');
 
-  final Set<MethodCallHandler> _handlers = {};
+  final Map<String, SplitEventMethodCallHandler> _handlers = {};
 
   final ImpressionsMethodCallHandler _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
 
   MethodChannelPlatform() {
-    _handlers.add(_impressionsMethodCallHandler);
     _methodChannel.setMethodCallHandler((call) => handle(call));
   }
 
   Future<void> handle(MethodCall call) async {
-    for (MethodCallHandler handler in _handlers) {
+    _impressionsMethodCallHandler.handle(call.method, call.arguments);
+    for (MethodCallHandler handler in _handlers.values) {
       handler.handle(call.method, call.arguments);
     }
-  }
-
-  @override
-  void addNativeCallHandler(MethodCallHandler handler) {
-    _handlers.add(handler);
-  }
-
-  @override
-  void removeNativeCallHandler(MethodCallHandler handler) {
-    _handlers.remove(handler);
   }
 
   @override
@@ -59,6 +49,16 @@ class MethodChannelPlatform extends SplitioPlatform {
   }
 
   @override
+  Future<void> getClient(
+      {required String matchingKey, required String? bucketingKey}) {
+    _handlers.addAll(
+        {'${matchingKey}_$bucketingKey': SplitEventMethodCallHandler(matchingKey, bucketingKey)});
+
+    return _methodChannel.invokeMethod(
+        'getClient', _buildParameters(matchingKey, bucketingKey));
+  }
+
+  @override
   Future<bool> clearAttributes(
       {required String matchingKey, required String? bucketingKey}) async {
     return await _methodChannel.invokeMethod(
@@ -68,6 +68,8 @@ class MethodChannelPlatform extends SplitioPlatform {
   @override
   Future<void> destroy(
       {required String matchingKey, required String? bucketingKey}) async {
+    _handlers['${matchingKey}_$bucketingKey']?.destroy();
+    _handlers.remove('${matchingKey}_$bucketingKey');
     return await _methodChannel.invokeMethod(
         'destroy', _buildParameters(matchingKey, bucketingKey));
   }
@@ -95,13 +97,6 @@ class MethodChannelPlatform extends SplitioPlatform {
     return _methodChannel.invokeMethod(
         'getAttribute', _buildParameters(
         matchingKey, bucketingKey, {'attributeName': attributeName}));
-  }
-
-  @override
-  Future<void> getClient(
-      {required String matchingKey, required String? bucketingKey}) {
-    return _methodChannel.invokeMethod(
-        'getClient', _buildParameters(matchingKey, bucketingKey));
   }
 
   @override
@@ -294,27 +289,27 @@ class MethodChannelPlatform extends SplitioPlatform {
   }
 
   @override
-  Future<SplitClient> onReady(
+  Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _handlers['${matchingKey}_$bucketingKey']?.onReady();
   }
 
   @override
-  Future<SplitClient> onReadyFromCache(
+  Future<void>? onReadyFromCache(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _handlers['${matchingKey}_$bucketingKey']?.onReadyFromCache();
   }
 
   @override
-  Stream<SplitClient> onUpdated(
+  Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _handlers['${matchingKey}_$bucketingKey']?.onUpdated();
   }
 
   @override
-  Future<SplitClient> onTimeout(
+  Future<void>? onTimeout(
       {required String matchingKey, required String? bucketingKey}) {
-    throw UnimplementedError();
+    return _handlers['${matchingKey}_$bucketingKey']?.onTimeout();
   }
 
   @override
