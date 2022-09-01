@@ -143,7 +143,6 @@ abstract class SplitClient {
 
 class DefaultSplitClient implements SplitClient {
   final MethodChannelManager _methodChannelManager;
-  late final SplitEventMethodCallHandler _methodCallHandler;
   final String _matchingKey;
   final String? _bucketingKey;
 
@@ -151,7 +150,7 @@ class DefaultSplitClient implements SplitClient {
 
   DefaultSplitClient(
       this._methodChannelManager, this._matchingKey, this._bucketingKey) {
-    _methodCallHandler =
+    SplitEventMethodCallHandler _methodCallHandler =
         SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this);
     _splitEventsListener =
         DefaultEventsListener(_methodChannelManager, _methodCallHandler);

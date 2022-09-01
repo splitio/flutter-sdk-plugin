@@ -17,9 +17,9 @@ void main() {
     var mockMethodHandler1 = MethodCallHandlerStub();
     var mockMethodHandler2 = MethodCallHandlerStub();
     var mockMethodHandler3 = MethodCallHandlerStub();
-    _methodChannelManager.addHandler(mockMethodHandler1);
-    _methodChannelManager.addHandler(mockMethodHandler2);
-    _methodChannelManager.addHandler(mockMethodHandler3);
+    _methodChannelManager.addNativeCallHandler(mockMethodHandler1);
+    _methodChannelManager.addNativeCallHandler(mockMethodHandler2);
+    _methodChannelManager.addNativeCallHandler(mockMethodHandler3);
 
     _methodChannelManager.handle(const MethodCall('test-method'));
 
@@ -50,11 +50,11 @@ void main() {
     final MethodCallHandlerStub handler1 = MethodCallHandlerStub();
     final MethodCallHandlerStub handler2 = MethodCallHandlerStub();
     final MethodCallHandlerStub handler3 = MethodCallHandlerStub();
-    _methodChannelManager.addHandler(handler1);
-    _methodChannelManager.addHandler(handler2);
-    _methodChannelManager.addHandler(handler3);
+    _methodChannelManager.addNativeCallHandler(handler1);
+    _methodChannelManager.addNativeCallHandler(handler2);
+    _methodChannelManager.addNativeCallHandler(handler3);
 
-    _methodChannelManager.removeHandler(handler2);
+    _methodChannelManager.removeNativeCallHandler(handler2);
 
     _methodChannelManager.handle(const MethodCall('test-method'));
 

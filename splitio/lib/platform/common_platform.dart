@@ -1,4 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/method_channel_platform.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
@@ -146,4 +147,8 @@ abstract class SplitioPlatform extends PlatformInterface
     PlatformInterface.verify(instance, _token);
     _instance = instance;
   }
+
+  void addNativeCallHandler(MethodCallHandler handler); //TODO
+
+  void removeNativeCallHandler(MethodCallHandler handler); //TODO
 }

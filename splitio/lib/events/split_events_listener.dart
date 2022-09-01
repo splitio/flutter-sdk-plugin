@@ -22,7 +22,7 @@ class DefaultEventsListener implements SplitEventsListener {
   final SplitEventMethodCallHandler _methodCallHandler;
 
   DefaultEventsListener(this._methodChannelManager, this._methodCallHandler) {
-    _methodChannelManager.addHandler(_methodCallHandler);
+    _methodChannelManager.addNativeCallHandler(_methodCallHandler);
   }
 
   @override
@@ -48,6 +48,6 @@ class DefaultEventsListener implements SplitEventsListener {
   @override
   void destroy() {
     _methodCallHandler.destroy();
-    _methodChannelManager.removeHandler(_methodCallHandler);
+    _methodChannelManager.removeNativeCallHandler(_methodCallHandler);
   }
 }

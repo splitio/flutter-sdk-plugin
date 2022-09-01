@@ -1,16 +1,56 @@
 import 'package:flutter/services.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_configuration.dart';
 import 'package:splitio/split_result.dart';
 import 'package:splitio/split_view.dart';
 
-class MethodChannelPlatform extends SplitioPlatform {
-  static const String _controlTreatment = 'control';
+const String _controlTreatment = 'control';
+const SplitResult _controlResult = SplitResult(_controlTreatment, null);
 
-  static const SplitResult _controlResult =
-  SplitResult(_controlTreatment, null);
+class MethodChannelPlatform extends SplitioPlatform {
 
   final MethodChannel _methodChannel = const MethodChannel('splitio');
+
+  final Set<MethodCallHandler> _handlers = {};
+
+  MethodChannelPlatform() {
+    _methodChannel.setMethodCallHandler((call) => handle(call));
+  }
+
+  Future<void> handle(MethodCall call) async {
+    for (MethodCallHandler handler in _handlers) {
+      handler.handle(call.method, call.arguments);
+    }
+  }
+
+  @override
+  void addNativeCallHandler(MethodCallHandler handler) {
+    _handlers.add(handler);
+  }
+
+  @override
+  void removeNativeCallHandler(MethodCallHandler handler) {
+    _handlers.remove(handler);
+  }
+
+  @override
+  Future<void> init({required String apiKey,
+    required String matchingKey,
+    required String? bucketingKey,
+    SplitConfiguration? sdkConfiguration}) {
+    Map<String, Object?> arguments = {
+      'apiKey': apiKey,
+      'matchingKey': matchingKey,
+      'sdkConfiguration': sdkConfiguration?.configurationMap ?? {},
+    };
+
+    if (bucketingKey != null) {
+      arguments.addAll({'bucketingKey': bucketingKey});
+    }
+
+    return _methodChannel.invokeMethod('init', arguments);
+  }
 
   @override
   Future<bool> clearAttributes(
@@ -118,24 +158,6 @@ class MethodChannelPlatform extends SplitioPlatform {
     return treatments?.map((key, value) =>
         MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
         {for (var item in splitNames) item: _controlResult};
-  }
-
-  @override
-  Future<void> init({required String apiKey,
-    required String matchingKey,
-    required String? bucketingKey,
-    SplitConfiguration? sdkConfiguration}) {
-    Map<String, Object?> arguments = {
-      'apiKey': apiKey,
-      'matchingKey': matchingKey,
-      'sdkConfiguration': sdkConfiguration?.configurationMap ?? {},
-    };
-
-    if (bucketingKey != null) {
-      arguments.addAll({'bucketingKey': bucketingKey});
-    }
-
-    return _methodChannel.invokeMethod('init', arguments);
   }
 
   @override

@@ -1,4 +1,3 @@
-import 'package:flutter/services.dart';
 import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_configuration.dart';
@@ -8,22 +7,16 @@ import 'package:splitio/split_view.dart';
 class MethodChannelManager extends SplitioPlatform {
   final SplitioPlatform _platform;
 
-  final Set<MethodCallHandler> _handlers = {};
-
   MethodChannelManager(this._platform);
 
-  void addHandler(MethodCallHandler handler) {
-    _handlers.add(handler);
+  @override
+  void addNativeCallHandler(MethodCallHandler handler) {
+    _platform.addNativeCallHandler(handler);
   }
 
-  void removeHandler(MethodCallHandler handler) {
-    _handlers.remove(handler);
-  }
-
-  Future<void> handle(MethodCall call) async {
-    for (MethodCallHandler handler in _handlers) {
-      handler.handle(call.method, call.arguments);
-    }
+  @override
+  void removeNativeCallHandler(MethodCallHandler handler) {
+    _platform.removeNativeCallHandler(handler);
   }
 
   @override

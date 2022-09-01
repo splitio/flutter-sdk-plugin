@@ -47,7 +47,7 @@ class Splitio {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
     _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
-    _methodChannelManager.addHandler(_impressionsMethodCallHandler);
+    _methodChannelManager.addNativeCallHandler(_impressionsMethodCallHandler);
 
     _init();
   }
