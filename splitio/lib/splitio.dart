@@ -1,17 +1,15 @@
 import 'dart:async';
 
-import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/platform/common_platform.dart';
 import 'package:splitio/split_client.dart';
-import 'package:splitio/split_configuration.dart';
-import 'package:splitio/split_view.dart';
+import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_impression.dart';
+import 'package:splitio_platform_interface/split_view.dart';
+import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
-export 'package:splitio/impressions/split_impression.dart';
 export 'package:splitio/split_client.dart';
-export 'package:splitio/split_configuration.dart';
-export 'package:splitio/split_result.dart';
-export 'package:splitio/split_sync_config.dart';
-export 'package:splitio/split_view.dart';
+export 'package:splitio_platform_interface/split_configuration.dart';
+export 'package:splitio_platform_interface/split_impression.dart';
+export 'package:splitio_platform_interface/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 

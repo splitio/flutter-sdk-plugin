@@ -1,4 +1,4 @@
-import 'package:splitio/split_sync_config.dart';
+import 'package:splitio_platform_interface/split_sync_config.dart';
 
 class SplitConfiguration {
   final Map<String, dynamic> configurationMap = {};

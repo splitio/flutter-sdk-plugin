@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
-import 'package:splitio/platform/common_platform.dart';
-import 'package:splitio/split_result.dart';
+import 'package:splitio_platform_interface/split_result.dart';
+import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 abstract class SplitClient {
   /// Performs an evaluation for the [splitName] feature.

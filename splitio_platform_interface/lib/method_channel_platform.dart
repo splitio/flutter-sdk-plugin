@@ -1,13 +1,14 @@
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:splitio/events/split_method_call_handler.dart';
-import 'package:splitio/impressions/impressions_method_call_handler.dart';
-import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/method_call_handler.dart';
-import 'package:splitio/platform/common_platform.dart';
-import 'package:splitio/split_configuration.dart';
-import 'package:splitio/split_result.dart';
-import 'package:splitio/split_view.dart';
+import 'package:splitio_platform_interface/events/split_method_call_handler.dart';
+import 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
+import 'package:splitio_platform_interface/method_call_handler.dart';
+import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_impression.dart';
+import 'package:splitio_platform_interface/split_result.dart';
+import 'package:splitio_platform_interface/split_view.dart';
+import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 const String _controlTreatment = 'control';
 const SplitResult _controlResult = SplitResult(_controlTreatment, null);

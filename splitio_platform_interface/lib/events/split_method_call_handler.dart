@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:splitio/method_call_handler.dart';
+import 'package:splitio_platform_interface/method_call_handler.dart';
 
 class SplitEventMethodCallHandler implements MethodCallHandler {
   static const String _eventClientReady = 'clientReady';

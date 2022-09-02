@@ -11,7 +11,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  plugin_platform_interface: ^2.1.2
+  splitio_platform_interface: # ^1.0.0
+    path: ../splitio_platform_interface
 
 dev_dependencies:
   flutter_test:

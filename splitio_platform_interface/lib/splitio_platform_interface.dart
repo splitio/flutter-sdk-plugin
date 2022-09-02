@@ -1,11 +1,11 @@
 import 'dart:async';
 
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:splitio/impressions/split_impression.dart';
-import 'package:splitio/platform/method_channel_platform.dart';
-import 'package:splitio/split_configuration.dart';
-import 'package:splitio/split_result.dart';
-import 'package:splitio/split_view.dart';
+import 'package:splitio_platform_interface/method_channel_platform.dart';
+import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_impression.dart';
+import 'package:splitio_platform_interface/split_result.dart';
+import 'package:splitio_platform_interface/split_view.dart';
 
 abstract class _FactoryPlatform {
   Future<void> getClient(

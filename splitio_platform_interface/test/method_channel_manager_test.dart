@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio/channel/method_channel_manager.dart';
-import 'package:splitio/method_call_handler.dart';
+
+import '../lib/method_call_handler.dart';
 
 void main() {
   late MethodChannelStub _channel;

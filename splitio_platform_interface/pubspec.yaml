@@ -1,0 +1,23 @@
+name: splitio_platform_interface
+description: Common platform interface for the splitio plugin.
+# NOTE: We strongly prefer non-breaking changes, even at the expense of a
+# less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
+version: 1.0.0
+homepage: https://split.io/
+repository: https://github.com/splitio/flutter-sdk-plugin/splitio/splitio_platform_interface
+
+publish_to: none
+
+environment:
+  sdk: ">=2.16.2 <3.0.0"
+  flutter: ">=2.5.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  plugin_platform_interface: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^1.0.0
