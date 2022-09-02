@@ -1,6 +1,8 @@
 import 'package:flutter/foundation.dart';
-import 'package:splitio_platform_interface/split_result.dart';
-import 'package:splitio_platform_interface/splitio_platform_interface.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/events/split_events_listener.dart';
+import 'package:splitio/events/split_method_call_handler.dart';
+import 'package:splitio/split_result.dart';
 
 abstract class SplitClient {
   /// Performs an evaluation for the [splitName] feature.
@@ -140,55 +142,79 @@ abstract class SplitClient {
 }
 
 class DefaultSplitClient implements SplitClient {
-  final SplitioPlatform _platform;
+  static const String _controlTreatment = 'control';
+  static const SplitResult _controlResult =
+      SplitResult(_controlTreatment, null);
+
+  final MethodChannelManager _methodChannelManager;
+  late final SplitEventMethodCallHandler _methodCallHandler;
   final String _matchingKey;
   final String? _bucketingKey;
 
-  DefaultSplitClient(this._platform, this._matchingKey, this._bucketingKey);
+  late final SplitEventsListener _splitEventsListener;
+
+  DefaultSplitClient(
+      this._methodChannelManager, this._matchingKey, this._bucketingKey) {
+    _methodCallHandler =
+        SplitEventMethodCallHandler(_matchingKey, _bucketingKey, this);
+    _splitEventsListener =
+        DefaultEventsListener(_methodChannelManager, _methodCallHandler);
+  }
 
   @visibleForTesting
-  DefaultSplitClient.withEventListener(
-      this._platform, this._matchingKey, this._bucketingKey);
+  DefaultSplitClient.withEventListener(this._methodChannelManager,
+      this._matchingKey, this._bucketingKey, this._splitEventsListener);
 
   @override
   Future<String> getTreatment(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _platform.getTreatment(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        splitName: splitName,
-        attributes: attributes);
+    return await _methodChannelManager.invokeMethod(
+            'getTreatment',
+            _buildParameters(
+                {'splitName': splitName, 'attributes': attributes})) ??
+        _controlTreatment;
   }
 
   @override
   Future<SplitResult> getTreatmentWithConfig(String splitName,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _platform.getTreatmentWithConfig(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        splitName: splitName,
-        attributes: attributes);
+    Map? treatment = (await _methodChannelManager.invokeMapMethod(
+            'getTreatmentWithConfig',
+            _buildParameters(
+                {'splitName': splitName, 'attributes': attributes})))
+        ?.entries
+        .first
+        .value;
+    if (treatment == null) {
+      return _controlResult;
+    }
+
+    return SplitResult(treatment['treatment'], treatment['config']);
   }
 
   @override
   Future<Map<String, String>> getTreatments(List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _platform.getTreatments(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        splitNames: splitNames,
-        attributes: attributes);
+    Map? treatments = await _methodChannelManager.invokeMapMethod(
+        'getTreatments',
+        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
+
+    return treatments
+            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+        {for (var item in splitNames) item: _controlTreatment};
   }
 
   @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> splitNames,
       [Map<String, dynamic> attributes = const {}]) async {
-    return _platform.getTreatmentsWithConfig(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        splitNames: splitNames,
-        attributes: attributes);
+    Map? treatments = await _methodChannelManager.invokeMapMethod(
+        'getTreatmentsWithConfig',
+        _buildParameters({'splitName': splitNames, 'attributes': attributes}));
+
+    return treatments?.map((key, value) =>
+            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+        {for (var item in splitNames) item: _controlResult};
   }
 
   @override
@@ -196,101 +222,121 @@ class DefaultSplitClient implements SplitClient {
       {String? trafficType,
       double? value,
       Map<String, dynamic> properties = const {}}) async {
-    return _platform.track(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        eventType: eventType,
-        trafficType: trafficType,
-        value: value,
-        properties: properties);
+    var parameters = _buildParameters({'eventType': eventType});
+
+    if (trafficType != null) {
+      parameters['trafficType'] = trafficType;
+    }
+
+    if (value != null) {
+      parameters['value'] = value;
+    }
+
+    try {
+      return await _methodChannelManager.invokeMethod("track", parameters)
+          as bool;
+    } on Exception catch (_) {
+      return false;
+    }
   }
 
   @override
   Future<bool> setAttribute(String attributeName, dynamic value) async {
-    return _platform.setAttribute(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        attributeName: attributeName,
-        value: value);
+    var result = await _methodChannelManager.invokeMethod('setAttribute',
+        _buildParameters({'attributeName': attributeName, 'value': value}));
+
+    if (result is bool) {
+      return result;
+    }
+
+    return false;
   }
 
   @override
   Future<dynamic> getAttribute(String attributeName) async {
-    return _platform.getAttribute(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        attributeName: attributeName);
+    return _methodChannelManager.invokeMethod(
+        'getAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
   Future<bool> setAttributes(Map<String, dynamic> attributes) async {
-    return _platform.setAttributes(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        attributes: attributes);
+    var result = await _methodChannelManager.invokeMethod(
+        'setAttributes', _buildParameters({'attributes': attributes}));
+
+    if (result is bool) {
+      return result;
+    }
+
+    return false;
   }
 
   @override
   Future<Map<String, dynamic>> getAttributes() async {
-    return _platform.getAllAttributes(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+    return (await _methodChannelManager.invokeMapMethod(
+                'getAllAttributes', _buildParameters()))
+            ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
+        {};
   }
 
   @override
   Future<bool> removeAttribute(String attributeName) async {
-    return _platform.removeAttribute(
-        matchingKey: _matchingKey,
-        bucketingKey: _bucketingKey,
-        attributeName: attributeName);
+    return await _methodChannelManager.invokeMethod(
+        'removeAttribute', _buildParameters({'attributeName': attributeName}));
   }
 
   @override
   Future<bool> clearAttributes() async {
-    return _platform.clearAttributes(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+    return await _methodChannelManager.invokeMethod(
+        'clearAttributes', _buildParameters());
   }
 
   @override
   Future<void> flush() async {
-    return _platform.flush(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+    return _methodChannelManager.invokeMethod('flush', _buildParameters());
   }
 
   @override
   Future<void> destroy() async {
-    return _platform.destroy(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+    _splitEventsListener.destroy();
+    return _methodChannelManager.invokeMethod('destroy', _buildParameters());
   }
 
   @override
-  Future<SplitClient> whenReady() async {
-    await _platform.onReady(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
-
-    return Future.value(this);
+  Future<SplitClient> whenReady() {
+    return _splitEventsListener.onReady();
   }
 
   @override
-  Future<SplitClient> whenReadyFromCache() async {
-    await _platform.onReadyFromCache(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
-
-    return Future.value(this);
+  Future<SplitClient> whenReadyFromCache() {
+    return _splitEventsListener.onReadyFromCache();
   }
 
   @override
   Stream<SplitClient> whenUpdated() {
-    return _platform
-            .onUpdated(matchingKey: _matchingKey, bucketingKey: _bucketingKey)
-            ?.map((event) => this) ??
-        const Stream.empty();
+    return _splitEventsListener.onUpdated();
   }
 
   @override
-  Future<SplitClient> whenTimeout() async {
-    await _platform.onTimeout(
-        matchingKey: _matchingKey, bucketingKey: _bucketingKey);
+  Future<SplitClient> whenTimeout() {
+    return _splitEventsListener.onTimeout();
+  }
 
-    return Future.value(this);
+  Map<String, String> _getKeysMap() {
+    Map<String, String> result = {'matchingKey': _matchingKey};
+
+    if (_bucketingKey != null) {
+      result.addAll({'bucketingKey': _bucketingKey!});
+    }
+
+    return result;
+  }
+
+  Map<String, dynamic> _buildParameters(
+      [Map<String, dynamic> parameters = const {}]) {
+    Map<String, dynamic> result = {};
+    result.addAll(parameters);
+    result.addAll(_getKeysMap());
+
+    return result;
   }
 }

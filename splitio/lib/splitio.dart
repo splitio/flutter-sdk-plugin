@@ -1,28 +1,31 @@
 import 'dart:async';
 
+import 'package:flutter/services.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/impressions/impressions_method_call_handler.dart';
+import 'package:splitio/impressions/split_impression.dart';
+import 'package:splitio/method_call_handler.dart';
 import 'package:splitio/split_client.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_impression.dart';
-import 'package:splitio_platform_interface/split_view.dart';
-import 'package:splitio_platform_interface/splitio_platform_interface.dart';
+import 'package:splitio/split_configuration.dart';
+import 'package:splitio/split_view.dart';
 
+export 'package:splitio/impressions/split_impression.dart';
 export 'package:splitio/split_client.dart';
-export 'package:splitio_platform_interface/split_configuration.dart';
-export 'package:splitio_platform_interface/split_impression.dart';
-export 'package:splitio_platform_interface/split_view.dart';
+export 'package:splitio/split_configuration.dart';
+export 'package:splitio/split_result.dart';
+export 'package:splitio/split_sync_config.dart';
+export 'package:splitio/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
 class Splitio {
   final String _apiKey;
-
   final String _defaultMatchingKey;
-
   late final String? _defaultBucketingKey;
-
   late final SplitConfiguration? _splitConfiguration;
-
-  final SplitioPlatform _platform = SplitioPlatform.instance;
+  late final StreamMethodCallHandler<Impression> _impressionsMethodCallHandler;
+  final MethodChannelManager _methodChannelManager =
+      MethodChannelManager(const MethodChannel('splitio'));
 
   /// SDK instance constructor.
   ///
@@ -38,6 +41,8 @@ class Splitio {
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
+    _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
+    _methodChannelManager.addHandler(_impressionsMethodCallHandler);
 
     _init();
   }
@@ -72,66 +77,97 @@ class Splitio {
       ClientReadinessCallback? onUpdated,
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
-    _platform.getClient(matchingKey: key, bucketingKey: bucketingKey);
 
-    var client = DefaultSplitClient(_platform, key, bucketingKey);
+    var client = DefaultSplitClient(_methodChannelManager, key, bucketingKey);
     if (onReady != null) {
-      _platform
-          .onReady(matchingKey: key, bucketingKey: bucketingKey)
-          ?.then((val) => onReady.call(client));
+      client.whenReady().then((client) => onReady.call(client));
     }
 
     if (onReadyFromCache != null) {
-      _platform
-          .onReadyFromCache(matchingKey: key, bucketingKey: bucketingKey)
-          ?.then((val) => onReadyFromCache.call(client));
+      client
+          .whenReadyFromCache()
+          .then((client) => onReadyFromCache.call(client));
     }
 
     if (onTimeout != null) {
-      _platform
-          .onTimeout(matchingKey: key, bucketingKey: bucketingKey)
-          ?.then((val) => onTimeout.call(client));
+      client.whenTimeout().then((client) => onTimeout.call(client));
     }
 
     if (onUpdated != null) {
-      _platform
-          .onUpdated(matchingKey: key, bucketingKey: bucketingKey)
-          ?.listen((event) => onUpdated.call(client));
+      client.whenUpdated().listen((client) => onUpdated.call(client));
     }
+
+    _methodChannelManager.invokeMethod(
+        'getClient', _buildGetClientArguments(key, bucketingKey));
 
     return client;
   }
 
   Future<List<String>> splitNames() async {
-    List<String> splitNames = await _platform.splitNames(
-        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
+    List<String> splitNames =
+        await _methodChannelManager.invokeListMethod<String>('splitNames') ??
+            [];
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    return _platform.splits(
-        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
+    List<Map> callResult = (await _methodChannelManager
+            .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
+        []);
+
+    List<SplitView> splits = [];
+    for (var element in callResult) {
+      SplitView? splitView = SplitView.fromEntry(element);
+      if (splitView != null) {
+        splits.add(splitView);
+      }
+    }
+
+    return Future.value(splits);
   }
 
   /// If the impressionListener configuration has been enabled,
   /// generated impressions will be streamed here.
   Stream<Impression> impressionsStream() {
-    return _platform.impressionsStream();
+    return _impressionsMethodCallHandler.stream();
   }
 
   Future<SplitView?> split(String splitName) async {
-    return _platform.split(
-        matchingKey: _defaultMatchingKey,
-        bucketingKey: _defaultBucketingKey,
-        splitName: splitName);
+    Map? mapResult = await _methodChannelManager
+        .invokeMapMethod('split', {'splitName': splitName});
+
+    if (mapResult == null) {
+      return null;
+    }
+
+    return SplitView.fromEntry(mapResult);
   }
 
   Future<void> _init() {
-    return _platform.init(
-        apiKey: _apiKey,
-        matchingKey: _defaultMatchingKey,
-        bucketingKey: _defaultBucketingKey,
-        sdkConfiguration: _splitConfiguration);
+    Map<String, Object?> arguments = {
+      'apiKey': _apiKey,
+      'matchingKey': _defaultMatchingKey,
+      'sdkConfiguration': _splitConfiguration?.configurationMap ?? {},
+    };
+
+    if (_defaultBucketingKey != null) {
+      arguments.addAll({'bucketingKey': _defaultBucketingKey});
+    }
+
+    return _methodChannelManager.invokeMethod('init', arguments);
+  }
+
+  Map<String, Object> _buildGetClientArguments(
+      String key, String? bucketingKey) {
+    var arguments = {
+      'matchingKey': key,
+    };
+
+    if (bucketingKey != null) {
+      arguments.addAll({'bucketingKey': bucketingKey});
+    }
+
+    return arguments;
   }
 }

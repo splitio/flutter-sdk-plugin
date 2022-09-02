@@ -3,9 +3,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio/channel/method_channel_manager.dart';
 import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/events/split_method_call_handler.dart';
+import 'package:splitio/split_client.dart';
 import 'package:splitio/split_result.dart';
-
-import '../lib/split_client.dart';
 
 void main() {
   const MethodChannel _channel = MethodChannel('splitio');
@@ -26,8 +25,7 @@ void main() {
 
   setUp(() {
     _channel.setMockMethodCallHandler((MethodCall methodCall) {
-      splitEventMethodCallHandler.handle(
-          methodCall.method, methodCall.arguments);
+      splitEventMethodCallHandler.handle(methodCall);
     });
   });
 
