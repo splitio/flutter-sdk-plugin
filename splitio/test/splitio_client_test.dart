@@ -1,5 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splitio/channel/method_channel_manager.dart';
+import 'package:splitio/events/split_events_listener.dart';
 import 'package:splitio/split_client.dart';
 
 void main() {
