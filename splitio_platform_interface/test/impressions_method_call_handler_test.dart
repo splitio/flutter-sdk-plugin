@@ -1,8 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
 import 'package:splitio_platform_interface/split_impression.dart';
-
-import '../lib/impressions/impressions_method_call_handler.dart';
 
 void main() {
   test('correct impressionLog method call emits value on stream', () async {
