@@ -1,5 +1,4 @@
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:splitio_platform_interface/events/split_method_call_handler.dart';
 import 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
@@ -15,18 +14,17 @@ const SplitResult _controlResult = SplitResult(_controlTreatment, null);
 
 class MethodChannelPlatform extends SplitioPlatform {
 
-  final MethodChannel _methodChannel = const MethodChannel('splitio');
+  late MethodChannel _methodChannel = const MethodChannel('splitio');
 
   final Map<String, SplitEventMethodCallHandler> _handlers = {};
 
   final ImpressionsMethodCallHandler _impressionsMethodCallHandler = ImpressionsMethodCallHandler();
 
   MethodChannelPlatform() {
-    _methodChannel.setMethodCallHandler((call) => handle(call));
+    _methodChannel.setMethodCallHandler((call) => _handle(call));
   }
 
-  @visibleForTesting
-  Future<void> handle(MethodCall call) async {
+  Future<void> _handle(MethodCall call) async {
     _impressionsMethodCallHandler.handle(call.method, call.arguments);
     for (MethodCallHandler handler in _handlers.values) {
       handler.handle(call.method, call.arguments);
@@ -210,8 +208,7 @@ class MethodChannelPlatform extends SplitioPlatform {
   }
 
   @override
-  Future<SplitView?> split({required String matchingKey,
-    required String? bucketingKey,
+  Future<SplitView?> split({
     required String splitName}) async {
     Map? mapResult =
     await _methodChannel.invokeMapMethod('split', {'splitName': splitName});
@@ -224,8 +221,7 @@ class MethodChannelPlatform extends SplitioPlatform {
   }
 
   @override
-  Future<List<String>> splitNames(
-      {required String matchingKey, required String? bucketingKey}) async {
+  Future<List<String>> splitNames() async {
     List<String> splitNames =
         await _methodChannel.invokeListMethod<String>('splitNames') ?? [];
 
@@ -233,8 +229,7 @@ class MethodChannelPlatform extends SplitioPlatform {
   }
 
   @override
-  Future<List<SplitView>> splits(
-      {required String matchingKey, required String? bucketingKey}) async {
+  Future<List<SplitView>> splits() async {
     List<Map> callResult = (await _methodChannel
         .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
         []);
@@ -269,7 +264,7 @@ class MethodChannelPlatform extends SplitioPlatform {
     }
 
     try {
-      return await _methodChannel.invokeMethod("track", parameters)
+      return await _methodChannel.invokeMethod('track', parameters)
       as bool;
     } on Exception catch (_) {
       return false;

@@ -22,20 +22,16 @@ abstract class _FactoryPlatform {
     throw UnimplementedError();
   }
 
-  Future<SplitView?> split(
-      {required String matchingKey,
-      required String? bucketingKey,
+  Future<SplitView?> split({
       required String splitName}) {
     throw UnimplementedError();
   }
 
-  Future<List<String>> splitNames(
-      {required String matchingKey, required String? bucketingKey}) {
+  Future<List<String>> splitNames() {
     throw UnimplementedError();
   }
 
-  Future<List<SplitView>> splits(
-      {required String matchingKey, required String? bucketingKey}) {
+  Future<List<SplitView>> splits() {
     throw UnimplementedError();
   }
 

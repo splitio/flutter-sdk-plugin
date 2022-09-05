@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/split_configuration.dart';
+import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_sync_config.dart';
 
 void main() {
   test('valuesAreMappedCorrectly', () async {
@@ -21,7 +22,9 @@ void main() {
         eventsEndpoint: 'eventsEndpoint.split.io',
         authServiceEndpoint: 'authServiceEndpoint.split.io',
         streamingServiceEndpoint: 'streamingServiceEndpoint.split.io',
-        telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io');
+        telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io',
+        syncConfig:
+            SyncConfig(names: ['one', 'two', 'three'], prefixes: ['pre1']));
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
@@ -44,6 +47,10 @@ void main() {
     expect(config.configurationMap['telemetryServiceEndpoint'],
         'telemetryServiceEndpoint.split.io');
     expect(config.configurationMap['impressionListener'], true);
+    expect(config.configurationMap['syncConfig']['syncConfigNames'],
+        ['one', 'two', 'three']);
+    expect(
+        config.configurationMap['syncConfig']['syncConfigPrefixes'], ['pre1']);
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {
