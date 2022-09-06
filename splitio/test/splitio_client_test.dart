@@ -270,12 +270,51 @@ void main() {
       });
     });
 
-    test('destroy', () async {
-      // TODO
+    test('destroy', () {
+      _platform.destroy(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(_platform.methodName, 'destroy');
+      expect(_platform.methodArguments,
+          {'matchingKey': 'matching-key', 'bucketingKey': 'bucketing-key'});
     });
   });
 
   group('events', () {
-    // TODO
+    test('onReady', () {
+      _platform.onReady(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(_platform.methodName, 'onReady');
+      expect(_platform.methodArguments,
+          {'matchingKey': 'matching-key', 'bucketingKey': 'bucketing-key'});
+    });
+
+    test('onReadyFromCache', () {
+      _platform.onReadyFromCache(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(_platform.methodName, 'onReadyFromCache');
+      expect(_platform.methodArguments,
+          {'matchingKey': 'matching-key', 'bucketingKey': 'bucketing-key'});
+    });
+
+    test('onTimeout', () {
+      _platform.onTimeout(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(_platform.methodName, 'onTimeout');
+      expect(_platform.methodArguments,
+          {'matchingKey': 'matching-key', 'bucketingKey': 'bucketing-key'});
+    });
+
+    test('onUpdated', () {
+      _platform.onUpdated(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(_platform.methodName, 'onUpdated');
+      expect(_platform.methodArguments,
+          {'matchingKey': 'matching-key', 'bucketingKey': 'bucketing-key'});
+    });
   });
 }
