@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:splitio_platform_interface/events/split_method_call_handler.dart';
 import 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
@@ -20,10 +21,14 @@ class MethodChannelPlatform extends SplitioPlatform {
       ImpressionsMethodCallHandler();
 
   MethodChannelPlatform() {
-    _methodChannel.setMethodCallHandler((call) => _handle(call));
+    _methodChannel.setMethodCallHandler((call) => handle(call));
   }
 
-  Future<void> _handle(MethodCall call) async {
+  @visibleForTesting
+  MethodChannelPlatform.withoutHandler();
+
+  @visibleForTesting
+  Future<void> handle(MethodCall call) async {
     _impressionsMethodCallHandler.handle(call.method, call.arguments);
     for (MethodCallHandler handler in _handlers.values) {
       handler.handle(call.method, call.arguments);

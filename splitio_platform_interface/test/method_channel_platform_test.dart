@@ -11,13 +11,25 @@ void main() {
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelPlatform _platform = MethodChannelPlatform();
+  MethodChannelPlatform _platform = MethodChannelPlatform.withoutHandler();
+
+  void _simulateMethodInvocation(String methodName,
+      {String key = 'key',
+      String? bucketingKey,
+      Map<String, dynamic>? arguments}) {
+    if (arguments == null) {
+      arguments = {};
+    }
+    arguments.addAll({'matchingKey': key, 'bucketingKey': bucketingKey});
+    _channel.invokeMethod(methodName, arguments);
+  }
 
   setUp(() {
     _channel.setMockMethodCallHandler((MethodCall methodCall) async {
       methodName = methodCall.method;
       methodArguments = methodCall.arguments;
 
+      _platform.handle(methodCall);
       switch (methodCall.method) {
         case 'getTreatment':
           return '';
@@ -419,20 +431,87 @@ void main() {
   });
 
   group('events', () {
-    test('onReady is returned from events listener', () {
-      // TODO
+    test('onReady', () {
+      _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      Future<void>? onReady = _platform
+          .onReady(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      _simulateMethodInvocation('clientReady',
+          key: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(onReady, completion(equals(true)));
     });
 
-    test('onReadyFromCache is returned from events listener', () {
-      // TODO
+    test('onReadyFromCache', () {
+      _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      Future<void>? onReadyFromCache = _platform
+          .onReadyFromCache(
+              matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      _simulateMethodInvocation('clientReadyFromCache',
+          key: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(onReadyFromCache, completion(equals(true)));
     });
 
-    test('onTimeout is returned from events listener', () {
-      // TODO
+    test('onTimeout', () {
+      _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      Future<void>? onTimeout = _platform
+          .onTimeout(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      _simulateMethodInvocation('clientTimeout',
+          key: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(onTimeout, completion(equals(true)));
     });
 
-    test('onUpdated is returned from events listener', () {
-      // TODO
+    test('onUpdated', () {
+      _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      Future<void>? onUpdated = _platform
+          .onUpdated(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.first
+          .then((value) => true);
+
+      _simulateMethodInvocation('clientUpdated',
+          key: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(onUpdated, completion(equals(true)));
+    });
+  });
+
+  test('impressions', () {
+    _platform.impressionsStream().listen(
+      expectAsync1((impression) {
+        expect(impression.key, 'key');
+        expect(impression.bucketingKey, null);
+        expect(impression.split, 'split');
+        expect(impression.treatment, 'treatment');
+        expect(impression.time, 3000);
+        expect(impression.appliedRule, 'appliedRule');
+        expect(impression.changeNumber, 200);
+        expect(impression.attributes, {});
+      }),
+    );
+    _simulateMethodInvocation('impressionLog', key: 'matching-key', arguments: {
+      'key': 'key',
+      'bucketingKey': 'bucketingKey',
+      'split': 'split',
+      'treatment': 'treatment',
+      'time': 3000,
+      'appliedRule': 'appliedRule',
+      'changeNumber': 200,
+      'attributes': {}
     });
   });
 }
