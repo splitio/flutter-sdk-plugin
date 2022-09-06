@@ -13,7 +13,7 @@ const String _controlTreatment = 'control';
 const SplitResult _controlResult = SplitResult(_controlTreatment, null);
 
 class MethodChannelPlatform extends SplitioPlatform {
-  late MethodChannel _methodChannel = const MethodChannel('splitio');
+  final MethodChannel _methodChannel = const MethodChannel('splitio');
 
   final Map<String, SplitEventMethodCallHandler> _handlers = {};
 
