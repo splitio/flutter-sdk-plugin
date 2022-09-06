@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
@@ -145,10 +144,6 @@ class DefaultSplitClient implements SplitClient {
   final String? _bucketingKey;
 
   DefaultSplitClient(this._platform, this._matchingKey, this._bucketingKey);
-
-  @visibleForTesting
-  DefaultSplitClient.withEventListener(
-      this._platform, this._matchingKey, this._bucketingKey);
 
   @override
   Future<String> getTreatment(String splitName,

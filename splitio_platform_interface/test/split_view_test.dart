@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/split_view.dart';
+import 'package:splitio_platform_interface/split_view.dart';
 
 void main() {
   test('split view from empty map results in null object', () {

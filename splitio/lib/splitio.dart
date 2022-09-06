@@ -18,9 +18,9 @@ class Splitio {
 
   final String _defaultMatchingKey;
 
-  late final String? _defaultBucketingKey;
+  late String? _defaultBucketingKey;
 
-  late final SplitConfiguration? _splitConfiguration;
+  late SplitConfiguration? _splitConfiguration;
 
   final SplitioPlatform _platform = SplitioPlatform.instance;
 
@@ -103,15 +103,13 @@ class Splitio {
   }
 
   Future<List<String>> splitNames() async {
-    List<String> splitNames = await _platform.splitNames(
-        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
+    List<String> splitNames = await _platform.splitNames();
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    return _platform.splits(
-        matchingKey: _defaultMatchingKey, bucketingKey: _defaultBucketingKey);
+    return _platform.splits();
   }
 
   /// If the impressionListener configuration has been enabled,
@@ -121,10 +119,7 @@ class Splitio {
   }
 
   Future<SplitView?> split(String splitName) async {
-    return _platform.split(
-        matchingKey: _defaultMatchingKey,
-        bucketingKey: _defaultBucketingKey,
-        splitName: splitName);
+    return _platform.split(splitName: splitName);
   }
 
   Future<void> _init() {
