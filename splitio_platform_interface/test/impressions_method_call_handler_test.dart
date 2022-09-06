@@ -1,7 +1,8 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio/impressions/impressions_method_call_handler.dart';
 import 'package:splitio/impressions/split_impression.dart';
+
+import '../lib/impressions/impressions_method_call_handler.dart';
 
 void main() {
   test('correct impressionLog method call emits value on stream', () async {
@@ -34,8 +35,9 @@ void main() {
       }),
     );
 
-    impressionsMethodCallHandler
-        .handle(const MethodCall('impressionLog', sourceMap));
+    const methodCall = MethodCall('impressionLog', sourceMap);
+    impressionsMethodCallHandler.handle(
+        methodCall.method, methodCall.arguments);
   });
 
   test('other method names are ignored', () async {
@@ -47,6 +49,8 @@ void main() {
             expect(event, null);
           }, count: 0),
         );
-    impressionsMethodCallHandler.handle(const MethodCall('clientReady'));
+    const methodCall = MethodCall('clientReady');
+    impressionsMethodCallHandler.handle(
+        methodCall.method, methodCall.arguments);
   });
 }
