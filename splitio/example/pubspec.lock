@@ -135,6 +135,13 @@ packages:
       relative: true
     source: path
     version: "0.1.1"
+  splitio_android:
+    dependency: transitive
+    description:
+      path: "../../splitio_android"
+      relative: true
+    source: path
+    version: "0.2.0"
   splitio_platform_interface:
     dependency: transitive
     description:

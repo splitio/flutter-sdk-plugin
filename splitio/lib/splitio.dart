@@ -22,8 +22,6 @@ class Splitio {
 
   late SplitConfiguration? _splitConfiguration;
 
-  final SplitioPlatform _platform = SplitioPlatform.instance;
-
   /// SDK instance constructor.
   ///
   /// Use [_apiKey] to specify your Split API key.
@@ -72,29 +70,31 @@ class Splitio {
       ClientReadinessCallback? onUpdated,
       ClientReadinessCallback? onTimeout}) {
     String? key = matchingKey ?? _defaultMatchingKey;
-    _platform.getClient(matchingKey: key, bucketingKey: bucketingKey);
+    SplitioPlatform.instance
+        .getClient(matchingKey: key, bucketingKey: bucketingKey);
 
-    var client = DefaultSplitClient(_platform, key, bucketingKey);
+    var client =
+        DefaultSplitClient(SplitioPlatform.instance, key, bucketingKey);
     if (onReady != null) {
-      _platform
+      SplitioPlatform.instance
           .onReady(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onReady.call(client));
     }
 
     if (onReadyFromCache != null) {
-      _platform
+      SplitioPlatform.instance
           .onReadyFromCache(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onReadyFromCache.call(client));
     }
 
     if (onTimeout != null) {
-      _platform
+      SplitioPlatform.instance
           .onTimeout(matchingKey: key, bucketingKey: bucketingKey)
           ?.then((val) => onTimeout.call(client));
     }
 
     if (onUpdated != null) {
-      _platform
+      SplitioPlatform.instance
           .onUpdated(matchingKey: key, bucketingKey: bucketingKey)
           ?.listen((event) => onUpdated.call(client));
     }
@@ -103,27 +103,27 @@ class Splitio {
   }
 
   Future<List<String>> splitNames() async {
-    List<String> splitNames = await _platform.splitNames();
+    List<String> splitNames = await SplitioPlatform.instance.splitNames();
 
     return splitNames;
   }
 
   Future<List<SplitView>> splits() async {
-    return _platform.splits();
+    return SplitioPlatform.instance.splits();
   }
 
   /// If the impressionListener configuration has been enabled,
   /// generated impressions will be streamed here.
   Stream<Impression> impressionsStream() {
-    return _platform.impressionsStream();
+    return SplitioPlatform.instance.impressionsStream();
   }
 
   Future<SplitView?> split(String splitName) async {
-    return _platform.split(splitName: splitName);
+    return SplitioPlatform.instance.split(splitName: splitName);
   }
 
   Future<void> _init() {
-    return _platform.init(
+    return SplitioPlatform.instance.init(
         apiKey: _apiKey,
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,

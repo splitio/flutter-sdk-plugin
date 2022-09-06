@@ -6,7 +6,7 @@ version: 1.0.0
 homepage: https://split.io/
 repository: https://github.com/splitio/flutter-sdk-plugin/splitio/splitio_platform_interface
 
-publish_to: none
+publish_to: 'none'
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
