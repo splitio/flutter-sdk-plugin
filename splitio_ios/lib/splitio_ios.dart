@@ -7,7 +7,6 @@ const MethodChannel _methodChannel = MethodChannel('split.io/splitio_ios');
 class SplitioIos extends MethodChannelPlatform {
   /// Registers this class as the default platform implementation.
   static void registerWith() {
-    print('registering iOS');
     SplitioPlatform.instance = SplitioIOS();
   }
 
