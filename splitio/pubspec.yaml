@@ -14,7 +14,7 @@ flutter:
       android:
         default_package: splitio_android
       ios:
-        pluginClass: SplitioPlugin
+        default_package: splitio_ios
 
 dependencies:
   flutter:

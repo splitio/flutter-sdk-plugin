@@ -1,9 +1,9 @@
 #
 # To learn more about a Podspec see http://guides.cocoapods.org/syntax/podspec.html.
-# Run `pod lib lint splitio.podspec` to validate before publishing.
+# Run `pod lib lint splitio_ios.podspec` to validate before publishing.
 #
 Pod::Spec.new do |s|
-  s.name             = 'splitio'
+  s.name             = 'splitio_ios'
   s.version          = '0.1.0'
   s.summary          = 'split.io official Flutter plugin.'
   s.description      = <<-DESC
