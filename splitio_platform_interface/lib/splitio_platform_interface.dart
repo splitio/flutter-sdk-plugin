@@ -7,6 +7,16 @@ import 'package:splitio_platform_interface/split_impression.dart';
 import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_view.dart';
 
+export 'package:splitio_platform_interface/events/split_method_call_handler.dart';
+export 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
+export 'package:splitio_platform_interface/method_call_handler.dart';
+export 'package:splitio_platform_interface/method_channel_platform.dart';
+export 'package:splitio_platform_interface/split_configuration.dart';
+export 'package:splitio_platform_interface/split_impression.dart';
+export 'package:splitio_platform_interface/split_result.dart';
+export 'package:splitio_platform_interface/split_view.dart';
+export 'package:splitio_platform_interface/splitio_platform_interface.dart';
+
 abstract class _FactoryPlatform {
   Future<void> getClient(
       {required String matchingKey, required String? bucketingKey}) {
@@ -22,8 +32,7 @@ abstract class _FactoryPlatform {
     throw UnimplementedError();
   }
 
-  Future<SplitView?> split({
-      required String splitName}) {
+  Future<SplitView?> split({required String splitName}) {
     throw UnimplementedError();
   }
 

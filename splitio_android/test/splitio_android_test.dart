@@ -1,17 +1,17 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio_platform_interface/method_channel_platform.dart';
+import 'package:splitio_android/splitio_android.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 
 void main() {
-  const MethodChannel _channel = MethodChannel('splitio');
+  const MethodChannel _channel = MethodChannel('splitio.io/splitio_android');
 
   String methodName = '';
   dynamic methodArguments;
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  MethodChannelPlatform _platform = MethodChannelPlatform();
+  SplitioAndroid _platform = SplitioAndroid();
 
   void _simulateMethodInvocation(String methodName,
       {String key = 'key',

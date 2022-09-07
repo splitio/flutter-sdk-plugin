@@ -1,31 +1,18 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:splitio_platform_interface/events/split_method_call_handler.dart';
-import 'package:splitio_platform_interface/impressions/impressions_method_call_handler.dart';
-import 'package:splitio_platform_interface/method_call_handler.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_impression.dart';
-import 'package:splitio_platform_interface/split_result.dart';
-import 'package:splitio_platform_interface/split_view.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 const String _controlTreatment = 'control';
 const SplitResult _controlResult = SplitResult(_controlTreatment, null);
+const MethodChannel _methodChannel = MethodChannel('splitio');
 
 class MethodChannelPlatform extends SplitioPlatform {
-  final MethodChannel _methodChannel = const MethodChannel('splitio');
+  MethodChannel get methodChannel => _methodChannel;
 
   final Map<String, SplitEventMethodCallHandler> _handlers = {};
 
   final ImpressionsMethodCallHandler _impressionsMethodCallHandler =
       ImpressionsMethodCallHandler();
-
-  MethodChannelPlatform() {
-    _methodChannel.setMethodCallHandler((call) => handle(call));
-  }
-
-  @visibleForTesting
-  MethodChannelPlatform.withoutHandler();
 
   @visibleForTesting
   Future<void> handle(MethodCall call) async {
@@ -41,6 +28,8 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String matchingKey,
       required String? bucketingKey,
       SplitConfiguration? sdkConfiguration}) {
+    methodChannel.setMethodCallHandler((call) => handle(call));
+
     Map<String, Object?> arguments = {
       'apiKey': apiKey,
       'matchingKey': matchingKey,
@@ -51,7 +40,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       arguments.addAll({'bucketingKey': bucketingKey});
     }
 
-    return _methodChannel.invokeMethod('init', arguments);
+    return methodChannel.invokeMethod('init', arguments);
   }
 
   @override
@@ -62,14 +51,14 @@ class MethodChannelPlatform extends SplitioPlatform {
           SplitEventMethodCallHandler(matchingKey, bucketingKey)
     });
 
-    return _methodChannel.invokeMethod(
+    return methodChannel.invokeMethod(
         'getClient', _buildParameters(matchingKey, bucketingKey));
   }
 
   @override
   Future<bool> clearAttributes(
       {required String matchingKey, required String? bucketingKey}) async {
-    return await _methodChannel.invokeMethod(
+    return await methodChannel.invokeMethod(
         'clearAttributes', _buildParameters(matchingKey, bucketingKey));
   }
 
@@ -80,21 +69,21 @@ class MethodChannelPlatform extends SplitioPlatform {
     _handlers[handlerKey]?.destroy();
     _handlers.remove(handlerKey);
 
-    return await _methodChannel.invokeMethod(
+    return await methodChannel.invokeMethod(
         'destroy', _buildParameters(matchingKey, bucketingKey));
   }
 
   @override
   Future<void> flush(
       {required String matchingKey, required String? bucketingKey}) async {
-    return await _methodChannel.invokeMethod(
+    return await methodChannel.invokeMethod(
         'flush', _buildParameters(matchingKey, bucketingKey));
   }
 
   @override
   Future<Map<String, dynamic>> getAllAttributes(
       {required String matchingKey, required String? bucketingKey}) async {
-    return (await _methodChannel.invokeMapMethod('getAllAttributes',
+    return (await methodChannel.invokeMapMethod('getAllAttributes',
                 _buildParameters(matchingKey, bucketingKey)))
             ?.map((key, value) => MapEntry<String, Object?>(key, value)) ??
         {};
@@ -105,7 +94,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String attributeName}) {
-    return _methodChannel.invokeMethod(
+    return methodChannel.invokeMethod(
         'getAttribute',
         _buildParameters(
             matchingKey, bucketingKey, {'attributeName': attributeName}));
@@ -117,7 +106,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String? bucketingKey,
       required String splitName,
       Map<String, dynamic> attributes = const {}}) async {
-    return await _methodChannel.invokeMethod(
+    return await methodChannel.invokeMethod(
             'getTreatment',
             _buildParameters(matchingKey, bucketingKey,
                 {'splitName': splitName, 'attributes': attributes})) ??
@@ -130,7 +119,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String? bucketingKey,
       required String splitName,
       Map<String, dynamic> attributes = const {}}) async {
-    Map? treatment = (await _methodChannel.invokeMapMethod(
+    Map? treatment = (await methodChannel.invokeMapMethod(
             'getTreatmentWithConfig',
             _buildParameters(matchingKey, bucketingKey,
                 {'splitName': splitName, 'attributes': attributes})))
@@ -150,7 +139,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String? bucketingKey,
       required List<String> splitNames,
       Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await _methodChannel.invokeMapMethod(
+    Map? treatments = await methodChannel.invokeMapMethod(
         'getTreatments',
         _buildParameters(matchingKey, bucketingKey,
             {'splitName': splitNames, 'attributes': attributes}));
@@ -166,7 +155,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String? bucketingKey,
       required List<String> splitNames,
       Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await _methodChannel.invokeMapMethod(
+    Map? treatments = await methodChannel.invokeMapMethod(
         'getTreatmentsWithConfig',
         _buildParameters(matchingKey, bucketingKey,
             {'splitName': splitNames, 'attributes': attributes}));
@@ -181,7 +170,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String attributeName}) async {
-    return await _methodChannel.invokeMethod(
+    return await methodChannel.invokeMethod(
         'removeAttribute',
         _buildParameters(
             matchingKey, bucketingKey, {'attributeName': attributeName}));
@@ -193,7 +182,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       required String? bucketingKey,
       required String attributeName,
       required value}) async {
-    var result = await _methodChannel.invokeMethod(
+    var result = await methodChannel.invokeMethod(
         'setAttribute',
         _buildParameters(matchingKey, bucketingKey,
             {'attributeName': attributeName, 'value': value}));
@@ -210,7 +199,7 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required Map<String, dynamic> attributes}) async {
-    var result = await _methodChannel.invokeMethod(
+    var result = await methodChannel.invokeMethod(
         'setAttributes',
         _buildParameters(
             matchingKey, bucketingKey, {'attributes': attributes}));
@@ -225,7 +214,7 @@ class MethodChannelPlatform extends SplitioPlatform {
   @override
   Future<SplitView?> split({required String splitName}) async {
     Map? mapResult =
-        await _methodChannel.invokeMapMethod('split', {'splitName': splitName});
+        await methodChannel.invokeMapMethod('split', {'splitName': splitName});
 
     if (mapResult == null) {
       return null;
@@ -237,14 +226,14 @@ class MethodChannelPlatform extends SplitioPlatform {
   @override
   Future<List<String>> splitNames() async {
     List<String> splitNames =
-        await _methodChannel.invokeListMethod<String>('splitNames') ?? [];
+        await methodChannel.invokeListMethod<String>('splitNames') ?? [];
 
     return splitNames;
   }
 
   @override
   Future<List<SplitView>> splits() async {
-    List<Map> callResult = (await _methodChannel
+    List<Map> callResult = (await methodChannel
             .invokeListMethod<Map<dynamic, dynamic>>('splits') ??
         []);
 
@@ -279,7 +268,7 @@ class MethodChannelPlatform extends SplitioPlatform {
     }
 
     try {
-      return await _methodChannel.invokeMethod('track', parameters) as bool;
+      return await methodChannel.invokeMethod('track', parameters) as bool;
     } on Exception catch (_) {
       return false;
     }
