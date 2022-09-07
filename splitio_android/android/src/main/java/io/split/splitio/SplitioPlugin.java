@@ -23,7 +23,7 @@ public class SplitioPlugin implements FlutterPlugin, MethodCallHandler {
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding flutterPluginBinding) {
-        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "splitio");
+        channel = new MethodChannel(flutterPluginBinding.getBinaryMessenger(), "splitio.io/splitio_android");
         channel.setMethodCallHandler(this);
         SplitFactoryProvider provider = getSplitFactoryProvider(flutterPluginBinding.getApplicationContext());
         methodParser = new SplitMethodParserImpl(flutterPluginBinding.getApplicationContext(), channel, provider);
