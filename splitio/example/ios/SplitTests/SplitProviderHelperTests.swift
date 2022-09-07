@@ -1,5 +1,5 @@
 import XCTest
-@testable import splitio
+@testable import splitio_ios
 @testable import Split
 
 class SplitProviderHelperTests: XCTestCase {

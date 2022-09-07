@@ -14,15 +14,17 @@ flutter:
       android:
         default_package: splitio_android
       ios:
-        pluginClass: SplitioPlugin
+        default_package: splitio_ios
 
 dependencies:
   flutter:
     sdk: flutter
   splitio_platform_interface: # ^1.0.0
     path: ../splitio_platform_interface
-  splitio_android: # ^1.0.0
+  splitio_android: # ^0.1.2
     path: ../splitio_android
+  splitio_ios: # ^0.1.2
+    path: ../splitio_ios
 
 dev_dependencies:
   flutter_test:

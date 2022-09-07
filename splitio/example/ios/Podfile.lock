@@ -1,13 +1,13 @@
 PODS:
   - Flutter (1.0.0)
   - Split (2.15.0)
-  - splitio (0.1.0):
+  - splitio_ios (0.1.0):
     - Flutter
     - Split (~> 2.15.0)
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
-  - splitio (from `.symlinks/plugins/splitio/ios`)
+  - splitio_ios (from `.symlinks/plugins/splitio_ios/ios`)
 
 SPEC REPOS:
   trunk:
@@ -16,13 +16,13 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
-  splitio:
-    :path: ".symlinks/plugins/splitio/ios"
+  splitio_ios:
+    :path: ".symlinks/plugins/splitio_ios/ios"
 
 SPEC CHECKSUMS:
   Flutter: 50d75fe2f02b26cc09d224853bb45737f8b3214a
   Split: d103c6afa47b5d1eac21e066c6bc09c879b21798
-  splitio: 6ef65e65e042489e9d30fe1f56abe9340bf69039
+  splitio_ios: 665651004a4984a415386b1eed4ae315b50bc069
 
 PODFILE CHECKSUM: 6ab177d3659abbf5f15e864674366127c98cb8c0
 
