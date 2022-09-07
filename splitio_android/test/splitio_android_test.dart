@@ -4,7 +4,7 @@ import 'package:splitio_android/splitio_android.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 
 void main() {
-  const MethodChannel _channel = MethodChannel('splitio.io/splitio_android');
+  const MethodChannel _channel = MethodChannel('split.io/splitio_android');
 
   String methodName = '';
   dynamic methodArguments;

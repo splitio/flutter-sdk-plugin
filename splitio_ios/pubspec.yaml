@@ -13,7 +13,8 @@ flutter:
     implements: splitio
     platforms:
       ios:
-        pluginClass: SwiftSplitioPlugin
+        pluginClass: SplitioPlugin
+        dartPluginClass: SplitioIos
 
 dependencies:
   flutter:
