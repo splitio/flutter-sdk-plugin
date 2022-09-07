@@ -22,8 +22,7 @@ abstract class _FactoryPlatform {
     throw UnimplementedError();
   }
 
-  Future<SplitView?> split({
-      required String splitName}) {
+  Future<SplitView?> split({required String splitName}) {
     throw UnimplementedError();
   }
 

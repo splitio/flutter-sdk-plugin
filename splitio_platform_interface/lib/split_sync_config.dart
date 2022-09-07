@@ -6,7 +6,14 @@ class SyncConfig {
 
   Set<String> get prefixes => _prefixes;
 
-  SyncConfig({Set<String> names = const {}, Set<String> prefixes = const {}}) {
+  SyncConfig(
+      {List<String> names = const [], List<String> prefixes = const []}) {
+    _names = names.toSet();
+    _prefixes = prefixes.toSet();
+  }
+
+  SyncConfig.fromSet(
+      {Set<String> names = const {}, Set<String> prefixes = const {}}) {
     _names = names;
     _prefixes = prefixes;
   }
