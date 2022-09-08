@@ -42,7 +42,7 @@ jobs:
         run: cd splitio/example/android/; gradle :splitio:testReleaseUnitTest;
 
   build-ios:
-    name: Test iOS
+    name: Build iOS
     runs-on: [ macos-latest ]
 
     steps:
