@@ -3,8 +3,7 @@ description: A common platform interface for the splitio plugin.
 # NOTE: We strongly prefer non-breaking changes, even at the expense of a
 # less-clean API. See https://flutter.dev/go/platform-interface-breaking-changes
 version: 1.0.0
-homepage: https://split.io/
-repository: https://github.com/splitio/flutter-sdk-plugin/splitio/splitio_platform_interface
+repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio_platform_interface
 
 environment:
   sdk: ">=2.16.2 <3.0.0"
