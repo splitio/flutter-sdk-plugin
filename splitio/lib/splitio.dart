@@ -1,9 +1,6 @@
 import 'dart:async';
 
 import 'package:splitio/split_client.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_impression.dart';
-import 'package:splitio_platform_interface/split_view.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 export 'package:splitio/split_client.dart';
