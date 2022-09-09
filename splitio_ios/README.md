@@ -1,4 +1,4 @@
-# splitio\_android
+# splitio\_ios
 
 The iOS implementation of [`splitio`][1].
 
