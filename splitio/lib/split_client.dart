@@ -1,4 +1,3 @@
-import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 abstract class SplitClient {

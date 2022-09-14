@@ -1,4 +1,7 @@
-# 0.1.2
+## 0.1.2+1
+* Added exports for models.
+
+## 0.1.2
 
 * Migrated to federated structure.
 * Added support for Impression Listener.
@@ -7,7 +10,7 @@
 * Added support for manager methods.
 * Added support for linking native factory.
 
-# 0.1.1
+## 0.1.1
 
 Minor fixes.
 

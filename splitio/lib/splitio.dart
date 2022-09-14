@@ -6,6 +6,8 @@ import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 export 'package:splitio/split_client.dart';
 export 'package:splitio_platform_interface/split_configuration.dart';
 export 'package:splitio_platform_interface/split_impression.dart';
+export 'package:splitio_platform_interface/split_result.dart';
+export 'package:splitio_platform_interface/split_sync_config.dart';
 export 'package:splitio_platform_interface/split_view.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
