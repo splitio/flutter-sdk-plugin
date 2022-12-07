@@ -31,6 +31,8 @@ android {
 
     defaultConfig {
         minSdkVersion 16
+
+        consumerProguardFiles 'split-proguard-rules.pro'
     }
 
     dependencies {
