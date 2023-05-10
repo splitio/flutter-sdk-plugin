@@ -1,66 +1,66 @@
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 abstract class SplitClient {
-  /// Performs an evaluation for the [splitName] feature.
+  /// Performs an evaluation for the [featureFlagName] feature flag.
   ///
   /// This method returns the string 'control' if: there was an exception in
-  /// evaluating the feature, the SDK does not know of the existence of this
-  /// feature, and/or the feature was deleted through the web console.
+  /// evaluating the feature flag, the SDK does not know of the existence of this
+  /// feature flag, and/or the feature flag was deleted through the Split user interface.
   ///
-  /// The sdk returns the default treatment of this feature if: The feature was
-  /// killed, or the key did not match any of the conditions in the feature
+  /// The SDK returns the default treatment of this feature flag if: The feature flag was
+  /// killed, or the key did not match any of the conditions in the feature flag
   /// roll-out plan.
   ///
-  /// [splitName] is the feature we want to evaluate.
+  /// [featureFlagName] is the feature flag we want to evaluate.
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   ///
-  /// Returns the evaluated treatment, the default treatment of this feature, or 'control'.
-  Future<String> getTreatment(String splitName,
+  /// Returns the evaluated treatment, the default treatment of this feature flag, or 'control'.
+  Future<String> getTreatment(String featureFlagName,
       [Map<String, dynamic> attributes = const {}]);
 
   /// Performs and evaluation and returns a [SplitResult] object for the
-  /// [splitName] feature. This object contains the treatment alongside the
-  /// split's configuration, if any.
+  /// [featureFlagName] feature flag. This object contains the treatment alongside the
+  /// feature flag's configuration, if any.
   ///
   /// This method returns 'control' if: there was an exception in
   /// evaluating the treatment, the SDK does not know of the existence of this
-  /// feature, and/or the feature was deleted through the web console.
+  /// feature flag, and/or the feature flag was deleted through the Split user interface.
   ///
-  /// The sdk returns the default treatment of this feature if: The feature was
-  /// killed, or the key did not match any of the conditions in the feature
+  /// The SDK returns the default treatment of this feature flag if: The feature flag was
+  /// killed, or the key did not match any of the conditions in the feature flag
   /// roll-out plan.
   ///
-  /// [splitName] is the feature we want to evaluate.
+  /// [featureFlagName] is the feature flag we want to evaluate.
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
-  Future<SplitResult> getTreatmentWithConfig(String splitName,
+  Future<SplitResult> getTreatmentWithConfig(String featureFlagName,
       [Map<String, dynamic> attributes = const {}]);
 
   /// Convenience method to perform multiple evaluations. Returns a [Map] in
-  /// which the keys are split names and the values are treatments.
+  /// which the keys are feature flag names and the values are treatments.
   ///
-  /// A list of splits need to be specified in [splitNames].
+  /// A list of feature flag names need to be specified in [featureFlagNames].
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
-  Future<Map<String, String>> getTreatments(List<String> splitNames,
+  Future<Map<String, String>> getTreatments(List<String> featureFlagNames,
       [Map<String, dynamic> attributes = const {}]);
 
   /// Convenience method to perform multiple evaluations. Returns a [Map] in
-  /// which the keys are split names and the values are [SplitResult] objects.
+  /// which the keys are feature flag names and the values are [SplitResult] objects.
   ///
-  /// A list of splits need to be specified in [splitNames].
+  /// A list of feature flag names need to be specified in [featureFlagNames].
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
-      List<String> splitNames,
+      List<String> featureFlagNames,
       [Map<String, dynamic> attributes = const {}]);
 
-  /// Enqueue a new event to be sent to split data collection services.
+  /// Enqueue a new event to be sent to Split data collection services.
   ///
   /// [eventType] is a [String] representing the event type.
   ///
@@ -130,7 +130,7 @@ abstract class SplitClient {
   Future<SplitClient> whenReadyFromCache();
 
   /// Returns Future that is completed when changes have been made, such as creating
-  /// new splits or modifying segments.
+  /// new feature flags or modifying segments.
   Stream<SplitClient> whenUpdated();
 
   /// Returns Future that is completed if the SDK has not been able to get ready in time.
@@ -145,43 +145,43 @@ class DefaultSplitClient implements SplitClient {
   DefaultSplitClient(this._platform, this._matchingKey, this._bucketingKey);
 
   @override
-  Future<String> getTreatment(String splitName,
+  Future<String> getTreatment(String featureFlagName,
       [Map<String, dynamic> attributes = const {}]) async {
     return _platform.getTreatment(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
-        splitName: splitName,
+        splitName: featureFlagName,
         attributes: attributes);
   }
 
   @override
-  Future<SplitResult> getTreatmentWithConfig(String splitName,
+  Future<SplitResult> getTreatmentWithConfig(String featureFlagName,
       [Map<String, dynamic> attributes = const {}]) async {
     return _platform.getTreatmentWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
-        splitName: splitName,
+        splitName: featureFlagName,
         attributes: attributes);
   }
 
   @override
-  Future<Map<String, String>> getTreatments(List<String> splitNames,
+  Future<Map<String, String>> getTreatments(List<String> featureFlagNames,
       [Map<String, dynamic> attributes = const {}]) async {
     return _platform.getTreatments(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
-        splitNames: splitNames,
+        splitNames: featureFlagNames,
         attributes: attributes);
   }
 
   @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
-      List<String> splitNames,
+      List<String> featureFlagNames,
       [Map<String, dynamic> attributes = const {}]) async {
     return _platform.getTreatmentsWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
-        splitNames: splitNames,
+        splitNames: featureFlagNames,
         attributes: attributes);
   }
 
