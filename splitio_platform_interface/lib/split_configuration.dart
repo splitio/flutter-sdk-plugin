@@ -5,7 +5,7 @@ class SplitConfiguration {
 
   /// Initializes the Split configuration.
   ///
-  /// [featuresRefreshRate] the SDK polls Split servers for changes to feature splits at this rate (in seconds).
+  /// [featuresRefreshRate] the SDK polls Split servers for changes to feature flags at this rate (in seconds).
   ///
   /// [segmentsRefreshRate] The SDK polls Split servers for changes to segments at this rate (in seconds).
   ///
@@ -31,7 +31,7 @@ class SplitConfiguration {
   ///
   /// [impressionListener] Enables impression listener. If true, generated impressions will be streamed in the impressionsStream() method of Splitio.
   ///
-  /// [syncConfig] Use it to filter specific splits to be synced and evaluated by the SDK. If not set, all splits will be downloaded.
+  /// [syncConfig] Use it to filter specific feature flags to be synced and evaluated by the SDK. If not set, all feature flags will be downloaded.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,

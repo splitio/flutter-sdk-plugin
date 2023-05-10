@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:splitio/splitio.dart';
 
 /// Replace these with valid values
-const String _apiKey = 'api-key';
+const String _sdkKey = 'sdk-key';
 const String _matchingKey = 'user-id';
 
 void main() {
@@ -21,12 +21,12 @@ class SplitioExampleApp extends StatefulWidget {
 }
 
 class _SplitioExampleAppState extends State<SplitioExampleApp> {
-  String _splitName = '';
+  String _featureFlagName = '';
   bool _sdkReady = false;
   bool _sdkReadyFromCache = false;
   late SplitClient _client;
 
-  final Splitio _split = Splitio(_apiKey, _matchingKey,
+  final Splitio _split = Splitio(_sdkKey, _matchingKey,
       configuration: SplitConfiguration(
         trafficType: "user",
       ));
@@ -87,20 +87,20 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
               Padding(
                 padding: const EdgeInsets.fromLTRB(32, 8, 32, 8),
                 child: TextField(
-                  decoration:
-                      const InputDecoration(hintText: 'Enter split name'),
+                  decoration: const InputDecoration(
+                      hintText: 'Enter feature flag name'),
                   onChanged: (text) {
                     setState(() {
-                      _splitName = text;
+                      _featureFlagName = text;
                     });
                   },
                 ),
               ),
               Visibility(
-                visible: _splitName != '',
+                visible: _featureFlagName != '',
                 child: ElevatedButton(
                     onPressed: performEvaluation,
-                    child: Text('Evaluate: $_splitName')),
+                    child: Text('Evaluate: $_featureFlagName')),
               ),
               Visibility(
                   visible: _sdkReady || _sdkReadyFromCache,
@@ -131,9 +131,8 @@ class _SplitioExampleAppState extends State<SplitioExampleApp> {
   }
 
   void performEvaluation() async {
-    _client
-        .getTreatment(_splitName)
-        .then((value) => {print('Evaluation value for $_splitName is $value')});
+    _client.getTreatment(_featureFlagName).then(
+        (value) => {print('Evaluation value for $_featureFlagName is $value')});
   }
 
   void track() {
