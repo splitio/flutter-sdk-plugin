@@ -1,7 +1,7 @@
 # Split Flutter plugin
 
 ## Overview
-This is the official Flutter plugin designed to work with Split, the platform for controlled rollouts, which serves features to your users via a Split feature flag to manage your complete customer experience.
+This is the official Flutter plugin designed to work with Split, the platform for controlled rollouts, which serves features to your users via feature flags to manage your complete customer experience.
 
 [![Twitter Follow](https://img.shields.io/twitter/follow/splitsoftware.svg?style=social&label=Follow&maxAge=1529000)](https://twitter.com/intent/follow?screen_name=splitsoftware)
 
@@ -19,11 +19,11 @@ Here is a small example of how to perform an evaluation.
 ```dart
 import 'package:splitio/splitio.dart';
 
-final Splitio _split = Splitio('YOUR_API_KEY', 'KEY');
+final Splitio _split = Splitio('YOUR_SDK_KEY', 'USER_KEY');
 
 /// Get treatment
 _split.client(onReady: (client) async {
-  final String treatment = await client.getTreatment('SPLIT_NAME');
+  final String treatment = await client.getTreatment('FEATURE_FLAG_NAME');
 
   if (treatment == 'on') {
     /// Insert code here to show on treatment
