@@ -24,7 +24,13 @@ void main() {
         streamingServiceEndpoint: 'streamingServiceEndpoint.split.io',
         telemetryServiceEndpoint: 'telemetryServiceEndpoint.split.io',
         syncConfig:
-            SyncConfig(names: ['one', 'two', 'three'], prefixes: ['pre1']));
+            SyncConfig(names: ['one', 'two', 'three'], prefixes: ['pre1']),
+        impressionsMode: ImpressionsMode.none,
+        syncEnabled: false,
+        userConsent: UserConsent.declined,
+        encryptionEnabled: true,
+        logLevel: SplitLogLevel.debug,
+    );
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
@@ -51,6 +57,11 @@ void main() {
         ['one', 'two', 'three']);
     expect(
         config.configurationMap['syncConfig']['syncConfigPrefixes'], ['pre1']);
+    expect(config.configurationMap['impressionsMode'], 'none');
+    expect(config.configurationMap['syncEnabled'], false);
+    expect(config.configurationMap['userConsent'], 'declined');
+    expect(config.configurationMap['encryptionEnabled'], true);
+    expect(config.configurationMap['logLevel'], 'debug');
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {
