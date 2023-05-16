@@ -12,6 +12,7 @@ import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFilter;
 import io.split.android.client.SyncConfig;
 import io.split.android.client.impressions.ImpressionListener;
+import io.split.android.client.utils.logger.SplitLogLevel;
 
 class SplitClientConfigHelper {
 
@@ -94,7 +95,7 @@ class SplitClientConfigHelper {
 
         Boolean enableDebug = getBoolean(configurationMap, ENABLE_DEBUG);
         if (enableDebug != null && enableDebug) {
-            builder.enableDebug();
+            builder.logLevel(SplitLogLevel.DEBUG);
         }
 
         Boolean streamingEnabled = getBoolean(configurationMap, STREAMING_ENABLED);
