@@ -13,7 +13,6 @@ import io.split.android.client.SplitFilter;
 import io.split.android.client.SyncConfig;
 import io.split.android.client.impressions.ImpressionListener;
 import io.split.android.client.shared.UserConsent;
-import io.split.android.client.utils.logger.Logger;
 import io.split.android.client.utils.logger.SplitLogLevel;
 
 class SplitClientConfigHelper {
