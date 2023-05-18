@@ -24,6 +24,11 @@ class SplitClientConfigHelper {
     static private let SYNC_CONFIG = "syncConfig"
     static private let SYNC_CONFIG_NAMES = "syncConfigNames"
     static private let SYNC_CONFIG_PREFIXES = "syncConfigPrefixes"
+    static private let IMPRESSIONS_MODE = "impressionsMode"
+    static private let SYNC_ENABLED = "syncEnabled"
+    static private let USER_CONSENT = "userConsent"
+    static private let ENCRYPTION_ENABLED = "encryptionEnabled"
+    static private let LOG_LEVEL = "logLevel"
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -84,7 +89,11 @@ class SplitClientConfigHelper {
 
         if configurationMap[ENABLE_DEBUG] != nil {
             if let enableDebug = configurationMap[ENABLE_DEBUG] as? Bool {
-                config.isDebugModeEnabled = enableDebug
+                if (enableDebug) {
+                    config.logLevel = .debug
+                } else {
+                    config.logLevel = .none
+                }
             }
         }
 
@@ -148,6 +157,46 @@ class SplitClientConfigHelper {
                 }
 
                 config.sync = syncConfigBuilder.build()
+            }
+        }
+        
+        if let impressionsMode = configurationMap[IMPRESSIONS_MODE] as? String {
+            config.impressionsMode = impressionsMode.uppercased()
+        }
+        
+        if let syncEnabled = configurationMap[SYNC_ENABLED] as? Bool {
+            config.syncEnabled = syncEnabled
+        }
+
+        if let userConsent = configurationMap[USER_CONSENT] as? String {
+            switch userConsent.lowercased() {
+            case "unknown":
+                config.userConsent = .unknown
+            case "declined":
+                config.userConsent = .declined
+            default:
+                config.userConsent = .granted
+            }
+        }
+
+        if let encryptionEnabled = configurationMap[ENCRYPTION_ENABLED] as? Bool {
+            config.encryptionEnabled = encryptionEnabled
+        }
+
+        if let logLevel = configurationMap[LOG_LEVEL] as? String {
+            switch logLevel.lowercased() {
+                case "verbose":
+                    config.logLevel = .verbose
+                case "debug":
+                    config.logLevel = .debug
+                case "info":
+                    config.logLevel = .info
+                case "warning":
+                    config.logLevel = .warning
+                case "error":
+                    config.logLevel = .error
+                default:
+                    config.logLevel = .none
             }
         }
 
