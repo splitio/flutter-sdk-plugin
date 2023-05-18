@@ -12,6 +12,8 @@ import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFilter;
 import io.split.android.client.SyncConfig;
 import io.split.android.client.impressions.ImpressionListener;
+import io.split.android.client.shared.UserConsent;
+import io.split.android.client.utils.logger.SplitLogLevel;
 
 class SplitClientConfigHelper {
 
@@ -36,11 +38,16 @@ class SplitClientConfigHelper {
     private static final String SYNC_CONFIG = "syncConfig";
     private static final String SYNC_CONFIG_NAMES = "syncConfigNames";
     private static final String SYNC_CONFIG_PREFIXES = "syncConfigPrefixes";
+    private static final String IMPRESSIONS_MODE = "impressionsMode";
+    private static final String SYNC_ENABLED = "syncEnabled";
+    private static final String USER_CONSENT = "userConsent";
+    private static final String ENCRYPTION_ENABLED = "encryptionEnabled";
+    private static final String LOG_LEVEL = "logLevel";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
      *
-     * @param configurationMap Map of config values.
+     * @param configurationMap   Map of config values.
      * @param impressionListener Optional ImpressionListener.
      * @return {@link SplitClientConfig} object.
      */
@@ -94,7 +101,7 @@ class SplitClientConfigHelper {
 
         Boolean enableDebug = getBoolean(configurationMap, ENABLE_DEBUG);
         if (enableDebug != null && enableDebug) {
-            builder.enableDebug();
+            builder.logLevel(SplitLogLevel.DEBUG);
         }
 
         Boolean streamingEnabled = getBoolean(configurationMap, STREAMING_ENABLED);
@@ -154,6 +161,49 @@ class SplitClientConfigHelper {
             }
 
             builder.syncConfig(syncConfigBuilder.build());
+        }
+
+        String impressionsMode = getString(configurationMap, IMPRESSIONS_MODE);
+        if (impressionsMode != null) {
+            builder.impressionsMode(impressionsMode);
+        }
+
+        Boolean syncEnabled = getBoolean(configurationMap, SYNC_ENABLED);
+        if (syncEnabled != null) {
+            builder.syncEnabled(syncEnabled);
+        }
+
+        String userConsent = getString(configurationMap, USER_CONSENT);
+        if (userConsent != null) {
+            if ("unknown".equalsIgnoreCase(userConsent)) {
+                builder.userConsent(UserConsent.UNKNOWN);
+            } else if ("declined".equalsIgnoreCase(userConsent)) {
+                builder.userConsent(UserConsent.DECLINED);
+            } else {
+                builder.userConsent(UserConsent.GRANTED);
+            }
+        }
+
+        Boolean encryptionEnabled = getBoolean(configurationMap, ENCRYPTION_ENABLED);
+        if (encryptionEnabled != null) {
+            builder.encryptionEnabled(encryptionEnabled);
+        }
+
+        String logLevel = getString(configurationMap, LOG_LEVEL);
+        if (logLevel != null) {
+            if ("verbose".equalsIgnoreCase(logLevel)) {
+                builder.logLevel(SplitLogLevel.VERBOSE);
+            } else if ("debug".equalsIgnoreCase(logLevel)) {
+                builder.logLevel(SplitLogLevel.DEBUG);
+            } else if ("info".equalsIgnoreCase(logLevel)) {
+                builder.logLevel(SplitLogLevel.INFO);
+            } else if ("warning".equalsIgnoreCase(logLevel)) {
+                builder.logLevel(SplitLogLevel.WARNING);
+            } else if ("error".equalsIgnoreCase(logLevel)) {
+                builder.logLevel(SplitLogLevel.ERROR);
+            } else {
+                builder.logLevel(SplitLogLevel.NONE);
+            }
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();

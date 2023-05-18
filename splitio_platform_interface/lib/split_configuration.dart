@@ -23,7 +23,7 @@ class SplitConfiguration {
   ///
   /// [trafficType] The default traffic type for events tracked using the track method. If not specified, every track call should specify a traffic type.
   ///
-  /// [enableDebug] If true, the SDK will log debug messages to the console.
+  /// [enableDebug] (Deprecated; use logLevel instead) If true, the SDK will log debug messages to the console.
   ///
   /// [streamingEnabled] Boolean flag to enable the streaming service as default synchronization mechanism when in foreground. In the event of an issue with streaming, the SDK will fallback to the polling mechanism. If false, the SDK will poll for changes as usual without attempting to use streaming.
   ///
@@ -32,6 +32,16 @@ class SplitConfiguration {
   /// [impressionListener] Enables impression listener. If true, generated impressions will be streamed in the impressionsStream() method of Splitio.
   ///
   /// [syncConfig] Use it to filter specific feature flags to be synced and evaluated by the SDK. If not set, all feature flags will be downloaded.
+  ///
+  /// [impressionsMode] This configuration defines how impressions (decisioning events) are queued. Supported modes are [ImpressionsMode.optimized], [ImpressionsMode.none], and [ImpressionsMode.debug]. In [ImpressionsMode.optimized] mode, only unique impressions are queued and posted to Split; this is the recommended mode for experimentation use cases. In [ImpressionsMode.none] mode, no impression is tracked in Split and only minimum viable data to support usage stats is, so never use this mode if you are experimenting with that instance impressions. Use [ImpressionsMode.none] when you want to optimize for feature flagging only use cases and reduce impressions network and storage load. In [ImpressionsMode.debug] mode, ALL impressions are queued and sent to Split; this is useful for validations. This mode doesn't impact the impression listener which receives all generated impressions locally.
+  ///
+  /// [syncEnabled] Controls the SDK continuous synchronization flags. When true, a running SDK processes rollout plan updates performed in the Split user interface (default). When false, it fetches all data upon init, which ensures a consistent experience during a user session and optimizes resources when these updates are not consumed by the app.
+  ///
+  /// [UserConsent] User consent status used to control the tracking of events and impressions. Possible values are [UserConsent.granted], [UserConsent.declined], and [UserConsent.unknown].
+  ///
+  /// [encryptionEnabled] If set to true, the local database contents is encrypted. Defaults to false.
+  ///
+  /// [logLevel] Enables logging according to the level specified. Options are [SplitLogLevel.verbose], [SplitLogLevel.none], [SplitLogLevel.debug], [SplitLogLevel.info], [SplitLogLevel.warning], and [SplitLogLevel.error].
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -42,7 +52,7 @@ class SplitConfiguration {
     int? eventFlushInterval,
     int? eventsPerPush,
     String? trafficType,
-    bool? enableDebug,
+    @Deprecated('Use logLevel instead') bool? enableDebug,
     bool? streamingEnabled,
     bool? persistentAttributesEnabled,
     bool? impressionListener,
@@ -52,6 +62,11 @@ class SplitConfiguration {
     String? streamingServiceEndpoint,
     String? telemetryServiceEndpoint,
     SyncConfig? syncConfig,
+    ImpressionsMode? impressionsMode,
+    bool? syncEnabled,
+    UserConsent? userConsent,
+    bool? encryptionEnabled,
+    SplitLogLevel? logLevel,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -132,5 +147,39 @@ class SplitConfiguration {
         'syncConfigPrefixes': syncConfig.prefixes.toList(growable: false)
       };
     }
+
+    if (impressionsMode != null) {
+      configurationMap['impressionsMode'] = impressionsMode.name;
+    }
+
+    if (syncEnabled != null) {
+      configurationMap['syncEnabled'] = syncEnabled;
+    }
+
+    if (userConsent != null) {
+      configurationMap['userConsent'] = userConsent.name;
+    }
+
+    if (encryptionEnabled != null) {
+      configurationMap['encryptionEnabled'] = encryptionEnabled;
+    }
+
+    if (logLevel != null) {
+      configurationMap['logLevel'] = logLevel.name;
+    }
   }
 }
+
+enum ImpressionsMode {
+  debug,
+  optimized,
+  none,
+}
+
+enum UserConsent {
+  granted,
+  declined,
+  unknown,
+}
+
+enum SplitLogLevel { verbose, debug, info, warning, error, none }

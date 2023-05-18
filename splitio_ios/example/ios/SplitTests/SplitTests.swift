@@ -235,12 +235,15 @@ class SplitFactoryStub: SplitFactory {
 
     var apiKey: String
 
+    var userConsent: UserConsent
+
     init(apiKey: String, client: SplitClient) {
         self.apiKey = apiKey
         self.client = client
         self.nilBucketingKeyClient = SplitClientStub()
         manager = SplitManagerStub()
         version = "0.0.0-stub"
+        userConsent = .unknown
     }
 
     convenience init(apiKey: String) {
@@ -266,6 +269,14 @@ class SplitFactoryStub: SplitFactory {
 
     func client(matchingKey: String, bucketingKey: String?) -> SplitClient {
         return client
+    }
+
+    func setUserConsent(enabled: Bool) {
+        if (enabled) {
+            self.userConsent = .granted
+        } else {
+            self.userConsent = .declined
+        }
     }
 }
 
