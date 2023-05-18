@@ -1,12 +1,14 @@
-## 0.1.2+2 (Dec 7, 2022)
+# 0.1.3-rc.1 (May 18, 2023)
+
+# 0.1.2+2 (Dec 7, 2022)
 
 Added consumer ProGuard rules for Android.
 
-## 0.1.2+1 (Sep 14, 2022)
+# 0.1.2+1 (Sep 14, 2022)
 
 Added exports for models.
 
-## 0.1.2 (Sep 13, 2022)
+# 0.1.2 (Sep 13, 2022)
 
 * Migrated to federated structure.
 * Added support for Impression Listener.
@@ -15,11 +17,11 @@ Added exports for models.
 * Added support for manager methods.
 * Added support for linking native factory.
 
-## 0.1.1 (Aug 19, 2022)
+# 0.1.1 (Aug 19, 2022)
 
 Minor fixes.
 
-## 0.1.0 (Aug 3, 2022)
+# 0.1.0 (Aug 3, 2022)
 
 Initial release.
 
