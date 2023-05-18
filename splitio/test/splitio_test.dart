@@ -36,13 +36,13 @@ void main() {
       Splitio('api-key', 'matching-key',
           bucketingKey: 'bucketing-key',
           configuration:
-              SplitConfiguration(enableDebug: true, streamingEnabled: false));
+              SplitConfiguration(logLevel: SplitLogLevel.debug, streamingEnabled: false));
       expect(_platform.methodName, 'init');
       expect(_platform.methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'enableDebug': true, 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false},
       });
     });
   });
