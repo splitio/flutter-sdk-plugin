@@ -17,9 +17,11 @@ void main() {
   }
 
   setUp(() {
-    _channel.setMockMethodCallHandler((MethodCall methodCall) {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (MethodCall methodCall) {
       splitEventMethodCallHandler.handle(
           methodCall.method, methodCall.arguments);
+      return null;
     });
   });
 
