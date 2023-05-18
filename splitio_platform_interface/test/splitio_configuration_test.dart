@@ -5,7 +5,6 @@ import 'package:splitio_platform_interface/split_sync_config.dart';
 void main() {
   test('valuesAreMappedCorrectly', () async {
     final SplitConfiguration config = SplitConfiguration(
-        enableDebug: true,
         eventFlushInterval: 2000,
         eventsPerPush: 300,
         eventsQueueSize: 250,
