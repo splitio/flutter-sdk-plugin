@@ -16,7 +16,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
       - name: Build example app APK
@@ -31,7 +31,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
       - name: Run Pub Get
@@ -39,7 +39,7 @@ jobs:
       - name: Build Android
         run: cd splitio/; flutter build
       - name: Run Android test
-        run: cd splitio/example/android/; gradle :splitio:testReleaseUnitTest;
+        run: cd splitio/example/android/; ./gradlew :splitio:testReleaseUnitTest;
 
   build-ios:
     name: Build iOS
@@ -47,7 +47,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
       - name: Run Build iOS
@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - uses: subosito/flutter-action@v2
+      - uses: subosito/flutter-action@v2.10.0
         with:
           channel: 'stable'
       - name: Run Build iOS
