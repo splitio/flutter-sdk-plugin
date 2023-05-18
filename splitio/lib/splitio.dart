@@ -13,7 +13,7 @@ export 'package:splitio_platform_interface/split_view.dart';
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
 class Splitio {
-  final String _apiKey;
+  final String _sdkKey;
 
   final String _defaultMatchingKey;
 
@@ -25,7 +25,7 @@ class Splitio {
 
   /// SDK instance constructor.
   ///
-  /// Use [_apiKey] to specify your Split API key.
+  /// Use [_sdkKey] to specify your Split SDK key.
   ///
   /// Use [_defaultMatchingKey] to specify a default matching key. The default
   /// client will be associated with it.
@@ -33,7 +33,7 @@ class Splitio {
   /// An optional [bucketingKey] can also be specified.
   ///
   /// Use the optional [configuration] parameter to fine tune configuration options.
-  Splitio(this._apiKey, this._defaultMatchingKey,
+  Splitio(this._sdkKey, this._defaultMatchingKey,
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
     _splitConfiguration = configuration;
@@ -60,7 +60,7 @@ class Splitio {
   /// up-to-date, but all the functionality will be available.
   ///
   /// [onUpdated] is executed when changes have been made, such as creating
-  /// new splits or modifying segments.
+  /// new feature flags or modifying segments.
   ///
   /// [onTimeout] is executed if the SDK has not been able to get ready in time.
   SplitClient client(
@@ -123,7 +123,7 @@ class Splitio {
 
   Future<void> _init() {
     return _platform.init(
-        apiKey: _apiKey,
+        apiKey: _sdkKey,
         matchingKey: _defaultMatchingKey,
         bucketingKey: _defaultBucketingKey,
         sdkConfiguration: _splitConfiguration);
