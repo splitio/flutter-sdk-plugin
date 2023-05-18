@@ -23,7 +23,8 @@ void main() {
   }
 
   setUp(() {
-    _channel.setMockMethodCallHandler((MethodCall methodCall) async {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(_channel, (MethodCall methodCall) async {
       methodName = methodCall.method;
       methodArguments = methodCall.arguments;
 
@@ -54,6 +55,7 @@ void main() {
         case 'clearAttributes':
           return true;
       }
+      return null;
     });
   });
 
@@ -371,13 +373,13 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           sdkConfiguration:
-              SplitConfiguration(enableDebug: true, streamingEnabled: false));
+              SplitConfiguration(logLevel: SplitLogLevel.warning, streamingEnabled: false));
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'enableDebug': true, 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'warning', 'streamingEnabled': false},
       });
     });
   });
