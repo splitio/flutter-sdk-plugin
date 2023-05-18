@@ -37,7 +37,7 @@ class SplitConfiguration {
   ///
   /// [syncEnabled] Controls the SDK continuous synchronization flags. When true, a running SDK processes rollout plan updates performed in the Split user interface (default). When false, it fetches all data upon init, which ensures a consistent experience during a user session and optimizes resources when these updates are not consumed by the app.
   ///
-  /// [UserConsent] User consent status used to control the tracking of events and impressions. Possible values are [UserConsent.granted], [UserConsent.declined], and [UserConsent.unknown].
+  /// [userConsent] User consent status used to control the tracking of events and impressions. Possible values are [UserConsent.granted], [UserConsent.declined], and [UserConsent.unknown].
   ///
   /// [encryptionEnabled] If set to true, the local database contents is encrypted. Defaults to false.
   ///

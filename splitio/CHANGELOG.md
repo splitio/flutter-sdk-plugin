@@ -1,3 +1,14 @@
+# 0.1.3 (May 18, 2023)
+
+* Updated iOS SDK to `2.20.1` & Android SDK to `3.2.1`
+* Added support for new configuration options:
+    * `impressionsMode`
+    * `syncEnabled`
+    * `logLevel`
+    * `userConsent`
+    * `encryptionEnabled`
+* Deprecated `enableDebug` configuration in favor of `logLevel`.
+
 # 0.1.3-rc.1 (May 18, 2023)
 
 # 0.1.2+2 (Dec 7, 2022)
