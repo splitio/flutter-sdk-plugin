@@ -24,4 +24,8 @@ interface SplitWrapper extends EvaluationWrapper, AttributesWrapper {
 
     @Nullable
     SplitView split(String splitName);
+
+    String getUserConsent();
+
+    void setUserConsent(boolean enabled);
 }

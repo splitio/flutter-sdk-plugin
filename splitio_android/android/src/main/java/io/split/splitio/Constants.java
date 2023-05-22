@@ -26,6 +26,8 @@ class Constants {
         static final String SPLIT_NAMES = "splitNames";
         static final String SPLIT = "split";
         static final String IMPRESSION_LOG = "impressionLog";
+        static final String GET_USER_CONSENT = "getUserConsent";
+        static final String SET_USER_CONSENT = "setUserConsent";
     }
 
     static class Argument {

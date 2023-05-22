@@ -475,4 +475,33 @@ public class SplitMethodParserImplTest {
                 eq("bucketing-key"),
                 argThat(splitClientConfig -> splitClientConfig.impressionListener() != null && !splitClientConfig.streamingEnabled()));
     }
+
+    @Test
+    public void getUserConsent() {
+        when(mSplitWrapper.getUserConsent()).thenReturn("granted");
+        mMethodParser.onMethodCall("getUserConsent", Collections.emptyMap(), mResult);
+
+        verify(mResult).success("granted");
+        verify(mSplitWrapper).getUserConsent();
+    }
+
+    @Test
+    public void setUserConsentEnabled() {
+        when(mArgumentParser.getBooleanArgument("value", Collections.singletonMap("value", true))).thenReturn(true);
+        when(mArgumentParser.getBooleanArgument("value", Collections.singletonMap("value", false))).thenReturn(false);
+        mMethodParser.onMethodCall("setUserConsent", Collections.singletonMap("value", true), mResult);
+
+        verify(mResult).success(null);
+        verify(mSplitWrapper).setUserConsent(true);
+    }
+
+    @Test
+    public void setUserConsentDisabled() {
+        when(mArgumentParser.getBooleanArgument("value", Collections.singletonMap("value", true))).thenReturn(true);
+        when(mArgumentParser.getBooleanArgument("value", Collections.singletonMap("value", false))).thenReturn(false);
+        mMethodParser.onMethodCall("setUserConsent", Collections.singletonMap("value", false), mResult);
+
+        verify(mResult).success(null);
+        verify(mSplitWrapper).setUserConsent(false);
+    }
 }
