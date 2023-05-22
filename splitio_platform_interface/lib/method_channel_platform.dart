@@ -324,6 +324,24 @@ class MethodChannelPlatform extends SplitioPlatform {
     return _impressionsMethodCallHandler.stream();
   }
 
+  @override
+  Future<UserConsent> getUserConsent() async {
+    String invokeMethod =
+        (await _methodChannel.invokeMethod('getUserConsent')) as String;
+    if (invokeMethod == 'granted') {
+      return UserConsent.granted;
+    } else if (invokeMethod == 'declined') {
+      return UserConsent.declined;
+    } else {
+      return UserConsent.unknown;
+    }
+  }
+
+  @override
+  Future<void> setUserConsent(bool enabled) async {
+    await _methodChannel.invokeMethod('setUserConsent', {'value': enabled});
+  }
+
   String _buildMapKey(String matchingKey, String? bucketingKey) {
     return '${matchingKey}_$bucketingKey';
   }
