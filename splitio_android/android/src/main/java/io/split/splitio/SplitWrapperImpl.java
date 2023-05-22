@@ -15,6 +15,7 @@ import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
 import io.split.android.client.api.SplitView;
+import io.split.android.client.shared.UserConsent;
 import io.split.android.client.utils.ConcurrentSet;
 import io.split.android.grammar.Treatments;
 
@@ -221,5 +222,22 @@ class SplitWrapperImpl implements SplitWrapper {
     @Override
     public SplitView split(String splitName) {
         return mSplitFactory.manager().split(splitName);
+    }
+
+    @Override
+    public String getUserConsent() {
+        UserConsent userConsent = mSplitFactory.getUserConsent();
+        if (userConsent == UserConsent.GRANTED) {
+            return "granted";
+        } else if (userConsent == UserConsent.DECLINED) {
+            return "declined";
+        } else {
+            return "unknown";
+        }
+    }
+
+    @Override
+    public void setUserConsent(boolean enabled) {
+        mSplitFactory.setUserConsent(enabled);
     }
 }

@@ -514,4 +514,27 @@ void main() {
       'attributes': {}
     });
   });
+
+  group('userConsent', () {
+    test('get user consent', () async {
+      UserConsent userConsent = await _platform.getUserConsent();
+
+      expect(methodName, 'getUserConsent');
+      expect(userConsent, UserConsent.declined);
+    });
+
+    test('set user consent enabled', () {
+      _platform.setUserConsent(true);
+
+      expect(methodName, 'setUserConsent');
+      expect(methodArguments, {'enabled': true});
+    });
+
+    test('set user consent disabled', () {
+      _platform.setUserConsent(false);
+
+      expect(methodName, 'setUserConsent');
+      expect(methodArguments, {'enabled': false});
+    });
+  });
 }
