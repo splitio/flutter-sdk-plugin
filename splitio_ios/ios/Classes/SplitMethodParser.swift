@@ -133,6 +133,12 @@ class DefaultSplitMethodParser: SplitMethodParser {
         case .split:
             result(SplitView.asMap(splitView: splitWrapper?.split(splitName: argumentParser.getStringArgument(argumentName: .splitName, arguments: arguments) ?? "")))
             break
+        case .getUserConsent:
+            result(splitWrapper?.getUserConsent())
+            break
+        case .setUserConsent:
+            splitWrapper?.setUserConsent(enabled: argumentParser.getBooleanArgument(argumentName: .value, arguments: arguments))
+            result(nil)
         default:
             result(FlutterMethodNotImplemented)
             break

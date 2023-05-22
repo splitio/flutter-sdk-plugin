@@ -16,6 +16,10 @@ protocol SplitWrapper: EvaluationWrapper, AttributesWrapper {
     func splits() -> [SplitView]
 
     func split(splitName: String) -> SplitView?
+
+    func getUserConsent() -> String
+
+    func setUserConsent(enabled: Bool)
 }
 
 protocol EvaluationWrapper {
@@ -225,6 +229,28 @@ class DefaultSplitWrapper: SplitWrapper {
             return splitFactory.manager.split(featureName: splitName)
         } else {
             return nil
+        }
+    }
+
+    func getUserConsent() -> String {
+        if let splitFactory = splitFactory {
+            let userConsent: UserConsent = splitFactory.userConsent
+            
+            if (userConsent == .granted) {
+                return "granted"
+            } else if (userConsent == .declined) {
+                return "declined"
+            } else {
+                return "unknown"
+            }
+        } else {
+            return "unknown"
+        }
+    }
+
+    func setUserConsent(enabled: Bool) {
+        if let splitFactory = splitFactory {
+            splitFactory.setUserConsent(enabled: enabled)
         }
     }
 }

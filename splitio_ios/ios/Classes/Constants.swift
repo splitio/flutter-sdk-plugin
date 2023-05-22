@@ -24,6 +24,8 @@ enum Method: String {
     case splits = "splits"
     case split = "split"
     case impressionLog = "impressionLog"
+    case getUserConsent = "getUserConsent"
+    case setUserConsent = "setUserConsent"
 }
 
 enum Argument: String {
