@@ -181,6 +181,26 @@ class SplitTests: XCTestCase {
         let split = splitWrapper.split(splitName: "my-split")
         XCTAssert(manager.splitNameValue == "my-split")
     }
+
+    func testGetUserConsent() {
+        let manager = SplitManagerStub()
+        let factoryProvider = SplitFactoryProviderStub(manager: manager)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+        let userConsent = splitWrapper.getUserConsent()
+        XCTAssert(userConsent == "unknown")
+    }
+
+    func testSetUserConsent() {
+        let manager = SplitManagerStub()
+        let factoryProvider = SplitFactoryProviderStub(manager: manager)
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: factoryProvider)
+        splitWrapper.setUserConsent(enabled: true)
+        let grantedUserConsent = splitWrapper.getUserConsent()
+        splitWrapper.setUserConsent(enabled: false)
+        let declinedUserConsent = splitWrapper.getUserConsent()
+        XCTAssert(grantedUserConsent == "granted")
+        XCTAssert(declinedUserConsent == "declined")
+    }
 }
 
 class SplitFactoryProviderStub: SplitFactoryProvider {
