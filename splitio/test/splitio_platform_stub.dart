@@ -339,4 +339,19 @@ class SplitioPlatformStub
 
     return Future.value(true);
   }
+
+  @override
+  Future<UserConsent> getUserConsent() {
+    methodName = 'getUserConsent';
+
+    return Future.value(UserConsent.granted);
+  }
+
+  @override
+  Future<void> setUserConsent(bool enabled) {
+    methodName = 'setUserConsent';
+    methodArguments['value'] = enabled;
+
+    return Future.value(null);
+  }
 }

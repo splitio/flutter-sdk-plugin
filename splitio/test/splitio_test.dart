@@ -101,4 +101,26 @@ void main() {
       expect(_platform.methodArguments, {'splitName': 'my_split'});
     });
   });
+
+  group('userConsent', () {
+    test('get user consent', () async {
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.getUserConsent();
+
+      expect(_platform.methodName, 'getUserConsent');
+    });
+
+    test('set user consent', () async {
+      var splitio = Splitio('api-key', 'matching-key');
+      splitio.setUserConsent(true);
+
+      expect(_platform.methodName, 'setUserConsent');
+      expect(_platform.methodArguments, {
+        'matchingKey': 'matching-key',
+        'apiKey': 'api-key',
+        'sdkConfiguration': {},
+        'value': true,
+      });
+    });
+  });
 }

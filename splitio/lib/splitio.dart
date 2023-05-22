@@ -121,6 +121,14 @@ class Splitio {
     return _platform.split(splitName: splitName);
   }
 
+  Future<UserConsent> getUserConsent() async {
+    return _platform.getUserConsent();
+  }
+
+  Future<void> setUserConsent(bool enabled) async {
+    return _platform.setUserConsent(enabled);
+  }
+
   Future<void> _init() {
     return _platform.init(
         apiKey: _sdkKey,
