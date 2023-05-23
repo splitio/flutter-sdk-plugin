@@ -27,10 +27,12 @@ import static io.split.splitio.Constants.Method.GET_TREATMENT;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.GET_TREATMENT_WITH_CONFIG;
+import static io.split.splitio.Constants.Method.GET_USER_CONSENT;
 import static io.split.splitio.Constants.Method.INIT;
 import static io.split.splitio.Constants.Method.REMOVE_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.SET_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.SET_ATTRIBUTES;
+import static io.split.splitio.Constants.Method.SET_USER_CONSENT;
 import static io.split.splitio.Constants.Method.SPLIT;
 import static io.split.splitio.Constants.Method.SPLITS;
 import static io.split.splitio.Constants.Method.SPLIT_NAMES;
@@ -194,6 +196,13 @@ class SplitMethodParserImpl implements SplitMethodParser {
                 break;
             case SPLIT:
                 result.success(getSplitViewAsMap(mSplitWrapper.split(mArgumentParser.getStringArgument(SPLIT_NAME, arguments))));
+                break;
+            case GET_USER_CONSENT:
+                result.success(mSplitWrapper.getUserConsent());
+                break;
+            case SET_USER_CONSENT:
+                mSplitWrapper.setUserConsent(mArgumentParser.getBooleanArgument(VALUE, arguments));
+                result.success(null);
                 break;
             default:
                 result.notImplemented();

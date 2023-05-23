@@ -54,6 +54,8 @@ void main() {
         case 'removeAttribute':
         case 'clearAttributes':
           return true;
+        case 'getUserConsent':
+          return 'declined';
       }
       return null;
     });
@@ -372,8 +374,8 @@ void main() {
           apiKey: 'api-key',
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
-          sdkConfiguration:
-              SplitConfiguration(logLevel: SplitLogLevel.debug, streamingEnabled: false));
+          sdkConfiguration: SplitConfiguration(
+              logLevel: SplitLogLevel.debug, streamingEnabled: false));
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
@@ -512,6 +514,29 @@ void main() {
       'appliedRule': 'appliedRule',
       'changeNumber': 200,
       'attributes': {}
+    });
+  });
+
+  group('userConsent', () {
+    test('get user consent', () async {
+      UserConsent userConsent = await _platform.getUserConsent();
+
+      expect(methodName, 'getUserConsent');
+      expect(userConsent, UserConsent.declined);
+    });
+
+    test('set user consent enabled', () {
+      _platform.setUserConsent(true);
+
+      expect(methodName, 'setUserConsent');
+      expect(methodArguments, {'value': true});
+    });
+
+    test('set user consent disabled', () {
+      _platform.setUserConsent(false);
+
+      expect(methodName, 'setUserConsent');
+      expect(methodArguments, {'value': false});
     });
   });
 }

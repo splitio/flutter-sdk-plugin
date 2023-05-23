@@ -22,6 +22,7 @@ import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitManager;
 import io.split.android.client.api.Key;
+import io.split.android.client.shared.UserConsent;
 
 public class SplitWrapperImplTest {
 
@@ -276,5 +277,20 @@ public class SplitWrapperImplTest {
         mSplitWrapper.split("my_split");
 
         verify(managerMock).split("my_split");
+    }
+
+    @Test
+    public void testGetUserConsent() {
+        when(mSplitFactory.getUserConsent()).thenReturn(UserConsent.DECLINED);
+        String userConsent = mSplitWrapper.getUserConsent();
+
+        verify(mSplitFactory).getUserConsent();
+        assertEquals("declined", userConsent);
+    }
+
+    @Test
+    public void testSetUserConsent() {
+        mSplitWrapper.setUserConsent(true);
+        verify(mSplitFactory).setUserConsent(true);
     }
 }

@@ -297,6 +297,28 @@ class SplitMethodParserTests: XCTestCase {
         XCTAssert(providerHelper.splitClientConfigValue?.impressionListener != nil)
         XCTAssert(providerHelper.splitClientConfigValue?.streamingEnabled == false)
     }
+
+    func testGetUserConsent() {
+        methodParser?.onMethodCall(methodName: "getUserConsent", arguments: [], result: { (_: Any?) in })
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.userConsent == "unknown")
+    }
+
+    func testSetUserConsent() {
+        methodParser?.onMethodCall(methodName: "setUserConsent", arguments: [], result: { (_: Any?) in })
+
+        guard let wrapper = splitWrapper as? SplitWrapperStub else {
+            XCTFail()
+            return
+        }
+
+        XCTAssert(wrapper.userConsent == "declined")
+    }
 }
 
 class SplitWrapperStub: SplitWrapper {
@@ -316,6 +338,7 @@ class SplitWrapperStub: SplitWrapper {
     var attributeNameValue: String = ""
     var splitsCalled = false
     var splitNamesCalled = false
+    var userConsent = "unknown"
 
     func getClient(matchingKey: String, bucketingKey: String?) -> SplitClient? {
         matchingKeyValue = matchingKey
@@ -439,6 +462,18 @@ class SplitWrapperStub: SplitWrapper {
     func split(splitName: String) -> SplitView? {
         splitNameValue = splitName
         return nil
+    }
+
+    func getUserConsent() -> String {
+        return userConsent
+    }
+
+    func setUserConsent(enabled: Bool) {
+        if (enabled) {
+            userConsent = "granted"
+        } else {
+            userConsent = "declined"
+        }
     }
 }
 

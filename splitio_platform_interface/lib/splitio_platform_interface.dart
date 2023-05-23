@@ -47,6 +47,14 @@ abstract class _FactoryPlatform {
   Stream<Impression> impressionsStream() {
     throw UnimplementedError();
   }
+
+  Future<UserConsent> getUserConsent() {
+    throw UnimplementedError();
+  }
+
+  Future<void> setUserConsent(bool enabled) {
+    throw UnimplementedError();
+  }
 }
 
 abstract class _ClientPlatform {
