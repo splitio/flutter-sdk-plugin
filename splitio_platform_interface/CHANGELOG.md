@@ -1,3 +1,5 @@
+# 0.1.4-rc.1 (May 23, 2023)
+
 # 1.1.0 (May 18, 2023)
 * Added support for new configuration options:
     * `impressionsMode`
