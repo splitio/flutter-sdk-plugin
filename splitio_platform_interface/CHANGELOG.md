@@ -1,3 +1,8 @@
+# 1.2.0 (May 23, 2023)
+
+* Added `setUserConsent` method.
+* Added `getUserConsent` method.
+
 # 1.2.0-rc.1 (May 23, 2023)
 
 # 1.1.0 (May 18, 2023)
