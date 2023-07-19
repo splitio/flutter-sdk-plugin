@@ -4,7 +4,7 @@
 #
 Pod::Spec.new do |s|
   s.name             = 'splitio_ios'
-  s.version          = '0.2.0'
+  s.version          = '0.3.0'
   s.summary          = 'split.io official Flutter plugin.'
   s.description      = <<-DESC
 split.io official Flutter plugin.
