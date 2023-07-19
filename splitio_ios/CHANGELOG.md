@@ -1,3 +1,10 @@
+# 0.1.5 (Jul 19, 2023)
+
+* Updated iOS SDK to `2.21.0`, which includes:
+  * Improved streaming architecture implementation to apply feature flag updates from the notification received which is now enhanced, improving efficiency and reliability of the whole update system.
+  * Added logic to do a full check of feature flags immediately when the app comes back to foreground, limited to once per minute.
+  * Updated SplitResult init to be public in order to improve testability.
+
 # 0.1.5-rc.1 (Jul 19, 2023)
 
 # 0.1.4 (May 23, 2023)
