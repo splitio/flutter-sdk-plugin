@@ -373,13 +373,13 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           sdkConfiguration:
-              SplitConfiguration(logLevel: SplitLogLevel.error, streamingEnabled: false));
+              SplitConfiguration(logLevel: SplitLogLevel.error, streamingEnabled: false, readyTimeout: 1));
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'error', 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'error', 'streamingEnabled': false, 'readyTimeout': 1},
       });
     });
   });

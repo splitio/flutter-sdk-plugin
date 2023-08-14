@@ -43,6 +43,7 @@ class SplitClientConfigHelper {
     private static final String USER_CONSENT = "userConsent";
     private static final String ENCRYPTION_ENABLED = "encryptionEnabled";
     private static final String LOG_LEVEL = "logLevel";
+    private static final String READY_TIMEOUT = "readyTimeout";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -204,6 +205,11 @@ class SplitClientConfigHelper {
             } else {
                 builder.logLevel(SplitLogLevel.NONE);
             }
+        }
+
+        Integer readyTimeout = getInteger(configurationMap, READY_TIMEOUT);
+        if (readyTimeout != null) {
+            builder.ready(readyTimeout);
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
