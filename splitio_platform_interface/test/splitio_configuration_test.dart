@@ -29,6 +29,7 @@ void main() {
         userConsent: UserConsent.declined,
         encryptionEnabled: true,
         logLevel: SplitLogLevel.debug,
+        readyTimeout: 1
     );
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
@@ -61,6 +62,7 @@ void main() {
     expect(config.configurationMap['userConsent'], 'declined');
     expect(config.configurationMap['encryptionEnabled'], true);
     expect(config.configurationMap['logLevel'], 'debug');
+    expect(config.configurationMap['readyTimeout'], 1);
   });
 
   test('noSpecialValuesLeavesMapEmpty', () async {
