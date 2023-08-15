@@ -157,14 +157,14 @@ packages:
       path: "../../splitio_android"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6-rc.1"
   splitio_ios:
     dependency: transitive
     description:
       path: "../../splitio_ios"
       relative: true
     source: path
-    version: "0.1.5"
+    version: "0.1.6-rc.1"
   splitio_platform_interface:
     dependency: transitive
     description:
