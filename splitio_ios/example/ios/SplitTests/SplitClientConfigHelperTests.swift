@@ -26,7 +26,8 @@ class SplitClientConfigHelperTests: XCTestCase {
             "syncEnabled": false,
             "userConsent": "declined",
             "encryptionEnabled": true,
-            "logLevel": "verbose"
+            "logLevel": "verbose",
+            "readyTimeout": 10
         ]
 
         let splitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
@@ -47,6 +48,7 @@ class SplitClientConfigHelperTests: XCTestCase {
         XCTAssertEqual(.declined, splitClientConfig.userConsent)
         XCTAssertTrue(splitClientConfig.encryptionEnabled)
         XCTAssertEqual(.verbose, splitClientConfig.logLevel)
+        XCTAssertEqual(10000, splitClientConfig.sdkReadyTimeOut)
     }
 
     func testEnableDebugLogLevelIsMappedCorrectly() {

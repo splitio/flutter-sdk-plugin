@@ -42,6 +42,8 @@ class SplitConfiguration {
   /// [encryptionEnabled] If set to true, the local database contents is encrypted. Defaults to false.
   ///
   /// [logLevel] Enables logging according to the level specified. Options are [SplitLogLevel.verbose], [SplitLogLevel.none], [SplitLogLevel.debug], [SplitLogLevel.info], [SplitLogLevel.warning], and [SplitLogLevel.error].
+  ///
+  /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -67,6 +69,7 @@ class SplitConfiguration {
     UserConsent? userConsent,
     bool? encryptionEnabled,
     SplitLogLevel? logLevel,
+    int? readyTimeout = 10,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -166,6 +169,10 @@ class SplitConfiguration {
 
     if (logLevel != null) {
       configurationMap['logLevel'] = logLevel.name;
+    }
+
+    if (readyTimeout != null) {
+      configurationMap['readyTimeout'] = readyTimeout;
     }
   }
 }

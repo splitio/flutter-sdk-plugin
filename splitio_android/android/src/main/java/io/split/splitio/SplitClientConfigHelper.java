@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
@@ -43,6 +44,7 @@ class SplitClientConfigHelper {
     private static final String USER_CONSENT = "userConsent";
     private static final String ENCRYPTION_ENABLED = "encryptionEnabled";
     private static final String LOG_LEVEL = "logLevel";
+    private static final String READY_TIMEOUT = "readyTimeout";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -204,6 +206,11 @@ class SplitClientConfigHelper {
             } else {
                 builder.logLevel(SplitLogLevel.NONE);
             }
+        }
+
+        Integer readyTimeout = getInteger(configurationMap, READY_TIMEOUT);
+        if (readyTimeout != null) {
+            builder.ready((int) TimeUnit.SECONDS.toMillis(readyTimeout)); // Android SDK uses this parameter in millis
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
