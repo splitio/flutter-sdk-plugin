@@ -36,7 +36,11 @@ class Splitio {
   Splitio(this._sdkKey, this._defaultMatchingKey,
       {String? bucketingKey, SplitConfiguration? configuration}) {
     _defaultBucketingKey = bucketingKey;
-    _splitConfiguration = configuration;
+    if (configuration != null) {
+      _splitConfiguration = configuration;
+    } else {
+      _splitConfiguration = SplitConfiguration();
+    }
 
     _init();
   }
