@@ -1,3 +1,7 @@
+# 0.1.6 (Aug 15, 2023)
+
+* Added `readyTimeout` configuration option.
+
 # 0.1.6-rc.1 (Aug 15, 2023)
 
 # 0.1.5 (Jul 19, 2023)
