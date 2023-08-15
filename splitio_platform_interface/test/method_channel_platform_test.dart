@@ -351,7 +351,7 @@ void main() {
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 
@@ -365,7 +365,7 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 

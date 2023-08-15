@@ -33,7 +33,7 @@ class MethodChannelPlatform extends SplitioPlatform {
     Map<String, Object?> arguments = {
       'apiKey': apiKey,
       'matchingKey': matchingKey,
-      'sdkConfiguration': sdkConfiguration?.configurationMap ?? {},
+      'sdkConfiguration': sdkConfiguration?.configurationMap ?? SplitConfiguration().configurationMap, // If sdkConfiguration is null, create a new SplitConfiguration to apply default values
     };
 
     if (bucketingKey != null) {
