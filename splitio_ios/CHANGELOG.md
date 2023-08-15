@@ -1,3 +1,5 @@
+# 0.1.6-rc.1 (Aug 15, 2023)
+
 # 0.1.5 (Jul 19, 2023)
 
 * Updated iOS SDK to `2.21.0`, which includes:
