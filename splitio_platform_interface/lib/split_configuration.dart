@@ -43,7 +43,7 @@ class SplitConfiguration {
   ///
   /// [logLevel] Enables logging according to the level specified. Options are [SplitLogLevel.verbose], [SplitLogLevel.none], [SplitLogLevel.debug], [SplitLogLevel.info], [SplitLogLevel.warning], and [SplitLogLevel.error].
   ///
-  /// [readyTimeout] Maximum amount of time in milliseconds to wait before firing the SDK_READY_TIMED_OUT event. If not set, the SDK will wait indefinitely.
+  /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. If not set, the SDK will wait indefinitely.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -69,7 +69,7 @@ class SplitConfiguration {
     UserConsent? userConsent,
     bool? encryptionEnabled,
     SplitLogLevel? logLevel,
-    int? readyTimeout,
+    int? readyTimeout = 10,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;

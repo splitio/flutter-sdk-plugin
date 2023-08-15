@@ -68,6 +68,7 @@ void main() {
   test('noSpecialValuesLeavesMapEmpty', () async {
     final SplitConfiguration config = SplitConfiguration();
 
-    expect(config.configurationMap.isEmpty, true);
+    expect(config.configurationMap.length, 1);
+    expect(config.configurationMap['readyTimeout'], 10);
   });
 }

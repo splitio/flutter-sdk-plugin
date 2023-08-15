@@ -27,7 +27,7 @@ class SplitClientConfigHelperTests: XCTestCase {
             "userConsent": "declined",
             "encryptionEnabled": true,
             "logLevel": "verbose",
-            "readyTimeout": 10000
+            "readyTimeout": 10
         ]
 
         let splitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)

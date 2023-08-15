@@ -202,7 +202,7 @@ class SplitClientConfigHelper {
         }
 
         if let readyTimeout = configurationMap[READY_TIMEOUT] as? Int {
-            config.sdkReadyTimeOut = readyTimeout
+            config.sdkReadyTimeOut = readyTimeout * 1000 // iOS SDK uses this parameter in millis
         }
 
         config.serviceEndpoints = serviceEndpointsBuilder.build()

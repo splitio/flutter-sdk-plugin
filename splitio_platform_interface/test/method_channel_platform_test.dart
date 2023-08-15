@@ -381,7 +381,7 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false, 'readyTimeout' : 10},
       });
     });
   });

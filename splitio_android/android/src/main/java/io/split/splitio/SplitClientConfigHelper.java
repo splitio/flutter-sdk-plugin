@@ -6,6 +6,7 @@ import androidx.annotation.Nullable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
@@ -209,7 +210,7 @@ class SplitClientConfigHelper {
 
         Integer readyTimeout = getInteger(configurationMap, READY_TIMEOUT);
         if (readyTimeout != null) {
-            builder.ready(readyTimeout);
+            builder.ready((int) TimeUnit.SECONDS.toMillis(readyTimeout)); // Android SDK uses this parameter in millis
         }
 
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
