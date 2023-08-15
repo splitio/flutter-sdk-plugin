@@ -29,6 +29,7 @@ class SplitClientConfigHelper {
     static private let USER_CONSENT = "userConsent"
     static private let ENCRYPTION_ENABLED = "encryptionEnabled"
     static private let LOG_LEVEL = "logLevel"
+    static private let READY_TIMEOUT = "readyTimeout"
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -198,6 +199,10 @@ class SplitClientConfigHelper {
                 default:
                     config.logLevel = .none
             }
+        }
+
+        if let readyTimeout = configurationMap[READY_TIMEOUT] as? Int {
+            config.sdkReadyTimeOut = readyTimeout * 1000 // iOS SDK uses this parameter in millis
         }
 
         config.serviceEndpoints = serviceEndpointsBuilder.build()

@@ -17,7 +17,7 @@ void main() {
       expect(_platform.methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 
@@ -28,7 +28,7 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 
@@ -42,7 +42,7 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false, 'readyTimeout': 10},
       });
     });
   });
@@ -118,7 +118,7 @@ void main() {
       expect(_platform.methodArguments, {
         'matchingKey': 'matching-key',
         'apiKey': 'api-key',
-        'sdkConfiguration': {},
+        'sdkConfiguration': {'readyTimeout': 10},
         'value': true,
       });
     });
