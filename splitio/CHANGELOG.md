@@ -1,3 +1,7 @@
+# 0.1.6 (Aug 15, 2023)
+
+* Added `readyTimeout` configuration option. If the SDK is not ready after the amount of time (in seconds) specified by this option, the `whenTimeout` future of the client will be completed. Defaults to 10 seconds. A negative value means no timeout.
+
 # 0.1.6-rc.1 (Aug 15, 2023)
 
 # 0.1.5 (Jul 19, 2023)
