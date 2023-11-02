@@ -23,6 +23,7 @@ void main() {
       'changeNumber': 156246,
       'trafficType': 'default',
       'defaultTreatment': 'on',
+      'sets': ['set1', 'set2'],
     });
 
     expect(splitView?.name, 'my_split');
@@ -32,5 +33,6 @@ void main() {
     expect(splitView?.changeNumber, 156246);
     expect(splitView?.trafficType, 'default');
     expect(splitView?.defaultTreatment, 'on');
+    expect(splitView?.sets, ['set1', 'set2']);
   });
 }
