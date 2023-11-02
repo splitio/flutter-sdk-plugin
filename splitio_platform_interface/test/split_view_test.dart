@@ -22,6 +22,7 @@ void main() {
       'configs': {'yes': '{"abc"}', 'no': '"wasd"'},
       'changeNumber': 156246,
       'trafficType': 'default',
+      'defaultTreatment': 'on',
     });
 
     expect(splitView?.name, 'my_split');
@@ -30,5 +31,6 @@ void main() {
     expect(splitView?.configs, {'yes': '{"abc"}', 'no': '"wasd"'});
     expect(splitView?.changeNumber, 156246);
     expect(splitView?.trafficType, 'default');
+    expect(splitView?.defaultTreatment, 'on');
   });
 }
