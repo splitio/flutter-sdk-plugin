@@ -13,8 +13,8 @@ class SplitResult {
   String toString() {
     return '{"treatment": "' +
         treatment +
-        '", config: ' +
-        (config != null ? '"$config"' : 'null') +
-        '}';
+        '", config: "' +
+        (config ?? 'null') +
+        '"}';
   }
 }
