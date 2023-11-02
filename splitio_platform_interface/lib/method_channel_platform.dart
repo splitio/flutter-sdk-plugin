@@ -33,7 +33,9 @@ class MethodChannelPlatform extends SplitioPlatform {
     Map<String, Object?> arguments = {
       'apiKey': apiKey,
       'matchingKey': matchingKey,
-      'sdkConfiguration': sdkConfiguration?.configurationMap ?? SplitConfiguration().configurationMap, // If sdkConfiguration is null, create a new SplitConfiguration to apply default values
+      'sdkConfiguration': sdkConfiguration?.configurationMap ??
+          SplitConfiguration().configurationMap,
+      // If sdkConfiguration is null, create a new SplitConfiguration to apply default values
     };
 
     if (bucketingKey != null) {
@@ -163,6 +165,70 @@ class MethodChannelPlatform extends SplitioPlatform {
     return treatments?.map((key, value) =>
             MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
         {for (var item in splitNames) item: _controlResult};
+  }
+
+  @override
+  Future<Map<String, String>> getTreatmentsByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) async {
+    Map? treatments = await methodChannel.invokeMapMethod(
+        'getTreatmentsByFlagSet',
+        _buildParameters(matchingKey, bucketingKey,
+            {'flagSet': flagSet, 'attributes': attributes}));
+
+    return treatments
+            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+        {};
+  }
+
+  @override
+  Future<Map<String, String>> getTreatmentsByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) async {
+    Map? treatments = await methodChannel.invokeMapMethod(
+        'getTreatmentsByFlagSets',
+        _buildParameters(matchingKey, bucketingKey,
+            {'flagSets': flagSets, 'attributes': attributes}));
+
+    return treatments
+            ?.map((key, value) => MapEntry<String, String>(key, value)) ??
+        {};
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) async {
+    Map? treatments = await methodChannel.invokeMapMethod(
+        'getTreatmentsWithConfigByFlagSet',
+        _buildParameters(matchingKey, bucketingKey,
+            {'flagSet': flagSet, 'attributes': attributes}));
+
+    return treatments?.map((key, value) =>
+            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+        {};
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) async {
+    Map? treatments = await methodChannel.invokeMapMethod(
+        'getTreatmentsWithConfigByFlagSets',
+        _buildParameters(matchingKey, bucketingKey,
+            {'flagSets': flagSets, 'attributes': attributes}));
+
+    return treatments?.map((key, value) =>
+        MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+        {};
   }
 
   @override
