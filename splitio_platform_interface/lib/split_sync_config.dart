@@ -22,7 +22,7 @@ class SyncConfig {
     _prefixes = prefixes;
   }
 
-  SyncConfig.flagSets({required List<String> sets}) {
+  SyncConfig.flagSets(List<String> sets) {
     _sets = sets.toSet();
     _names = <String>{};
     _prefixes = <String>{};

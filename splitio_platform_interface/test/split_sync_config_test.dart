@@ -11,7 +11,7 @@ void main() {
   });
 
   test('flagSets constructor allows only sets', () {
-    var syncConfig = SyncConfig.flagSets(sets: ['set1','set2']);
+    var syncConfig = SyncConfig.flagSets(['set1','set2']);
 
     expect(syncConfig.names, []);
     expect(syncConfig.prefixes, []);

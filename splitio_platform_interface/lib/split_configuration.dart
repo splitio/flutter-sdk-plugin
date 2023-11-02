@@ -147,7 +147,8 @@ class SplitConfiguration {
     if (syncConfig != null) {
       configurationMap['syncConfig'] = {
         'syncConfigNames': syncConfig.names.toList(growable: false),
-        'syncConfigPrefixes': syncConfig.prefixes.toList(growable: false)
+        'syncConfigPrefixes': syncConfig.prefixes.toList(growable: false),
+        'syncConfigFlagSets': syncConfig.sets.toList(growable: false)
       };
     }
 
