@@ -150,28 +150,28 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.6-rc.1"
+    version: "0.1.6"
   splitio_android:
     dependency: transitive
     description:
       path: "../../splitio_android"
       relative: true
     source: path
-    version: "0.1.6-rc.1"
+    version: "0.1.6"
   splitio_ios:
     dependency: transitive
     description:
       path: "../../splitio_ios"
       relative: true
     source: path
-    version: "0.1.6-rc.1"
+    version: "0.1.6"
   splitio_platform_interface:
     dependency: transitive
     description:
       path: "../../splitio_platform_interface"
       relative: true
     source: path
-    version: "1.3.0-rc.1"
+    version: "1.3.0"
   stack_trace:
     dependency: transitive
     description:

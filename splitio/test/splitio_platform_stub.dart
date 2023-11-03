@@ -157,6 +157,78 @@ class SplitioPlatformStub
   }
 
   @override
+  Future<Map<String, String>> getTreatmentsByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) {
+    methodName = 'getTreatmentsByFlagSet';
+
+    methodArguments = {
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+      'flagSet': flagSet,
+      'attributes': attributes,
+    };
+
+    return Future.value({});
+  }
+
+  @override
+  Future<Map<String, String>> getTreatmentsByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) {
+    methodName = 'getTreatmentsByFlagSets';
+
+    methodArguments = {
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+      'flagSets': flagSets,
+      'attributes': attributes,
+    };
+
+    return Future.value({});
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) {
+    methodName = 'getTreatmentsWithConfigByFlagSet';
+
+    methodArguments = {
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+      'flagSet': flagSet,
+      'attributes': attributes,
+    };
+
+    return Future.value({});
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) {
+    methodName = 'getTreatmentsWithConfigByFlagSets';
+
+    methodArguments = {
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+      'flagSets': flagSets,
+      'attributes': attributes,
+    };
+
+    return Future.value({});
+  }
+
+  @override
   Stream<Impression> impressionsStream() {
     methodName = 'impressionsStream';
 
