@@ -90,6 +90,38 @@ abstract class _ClientPlatform {
     throw UnimplementedError();
   }
 
+  Future<Map<String, String>> getTreatmentsByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) {
+    throw UnimplementedError();
+  }
+
+  Future<Map<String, String>> getTreatmentsByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) {
+    throw UnimplementedError();
+  }
+
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {}}) {
+    throw UnimplementedError();
+  }
+
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {}}) {
+    throw UnimplementedError();
+  }
+
   Future<Map<String, dynamic>> getAllAttributes(
       {required String matchingKey, required String? bucketingKey}) {
     throw UnimplementedError();
