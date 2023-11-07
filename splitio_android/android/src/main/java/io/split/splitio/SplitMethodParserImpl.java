@@ -5,6 +5,8 @@ import static io.split.splitio.Constants.Argument.ATTRIBUTES;
 import static io.split.splitio.Constants.Argument.ATTRIBUTE_NAME;
 import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
 import static io.split.splitio.Constants.Argument.EVENT_TYPE;
+import static io.split.splitio.Constants.Argument.FLAG_SET;
+import static io.split.splitio.Constants.Argument.FLAG_SETS;
 import static io.split.splitio.Constants.Argument.MATCHING_KEY;
 import static io.split.splitio.Constants.Argument.PROPERTIES;
 import static io.split.splitio.Constants.Argument.SDK_CONFIGURATION;
@@ -25,7 +27,11 @@ import static io.split.splitio.Constants.Method.GET_ALL_ATTRIBUTES;
 import static io.split.splitio.Constants.Method.GET_ATTRIBUTE;
 import static io.split.splitio.Constants.Method.GET_TREATMENT;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS_BY_FLAG_SET;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS_BY_FLAG_SETS;
 import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SET;
+import static io.split.splitio.Constants.Method.GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SETS;
 import static io.split.splitio.Constants.Method.GET_TREATMENT_WITH_CONFIG;
 import static io.split.splitio.Constants.Method.GET_USER_CONSENT;
 import static io.split.splitio.Constants.Method.INIT;
@@ -130,6 +136,34 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringListArgument(SPLIT_NAME, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                break;
+            case GET_TREATMENTS_BY_FLAG_SET:
+                result.success(getTreatmentsByFlagSet(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(FLAG_SET, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                break;
+            case GET_TREATMENTS_BY_FLAG_SETS:
+                result.success(getTreatmentsByFlagSets(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringListArgument(FLAG_SETS, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                break;
+            case GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SET:
+                result.success(getTreatmentsWithConfigByFlagSet(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringArgument(FLAG_SET, arguments),
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                break;
+            case GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SETS:
+                result.success(getTreatmentsWithConfigByFlagSets(
+                        mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
+                        mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
+                        mArgumentParser.getStringListArgument(FLAG_SETS, arguments),
                         mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
                 break;
             case TRACK:
@@ -279,6 +313,52 @@ class SplitMethodParserImpl implements SplitMethodParser {
         return resultMap;
     }
 
+    private Map<String, String> getTreatmentsByFlagSet(
+            String matchingKey,
+            String bucketingKey,
+            String flagSet,
+            Map<String, Object> attributes) {
+        return mSplitWrapper.getTreatmentsByFlagSet(matchingKey, bucketingKey, flagSet, attributes);
+    }
+
+    private Map<String, String> getTreatmentsByFlagSets(
+            String matchingKey,
+            String bucketingKey,
+            List<String> flagSets,
+            Map<String, Object> attributes) {
+        return mSplitWrapper.getTreatmentsByFlagSets(matchingKey, bucketingKey, flagSets, attributes);
+    }
+
+    private Map<String, Map<String, String>> getTreatmentsWithConfigByFlagSet(
+            String matchingKey,
+            String bucketingKey,
+            String flagSet,
+            Map<String, Object> attributes) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey, bucketingKey, flagSet, attributes);
+        Map<String, Map<String, String>> resultMap = new HashMap<>();
+
+        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
+            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
+        }
+
+        return resultMap;
+    }
+
+    private Map<String, Map<String, String>> getTreatmentsWithConfigByFlagSets(
+            String matchingKey,
+            String bucketingKey,
+            List<String> flagSets,
+            Map<String, Object> attributes) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey, bucketingKey, flagSets, attributes);
+        Map<String, Map<String, String>> resultMap = new HashMap<>();
+
+        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
+            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
+        }
+
+        return resultMap;
+    }
+
     private boolean track(String matchingKey,
                           String bucketingKey,
                           String eventType,
@@ -395,6 +475,8 @@ class SplitMethodParserImpl implements SplitMethodParser {
         splitViewMap.put("treatments", splitView.treatments);
         splitViewMap.put("changeNumber", splitView.changeNumber);
         splitViewMap.put("configs", splitView.configs);
+        splitViewMap.put("defaultTreatment", splitView.defaultTreatment);
+        splitViewMap.put("sets", splitView.sets);
 
         return splitViewMap;
     }
