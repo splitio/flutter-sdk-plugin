@@ -32,7 +32,7 @@ class SplitView {
         entry['changeNumber'],
         mappedConfig,
         entry['defaultTreatment'] ?? '',
-        entry['sets'] ?? []);
+        (entry['sets'] ?? [] as List).map((el) => el as String).toList());
   }
 
   @override
