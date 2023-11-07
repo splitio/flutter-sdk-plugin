@@ -304,13 +304,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
             List<String> splitNames,
             Map<String, Object> attributes) {
         Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfig(matchingKey, bucketingKey, splitNames, attributes);
-        Map<String, Map<String, String>> resultMap = new HashMap<>();
-
-        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
-            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
-        }
-
-        return resultMap;
+        return mapToSplitResults(treatmentsWithConfig);
     }
 
     private Map<String, String> getTreatmentsByFlagSet(
@@ -335,13 +329,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
             String flagSet,
             Map<String, Object> attributes) {
         Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey, bucketingKey, flagSet, attributes);
-        Map<String, Map<String, String>> resultMap = new HashMap<>();
-
-        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
-            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
-        }
-
-        return resultMap;
+        return mapToSplitResults(treatmentsWithConfig);
     }
 
     private Map<String, Map<String, String>> getTreatmentsWithConfigByFlagSets(
@@ -350,13 +338,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
             List<String> flagSets,
             Map<String, Object> attributes) {
         Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey, bucketingKey, flagSets, attributes);
-        Map<String, Map<String, String>> resultMap = new HashMap<>();
-
-        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
-            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
-        }
-
-        return resultMap;
+        return mapToSplitResults(treatmentsWithConfig);
     }
 
     private boolean track(String matchingKey,
@@ -434,6 +416,17 @@ class SplitMethodParserImpl implements SplitMethodParser {
         }
 
         methodChannel.invokeMethod(methodName, arguments);
+    }
+
+    @NonNull
+    private static Map<String, Map<String, String>> mapToSplitResults(Map<String, SplitResult> treatmentsWithConfig) {
+        Map<String, Map<String, String>> resultMap = new HashMap<>();
+
+        for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
+            resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
+        }
+
+        return resultMap;
     }
 
     private static Map<String, String> getSplitResultMap(SplitResult splitResult) {
