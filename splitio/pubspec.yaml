@@ -19,9 +19,12 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  splitio_android: ^0.1.6
-  splitio_ios: ^0.1.6
-  splitio_platform_interface: ^1.3.0
+  splitio_android: #^0.1.6
+    path: ../splitio_android
+  splitio_ios: #^0.1.6
+    path: ../splitio_ios
+  splitio_platform_interface: #^1.3.0
+    path: ../splitio_platform_interface
 
 dev_dependencies:
   flutter_test:
