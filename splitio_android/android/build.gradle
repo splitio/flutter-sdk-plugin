@@ -22,7 +22,7 @@ rootProject.allprojects {
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 31
+    compileSdk 31
 
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
@@ -30,13 +30,13 @@ android {
     }
 
     defaultConfig {
-        minSdkVersion 16
+        minSdk 16
 
         consumerProguardFiles 'split-proguard-rules.pro'
     }
 
     dependencies {
-        implementation 'io.split.client:android-client:3.3.0'
+        implementation 'io.split.client:android-client:3.4.0'
         implementation 'com.squareup.okhttp3:okhttp:3.12.13'
 
         testImplementation 'junit:junit:4.13.2'

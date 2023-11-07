@@ -44,10 +44,6 @@ public class SplitClientConfigHelperTest {
         configValues.put("authServiceEndpoint", "sseAuthServiceEndpoint.split.io");
         configValues.put("streamingServiceEndpoint", "streamingServiceEndpoint.split.io");
         configValues.put("telemetryServiceEndpoint", "telemetryServiceEndpoint.split.io");
-        Map<String, List<String>> syncConfigMap = new HashMap<>();
-        syncConfigMap.put("syncConfigNames", Arrays.asList("split1", "split2"));
-        syncConfigMap.put("syncConfigPrefixes", Arrays.asList("split_", "my_split_"));
-        configValues.put("syncConfig", syncConfigMap);
         configValues.put("impressionsMode", "none");
         configValues.put("syncEnabled", false);
         configValues.put("userConsent", "declined");
@@ -73,10 +69,6 @@ public class SplitClientConfigHelperTest {
         assertEquals("sseAuthServiceEndpoint.split.io", splitClientConfig.authServiceUrl());
         assertEquals("streamingServiceEndpoint.split.io", splitClientConfig.streamingServiceUrl());
         assertEquals("telemetryServiceEndpoint.split.io", splitClientConfig.telemetryEndpoint());
-        assertEquals(Arrays.asList("split1", "split2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
-        assertEquals(SplitFilter.Type.BY_NAME, splitClientConfig.syncConfig().getFilters().get(0).getType());
-        assertEquals(Arrays.asList("split_", "my_split_"), splitClientConfig.syncConfig().getFilters().get(1).getValues());
-        assertEquals(SplitFilter.Type.BY_PREFIX, splitClientConfig.syncConfig().getFilters().get(1).getType());
         assertEquals(ImpressionsMode.NONE, splitClientConfig.impressionsMode());
         assertFalse(splitClientConfig.syncEnabled());
         assertEquals(UserConsent.DECLINED, splitClientConfig.userConsent());
@@ -150,5 +142,40 @@ public class SplitClientConfigHelperTest {
         assertEquals(ImpressionsMode.DEBUG, debugConfig.impressionsMode());
         assertEquals(ImpressionsMode.NONE, noneConfig.impressionsMode());
         assertEquals(ImpressionsMode.OPTIMIZED, optimizedConfig.impressionsMode());
+    }
+
+    @Test
+    public void syncConfigWithoutFlagSetsIsMappedCorrectly() {
+        Map<String, Object> configValues = new HashMap<>();
+        Map<String, List<String>> syncConfigMap = new HashMap<>();
+        syncConfigMap.put("syncConfigNames", Arrays.asList("split1", "split2"));
+        syncConfigMap.put("syncConfigPrefixes", Arrays.asList("split_", "my_split_"));
+        configValues.put("syncConfig", syncConfigMap);
+
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper
+                .fromMap(configValues, mock(ImpressionListener.class));
+
+        assertEquals(2, splitClientConfig.syncConfig().getFilters().size());
+        assertEquals(Arrays.asList("split1", "split2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
+        assertEquals(SplitFilter.Type.BY_NAME, splitClientConfig.syncConfig().getFilters().get(0).getType());
+        assertEquals(Arrays.asList("split_", "my_split_"), splitClientConfig.syncConfig().getFilters().get(1).getValues());
+        assertEquals(SplitFilter.Type.BY_PREFIX, splitClientConfig.syncConfig().getFilters().get(1).getType());
+    }
+
+    @Test
+    public void syncConfigWithFlagSetsIsMappedCorrectly() {
+        Map<String, Object> configValues = new HashMap<>();
+        Map<String, List<String>> syncConfigMap = new HashMap<>();
+        syncConfigMap.put("syncConfigNames", Arrays.asList("split1", "split2"));
+        syncConfigMap.put("syncConfigPrefixes", Arrays.asList("split_", "my_split_"));
+        syncConfigMap.put("syncConfigFlagSets", Arrays.asList("set_1", "set_2"));
+        configValues.put("syncConfig", syncConfigMap);
+
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper
+                .fromMap(configValues, mock(ImpressionListener.class));
+
+        assertEquals(1, splitClientConfig.syncConfig().getFilters().size());
+        assertEquals(Arrays.asList("set_1", "set_2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
+        assertEquals(SplitFilter.Type.BY_SET, splitClientConfig.syncConfig().getFilters().get(0).getType());
     }
 }

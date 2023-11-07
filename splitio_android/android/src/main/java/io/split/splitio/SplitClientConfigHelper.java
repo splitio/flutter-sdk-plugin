@@ -39,6 +39,7 @@ class SplitClientConfigHelper {
     private static final String SYNC_CONFIG = "syncConfig";
     private static final String SYNC_CONFIG_NAMES = "syncConfigNames";
     private static final String SYNC_CONFIG_PREFIXES = "syncConfigPrefixes";
+    private static final String SYNC_CONFIG_SETS = "syncConfigFlagSets";
     private static final String IMPRESSIONS_MODE = "impressionsMode";
     private static final String SYNC_ENABLED = "syncEnabled";
     private static final String USER_CONSENT = "userConsent";
@@ -152,14 +153,19 @@ class SplitClientConfigHelper {
         if (syncConfig != null) {
             List<String> names = syncConfig.get(SYNC_CONFIG_NAMES);
             List<String> prefixes = syncConfig.get(SYNC_CONFIG_PREFIXES);
+            List<String> flagSets = syncConfig.get(SYNC_CONFIG_SETS);
 
             SyncConfig.Builder syncConfigBuilder = SyncConfig.builder();
-            if (names != null && !names.isEmpty()) {
-                syncConfigBuilder.addSplitFilter(SplitFilter.byName(names));
-            }
+            if (flagSets != null && !flagSets.isEmpty()) {
+                syncConfigBuilder.addSplitFilter(SplitFilter.bySet(flagSets));
+            } else {
+                if (names != null && !names.isEmpty()) {
+                    syncConfigBuilder.addSplitFilter(SplitFilter.byName(names));
+                }
 
-            if (prefixes != null && !prefixes.isEmpty()) {
-                syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(prefixes));
+                if (prefixes != null && !prefixes.isEmpty()) {
+                    syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(prefixes));
+                }
             }
 
             builder.syncConfig(syncConfigBuilder.build());
