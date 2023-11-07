@@ -31,6 +31,14 @@ protocol EvaluationWrapper {
     func getTreatmentWithConfig(matchingKey: String, splitName: String, bucketingKey: String?, attributes: [String: Any]?) -> SplitResult?
 
     func getTreatmentsWithConfig(matchingKey: String, splits: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: SplitResult]
+
+    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String: Any]?) -> [String: String]?
+
+    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: String]?
+
+    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String: Any]?) -> [String: SplitResult]?
+
+    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String: Any]?) -> [String: SplitResult]?
 }
 
 protocol AttributesWrapper {
@@ -119,6 +127,38 @@ class DefaultSplitWrapper: SplitWrapper {
         }
 
         return client.getTreatmentsWithConfig(splits: splits, attributes: attributes)
+    }
+
+    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> [String: String]? {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return nil
+        }
+
+        return client.getTreatmentsByFlagSet(flagSet, attributes: attributes)
+    }
+
+    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> [String: String]? {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return nil
+        }
+
+        return client.getTreatmentsByFlagSets(flagSets, attributes: attributes)
+    }
+
+    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> [String: SplitResult]? {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return nil
+        }
+
+        return client.getTreatmentsWithConfigByFlagSet(flagSet, attributes: attributes)
+    }
+
+    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String? = nil, attributes: [String: Any]? = [:]) -> [String: SplitResult]? {
+        guard let client = getInitializedClient(matchingKey: matchingKey, bucketingKey: bucketingKey) else {
+            return nil
+        }
+
+        return client.getTreatmentsWithConfigByFlagSets(flagSets, attributes: attributes)
     }
 
     func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool {

@@ -24,6 +24,7 @@ class SplitClientConfigHelper {
     static private let SYNC_CONFIG = "syncConfig"
     static private let SYNC_CONFIG_NAMES = "syncConfigNames"
     static private let SYNC_CONFIG_PREFIXES = "syncConfigPrefixes"
+    static private let SYNC_CONFIG_SETS = "syncConfigFlagSets"
     static private let IMPRESSIONS_MODE = "impressionsMode"
     static private let SYNC_ENABLED = "syncEnabled"
     static private let USER_CONSENT = "userConsent"
@@ -149,12 +150,19 @@ class SplitClientConfigHelper {
         if configurationMap[SYNC_CONFIG] != nil {
             if let syncConfig = configurationMap[SYNC_CONFIG] as? [String: [String]] {
                 let syncConfigBuilder = SyncConfig.builder()
-                if let syncNames = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
-                    syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncNames))
-                }
 
-                if let syncPrefixes = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
-                    syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(syncPrefixes))
+                if (syncConfig[SYNC_CONFIG_SETS] != nil && syncConfig[SYNC_CONFIG_SETS]?.isEmpty == false) {
+                    if let syncFlagSets = syncConfig[SYNC_CONFIG_SETS] as? [String] {
+                        syncConfigBuilder.addSplitFilter(SplitFilter.bySet(syncFlagSets))
+                    }
+                } else {
+                    if let syncNames = syncConfig[SYNC_CONFIG_NAMES] as? [String] {
+                        syncConfigBuilder.addSplitFilter(SplitFilter.byName(syncNames))
+                    }
+
+                    if let syncPrefixes = syncConfig[SYNC_CONFIG_PREFIXES] as? [String] {
+                        syncConfigBuilder.addSplitFilter(SplitFilter.byPrefix(syncPrefixes))
+                    }
                 }
 
                 config.sync = syncConfigBuilder.build()
