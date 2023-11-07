@@ -18,7 +18,7 @@ class SplitTests: XCTestCase {
         splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatment(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
         XCTAssert(treatment != nil)
-        XCTAssert(client.getTreatmentCalled)
+        XCTAssert(client.methodCalls["getTreatment"] == true)
     }
 
     func testGetTreatments() {
@@ -27,7 +27,7 @@ class SplitTests: XCTestCase {
         splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatments(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
         XCTAssert(!treatment.isEmpty)
-        XCTAssert(client.getTreatmentsCalled)
+        XCTAssert(client.methodCalls["getTreatments"] == true)
     }
 
     func testGetTreatmentWithConfig() {
@@ -36,7 +36,7 @@ class SplitTests: XCTestCase {
         splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatmentWithConfig(matchingKey: "key", splitName: "split", bucketingKey: "bucketing", attributes: nil)
         XCTAssert(treatment != nil)
-        XCTAssert(client.getTreatmentWithConfigCalled)
+        XCTAssert(client.methodCalls["getTreatmentWithConfig"] == true)
     }
 
     func testGetTreatmentsWithConfig() {
@@ -45,7 +45,40 @@ class SplitTests: XCTestCase {
         splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
         let treatment = splitWrapper.getTreatmentsWithConfig(matchingKey: "key", splits: ["split"], bucketingKey: "bucketing", attributes: nil)
         XCTAssert(!treatment.isEmpty)
-        XCTAssert(client.getTreatmentsWithConfigCalled)
+        XCTAssert(client.methodCalls["getTreatmentsWithConfig"] == true)
+    }
+
+    func testGetTreatmentsByFlagSet() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
+        let treatment = splitWrapper.getTreatmentsByFlagSet(matchingKey: "key", flagSet: "set_1", bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(client.methodCalls["getTreatmentsByFlagSet"] == true)
+    }
+
+    func testGetTreatmentsByFlagSets() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
+        let treatment = splitWrapper.getTreatmentsByFlagSets(matchingKey: "key", flagSets: ["set_1"], bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(client.methodCalls["getTreatmentsByFlagSets"] == true)
+    }
+
+    func testGetTreatmentsWithConfigByFlagSet() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
+        let treatment = splitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey: "key", flagSet: "set_1", bucketingKey: "bucketing", attributes: nil)
+        XCTAssert(client.methodCalls["getTreatmentsWithConfigByFlagSet"] == true)
+    }
+
+    func testGetTreatmentsWithConfigByFlagSets() {
+        let client = SplitClientStub()
+        splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client))
+        splitWrapper.getClient(matchingKey: "key", bucketingKey: "bucketing")
+        let treatment = splitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey: "key", flagSets: ["set_1"], bucketingKey: "bucketing", attributes: nil)
+
+        XCTAssert(client.methodCalls["getTreatmentsWithConfigByFlagSets"] == true)
     }
 
     func testTrack() {
@@ -146,7 +179,7 @@ class SplitTests: XCTestCase {
         usedKeys.insert(Key(matchingKey: "key", bucketingKey: "bucketing"))
         splitWrapper = DefaultSplitWrapper(splitFactoryProvider: SplitFactoryProviderStubWithClient(client: client), usedKeys: usedKeys)
         splitWrapper.flush(matchingKey: "key", bucketingKey: "bucketing")
-        XCTAssert(client.flushCalled)
+        XCTAssert((client.methodCalls["flush"] != nil))
     }
 
     func testDestroy() {
@@ -303,11 +336,17 @@ class SplitFactoryStub: SplitFactory {
 class SplitClientStub: SplitClient {
 
     var destroyCalled: Bool = false
-    var getTreatmentCalled: Bool = false
-    var getTreatmentWithConfigCalled: Bool = false
-    var getTreatmentsCalled: Bool = false
-    var getTreatmentsWithConfigCalled: Bool = false
-    var flushCalled: Bool = false
+    var methodCalls = [
+        "getTreatment": false,
+        "getTreatmentWithConfig": false,
+        "getTreatments": false,
+        "getTreatmentsWithConfig": false,
+        "getTreatmentsByFlagSet": false,
+        "getTreatmentsByFlagSets": false,
+        "getTreatmentsWithConfigByFlagSet": false,
+        "getTreatmentsWithConfigByFlagSets": false,
+        "flush": false,
+    ]
     var eventTypeValue: String = ""
     var trafficTypeValue: String?
     var valueValue: Double?
@@ -319,33 +358,53 @@ class SplitClientStub: SplitClient {
     var sdkReadyEventAction: SplitAction?
 
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
-        getTreatmentCalled = true
+        methodCalls["getTreatment"] = true
         return SplitConstants.control
     }
 
     func getTreatment(_ split: String) -> String {
-        getTreatmentCalled = true
+        methodCalls["getTreatment"] = true
         return SplitConstants.control
     }
 
     func getTreatments(splits: [String], attributes: [String: Any]?) -> [String: String] {
-        getTreatmentsCalled = true
+        methodCalls["getTreatments"] = true
         return ["feature": SplitConstants.control]
     }
 
     func getTreatmentWithConfig(_ split: String) -> SplitResult {
-        getTreatmentWithConfigCalled = true
+        methodCalls["getTreatmentWithConfig"] = true
         return SplitResult(treatment: SplitConstants.control)
     }
 
     func getTreatmentWithConfig(_ split: String, attributes: [String: Any]?) -> SplitResult {
-        getTreatmentWithConfigCalled = true
+        methodCalls["getTreatmentWithConfig"] = true
         return SplitResult(treatment: SplitConstants.control)
     }
 
     func getTreatmentsWithConfig(splits: [String], attributes: [String: Any]?) -> [String: SplitResult] {
-        getTreatmentsWithConfigCalled = true
+        methodCalls["getTreatmentsWithConfig"] = true
         return ["feature": SplitResult(treatment: SplitConstants.control)]
+    }
+
+    func getTreatmentsByFlagSet(_ flagSet: String, attributes: [String : Any]?) -> [String : String] {
+        methodCalls["getTreatmentsByFlagSet"] = true
+        return [:]
+    }
+
+    func getTreatmentsByFlagSets(_ flagSets: [String], attributes: [String : Any]?) -> [String : String] {
+        methodCalls["getTreatmentsByFlagSets"] = true
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSet(_ flagSet: String, attributes: [String : Any]?) -> [String : SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSet"] = true
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSets(_ flagSets: [String], attributes: [String : Any]?) -> [String : SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSets"] = true
+        return [:]
     }
 
     func on(event: SplitEvent, execute action: @escaping SplitAction) {
@@ -430,7 +489,7 @@ class SplitClientStub: SplitClient {
     }
 
     func flush() {
-        flushCalled = true
+        methodCalls["flush"] = true
     }
 
     func destroy() {
