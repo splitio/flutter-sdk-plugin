@@ -422,6 +422,10 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private static Map<String, Map<String, String>> mapToSplitResults(Map<String, SplitResult> treatmentsWithConfig) {
         Map<String, Map<String, String>> resultMap = new HashMap<>();
 
+        if (treatmentsWithConfig == null) {
+            return resultMap;
+        }
+
         for (Map.Entry<String, SplitResult> entry : treatmentsWithConfig.entrySet()) {
             resultMap.put(entry.getKey(), getSplitResultMap(entry.getValue()));
         }
