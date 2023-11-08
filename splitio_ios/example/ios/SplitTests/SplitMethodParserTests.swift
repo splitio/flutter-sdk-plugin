@@ -86,6 +86,59 @@ class SplitMethodParserTests: XCTestCase {
         }
     }
 
+    func testGetTreatmentsByFlagSet() {
+        methodParser?.onMethodCall(methodName: "getTreatmentsByFlagSet", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "flagSet": "set_1", "attributes": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.flagSetValue == "set_1")
+            print(splitWrapper.attributesValue)
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.attributesValue!))
+        }
+    }
+
+    func testGetTreatmentsByFlagSets() {
+        methodParser?.onMethodCall(methodName: "getTreatmentsByFlagSets", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "flagSets": ["set_1", "set_2"], "attributes": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.flagSetsValue == ["set_1", "set_2"])
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.attributesValue!))
+        }
+    }
+
+    func testGetTreatmentsWithConfigByFlagSet() {
+        methodParser?.onMethodCall(methodName: "getTreatmentsWithConfigByFlagSet", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "flagSet": "set_1", "attributes": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.flagSetValue == "set_1")
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.attributesValue!))
+        }
+    }
+
+    func testGetTreatmentsWithConfigByFlagSets() {
+        methodParser?.onMethodCall(methodName: "getTreatmentsWithConfigByFlagSets", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "flagSets": ["set_1", "set_2"], "attributes": ["age": 50]], result: { (_: Any?) in
+            return
+        })
+
+        if let splitWrapper = (splitWrapper as? SplitWrapperStub) {
+            XCTAssert(splitWrapper.matchingKeyValue == "user-key")
+            XCTAssert(splitWrapper.bucketingKeyValue == "bucketing-key")
+            XCTAssert(splitWrapper.flagSetsValue == ["set_1", "set_2"])
+            XCTAssert(NSDictionary(dictionary: ["age": 50]).isEqual(to: splitWrapper.attributesValue!))
+        }
+    }
+
     func testTrackWithValue() {
         methodParser?.onMethodCall(methodName: "track", arguments: ["matchingKey": "user-key", "bucketingKey": "bucketing-key", "eventType": "my_event", "value": 25.20], result: { (_: Any?) in
             return
@@ -391,38 +444,38 @@ class SplitWrapperStub: SplitWrapper {
         return result
     }
 
-    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : String]? {
+    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetValue = flagSet
-        attributeValue = attributes
+        attributesValue = attributes
 
         return [:]
     }
 
-    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : String]? {
+    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetsValue = flagSets
-        attributeValue = attributes
+        attributesValue = attributes
 
         return [:]
     }
 
-    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult]? {
+    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetValue = flagSet
-        attributeValue = attributes
+        attributesValue = attributes
 
         return [:]
     }
 
-    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult]? {
+    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetsValue = flagSets
-        attributeValue = attributes
+        attributesValue = attributes
 
         return [:]
     }
