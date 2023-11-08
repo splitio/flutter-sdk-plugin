@@ -391,7 +391,7 @@ class SplitWrapperStub: SplitWrapper {
         return result
     }
 
-    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : String]? {
+    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetValue = flagSet
@@ -400,7 +400,7 @@ class SplitWrapperStub: SplitWrapper {
         return [:]
     }
 
-    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : String]? {
+    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetsValue = flagSets
@@ -409,7 +409,7 @@ class SplitWrapperStub: SplitWrapper {
         return [:]
     }
 
-    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult]? {
+    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetValue = flagSet
@@ -418,7 +418,7 @@ class SplitWrapperStub: SplitWrapper {
         return [:]
     }
 
-    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult]? {
+    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
         matchingKeyValue = matchingKey
         bucketingKeyValue = bucketingKey
         flagSetsValue = flagSets
