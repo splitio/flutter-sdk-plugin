@@ -480,7 +480,7 @@ void main() {
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 
@@ -494,7 +494,7 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {}
+        'sdkConfiguration': {'readyTimeout': 10}
       });
     });
 
@@ -504,13 +504,13 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           sdkConfiguration:
-              SplitConfiguration(logLevel: SplitLogLevel.warning, streamingEnabled: false));
+          SplitConfiguration(logLevel: SplitLogLevel.error, streamingEnabled: false, readyTimeout: 1));
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'warning', 'streamingEnabled': false},
+        'sdkConfiguration': {'logLevel': 'error', 'streamingEnabled': false, 'readyTimeout': 1},
       });
     });
   });
