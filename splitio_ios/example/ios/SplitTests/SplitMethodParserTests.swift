@@ -328,6 +328,8 @@ class SplitWrapperStub: SplitWrapper {
     var matchingKeyValue = ""
     var bucketingKeyValue: String?
     var splitNameValue = ""
+    var flagSetValue = ""
+    var flagSetsValue: [String] = []
     var splitsValue: [String]?
     var attributesValue: [String: Any]?
     var eventTypeValue: String = ""
@@ -387,6 +389,42 @@ class SplitWrapperStub: SplitWrapper {
         }
 
         return result
+    }
+
+    func getTreatmentsByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        flagSetValue = flagSet
+        attributeValue = attributes
+
+        return [:]
+    }
+
+    func getTreatmentsByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : String] {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        flagSetsValue = flagSets
+        attributeValue = attributes
+
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSet(matchingKey: String, flagSet: String, bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        flagSetValue = flagSet
+        attributeValue = attributes
+
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSets(matchingKey: String, flagSets: [String], bucketingKey: String?, attributes: [String : Any]?) -> [String : SplitResult] {
+        matchingKeyValue = matchingKey
+        bucketingKeyValue = bucketingKey
+        flagSetsValue = flagSets
+        attributeValue = attributes
+
+        return [:]
     }
 
     func track(matchingKey: String, bucketingKey: String?, eventType: String, trafficType: String?, value: Double?, properties: [String: Any]) -> Bool {
