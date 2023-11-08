@@ -13,6 +13,10 @@ enum Method: String {
     case getTreatments = "getTreatments"
     case getTreatmentWithConfig = "getTreatmentWithConfig"
     case getTreatmentsWithConfig = "getTreatmentsWithConfig"
+    case getTreatmentsByFlagSet = "getTreatmentsByFlagSet"
+    case getTreatmentsByFlagSets = "getTreatmentsByFlagSets"
+    case getTreatmentsWithConfigByFlagSet = "getTreatmentsWithConfigByFlagSet"
+    case getTreatmentsWithConfigByFlagSets = "getTreatmentsWithConfigByFlagSets"
     case track = "track"
     case getAttribute = "getAttribute"
     case getAllAttributes = "getAllAttributes"
@@ -40,4 +44,6 @@ enum Argument: String {
     case value = "value"
     case properties = "properties"
     case attributeName = "attributeName"
+    case flagSet = "flagSet"
+    case flagSets = "flagSets"
 }

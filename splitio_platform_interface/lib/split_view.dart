@@ -24,6 +24,14 @@ class SplitView {
           mappedConfig.addAll({entry.key.toString(): entry.value.toString()})
         });
 
+    if (entry['treatments'] == null) {
+      entry['treatments'] = entry['treatments'] ?? [];
+    }
+
+    if (entry['sets'] == null) {
+      entry['sets'] = [];
+    }
+
     return SplitView(
         entry['name'],
         entry['trafficType'],
@@ -32,7 +40,8 @@ class SplitView {
         entry['changeNumber'],
         mappedConfig,
         entry['defaultTreatment'] ?? '',
-        (entry['sets'] ?? [] as List).map((el) => el as String).toList());
+        (entry['sets'] as List).map((el) => el as String).toList()
+    );
   }
 
   @override
