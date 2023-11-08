@@ -21,3 +21,7 @@ jobs:
         run: cd splitio/; flutter pub get
       - name: Run flutter test
         run: cd splitio/; flutter test
+      - name: Run flutter splitio_android test
+        run: cd splitio_android/; flutter test
+      - name: Run flutter splitio_ios test
+        run: cd splitio_ios/; flutter test
