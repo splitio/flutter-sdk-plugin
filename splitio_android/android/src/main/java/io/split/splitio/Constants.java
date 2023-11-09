@@ -15,6 +15,10 @@ class Constants {
         static final String GET_TREATMENTS = "getTreatments";
         static final String GET_TREATMENT_WITH_CONFIG = "getTreatmentWithConfig";
         static final String GET_TREATMENTS_WITH_CONFIG = "getTreatmentsWithConfig";
+        static final String GET_TREATMENTS_BY_FLAG_SET = "getTreatmentsByFlagSet";
+        static final String GET_TREATMENTS_BY_FLAG_SETS = "getTreatmentsByFlagSets";
+        static final String GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SET = "getTreatmentsWithConfigByFlagSet";
+        static final String GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SETS = "getTreatmentsWithConfigByFlagSets";
         static final String TRACK = "track";
         static final String GET_ATTRIBUTE = "getAttribute";
         static final String GET_ALL_ATTRIBUTES = "getAllAttributes";
@@ -42,6 +46,8 @@ class Constants {
         static final String VALUE = "value";
         static final String PROPERTIES = "properties";
         static final String ATTRIBUTE_NAME = "attributeName";
+        static final String FLAG_SET = "flagSet";
+        static final String FLAG_SETS = "flagSets";
     }
 
     static class Error {

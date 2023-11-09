@@ -75,6 +75,34 @@ class DefaultSplitMethodParser: SplitMethodParser {
                     splits: argumentParser.getStringListArgument(argumentName: .splitName, arguments: arguments),
                     attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any]))
             break
+        case .getTreatmentsByFlagSet:
+            result(getTreatmentsByFlagSet(
+                matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                flagSet: argumentParser.getStringArgument(argumentName: .flagSet, arguments: arguments) ?? "",
+                attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any]))
+            break
+        case .getTreatmentsByFlagSets:
+            result(getTreatmentsByFlagSets(
+                matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                flagSets: argumentParser.getStringListArgument(argumentName: .flagSets, arguments: arguments),
+                attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any]))
+            break
+        case .getTreatmentsWithConfigByFlagSet:
+            result(getTreatmentsWithConfigByFlagSet(
+                matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                flagSet: argumentParser.getStringArgument(argumentName: .flagSet, arguments: arguments) ?? "",
+                attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any]))
+            break
+        case .getTreatmentsWithConfigByFlagSets:
+            result(getTreatmentsWithConfigByFlagSets(
+                matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
+                bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
+                flagSets: argumentParser.getStringListArgument(argumentName: .flagSets, arguments: arguments),
+                attributes: argumentParser.getMapArgument(argumentName: .attributes, arguments: arguments) as [String: Any]))
+            break
         case .track:
             result(track(matchingKey: argumentParser.getStringArgument(argumentName: .matchingKey, arguments: arguments) ?? "",
                     bucketingKey: argumentParser.getStringArgument(argumentName: .bucketingKey, arguments: arguments),
@@ -215,6 +243,50 @@ class DefaultSplitMethodParser: SplitMethodParser {
         }
     }
 
+    private func getTreatmentsByFlagSet(matchingKey: String, bucketingKey: String? = nil, flagSet: String, attributes: [String: Any]? = [:]) -> [String: String] {
+        guard let splitWrapper = getSplitWrapper() else {
+            return [:]
+        }
+
+        let treatments = splitWrapper.getTreatmentsByFlagSet(matchingKey: matchingKey, flagSet: flagSet, bucketingKey: bucketingKey, attributes: attributes)
+
+        return treatments
+    }
+
+    private func getTreatmentsByFlagSets(matchingKey: String, bucketingKey: String? = nil, flagSets: [String], attributes: [String: Any]? = [:]) -> [String: String] {
+        guard let splitWrapper = getSplitWrapper() else {
+            return [:]
+        }
+
+        let treatments = splitWrapper.getTreatmentsByFlagSets(matchingKey: matchingKey, flagSets: flagSets, bucketingKey: bucketingKey, attributes: attributes)
+
+        return treatments
+    }
+
+    private func getTreatmentsWithConfigByFlagSet(matchingKey: String, bucketingKey: String? = nil, flagSet: String, attributes: [String: Any]? = [:]) -> [String: [String: String?]] {
+        guard let splitWrapper = getSplitWrapper() else {
+            return [:]
+        }
+
+        let treatments = splitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey: matchingKey, flagSet: flagSet, bucketingKey: bucketingKey, attributes: attributes)
+
+        return treatments.mapValues {
+            ["treatment": $0.treatment, "config": $0.config]
+        }
+    }
+
+    private func getTreatmentsWithConfigByFlagSets(matchingKey: String, bucketingKey: String? = nil, flagSets: [String], attributes: [String: Any]? = [:]) -> [String: [String: String?]] {
+        guard let splitWrapper = getSplitWrapper() else {
+            return [:]
+        }
+
+        let treatments = splitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey: matchingKey, flagSets: flagSets, bucketingKey: bucketingKey, attributes: attributes)
+
+        return treatments.mapValues {
+            ["treatment": $0.treatment, "config": $0.config]
+        }
+    }
+
     private func track(matchingKey: String, bucketingKey: String? = nil, eventType: String, trafficType: String? = nil, value: Double? = nil, properties: [String: Any?]) -> Bool {
         guard let splitWrapper = getSplitWrapper() else {
             return false
@@ -319,19 +391,5 @@ class DefaultSplitMethodParser: SplitMethodParser {
         }
 
         return splitWrapper
-    }
-
-    private func getSplitViewAsMap(splitView: SplitView?) -> [String: Any?] {
-        if let splitView = splitView {
-            return [
-                "name": splitView.name,
-                "trafficType": splitView.trafficType,
-                "killed": splitView.killed,
-                "treatments": splitView.treatments,
-                "changeNumber": splitView.changeNumber,
-                "configs": splitView.configs]
-        } else {
-            return [:]
-        }
     }
 }

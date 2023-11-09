@@ -504,4 +504,92 @@ public class SplitMethodParserImplTest {
         verify(mResult).success(null);
         verify(mSplitWrapper).setUserConsent(false);
     }
+
+    @Test
+    public void getTreatmentsByFlagSetWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("flagSet", "set_1");
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("flagSet", map)).thenReturn("set_1");
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentsByFlagSet(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
+
+        mMethodParser.onMethodCall("getTreatmentsByFlagSet", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentsByFlagSet("user-key", "bucketing-key", "set_1", Collections.singletonMap("age", 10));
+        verify(mResult).success(Collections.singletonMap("flag_1", "on"));
+    }
+
+    @Test
+    public void getTreatmentsByFlagSetsWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("flagSets", Arrays.asList("set_1", "set_2"));
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringListArgument("flagSets", map)).thenReturn(Arrays.asList("set_1", "set_2"));
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentsByFlagSets(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
+
+        mMethodParser.onMethodCall("getTreatmentsByFlagSets", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentsByFlagSets("user-key", "bucketing-key", Arrays.asList("set_1", "set_2"), Collections.singletonMap("age", 10));
+        verify(mResult).success(Collections.singletonMap("flag_1", "on"));
+    }
+
+    @Test
+    public void getTreatmentsWithConfigByFlagSetWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("flagSet", "set_1");
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        Map<String, String> resultMap1 = new HashMap<>();
+        resultMap1.put("treatment", "on");
+        resultMap1.put("config", "{config}");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringArgument("flagSet", map)).thenReturn("set_1");
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentsWithConfigByFlagSet(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
+
+        mMethodParser.onMethodCall("getTreatmentsWithConfigByFlagSet", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSet("user-key", "bucketing-key", "set_1", Collections.singletonMap("age", 10));
+        verify(mResult).success(Collections.singletonMap("flag_1", resultMap1));
+    }
+
+    @Test
+    public void getTreatmentsWithConfigByFlagSetsWorksCorrectly() {
+        Map<String, Object> map = new HashMap<>();
+        map.put("matchingKey", "user-key");
+        map.put("bucketingKey", "bucketing-key");
+        map.put("flagSets", Arrays.asList("set_1", "set_2"));
+        map.put("attributes", Collections.singletonMap("age", 10));
+
+        Map<String, String> resultMap1 = new HashMap<>();
+        resultMap1.put("treatment", "on");
+        resultMap1.put("config", "{config}");
+
+        when(mArgumentParser.getStringArgument("matchingKey", map)).thenReturn("user-key");
+        when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
+        when(mArgumentParser.getStringListArgument("flagSets", map)).thenReturn(Arrays.asList("set_1", "set_2"));
+        when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
+        when(mSplitWrapper.getTreatmentsWithConfigByFlagSets(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
+
+        mMethodParser.onMethodCall("getTreatmentsWithConfigByFlagSets", map, mResult);
+
+        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSets("user-key", "bucketing-key", Arrays.asList("set_1", "set_2"), Collections.singletonMap("age", 10));
+        verify(mResult).success(Collections.singletonMap("flag_1", resultMap1));
+    }
 }

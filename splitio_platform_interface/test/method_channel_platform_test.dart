@@ -33,8 +33,12 @@ void main() {
         case 'getTreatment':
           return '';
         case 'getTreatments':
+        case 'getTreatmentsByFlagSet':
+        case 'getTreatmentsByFlagSets':
           return {'split1': 'on', 'split2': 'off'};
         case 'getTreatmentsWithConfig':
+        case 'getTreatmentsWithConfigByFlagSet':
+        case 'getTreatmentsWithConfigByFlagSets':
           return {
             'split1': {'treatment': 'on', 'config': null},
             'split2': {'treatment': 'off', 'config': null}
@@ -180,6 +184,130 @@ void main() {
       expect(methodName, 'getTreatmentsWithConfig');
       expect(methodArguments, {
         'splitName': ['split1', 'split2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsByFlagSet without attributes', () async {
+      _platform.getTreatmentsByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1');
+
+      expect(methodName, 'getTreatmentsByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsByFlagSet with attributes', () async {
+      _platform.getTreatmentsByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1',
+          attributes: {'attr1': true});
+
+      expect(methodName, 'getTreatmentsByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsByFlagSets without attributes', () async {
+      _platform.getTreatmentsByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2']);
+
+      expect(methodName, 'getTreatmentsByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsByFlagSets with attributes', () async {
+      _platform.getTreatmentsByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2'],
+          attributes: {'attr1': true});
+
+      expect(methodName, 'getTreatmentsByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSet without attributes', () async {
+      _platform.getTreatmentsWithConfigByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1');
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSet with attributes', () async {
+      _platform.getTreatmentsWithConfigByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1',
+          attributes: {'attr1': true});
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSets without attributes', () async {
+      _platform.getTreatmentsWithConfigByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2']);
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSets with attributes', () async {
+      _platform.getTreatmentsWithConfigByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2'],
+          attributes: {'attr1': true});
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
         'attributes': {'attr1': true}

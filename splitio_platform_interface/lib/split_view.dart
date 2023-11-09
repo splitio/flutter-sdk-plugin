@@ -7,9 +7,12 @@ class SplitView {
   List<String> treatments = [];
   int changeNumber;
   Map<String, String> configs = {};
+  String defaultTreatment;
+  List<String> sets = [];
 
   SplitView(this.name, this.trafficType, this.killed, this.treatments,
-      this.changeNumber, this.configs);
+      this.changeNumber, this.configs,
+      [this.defaultTreatment = '', this.sets = const []]);
 
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
@@ -21,13 +24,24 @@ class SplitView {
           mappedConfig.addAll({entry.key.toString(): entry.value.toString()})
         });
 
+    if (entry['treatments'] == null) {
+      entry['treatments'] = entry['treatments'] ?? [];
+    }
+
+    if (entry['sets'] == null) {
+      entry['sets'] = [];
+    }
+
     return SplitView(
         entry['name'],
         entry['trafficType'],
         entry['killed'],
         (entry['treatments'] as List).map((el) => el as String).toList(),
         entry['changeNumber'],
-        mappedConfig);
+        mappedConfig,
+        entry['defaultTreatment'] ?? '',
+        (entry['sets'] as List).map((el) => el as String).toList()
+    );
   }
 
   @override
@@ -38,7 +52,9 @@ class SplitView {
       killed: $killed,
       treatments: ${treatments.toString()},
       changeNumber: $changeNumber,
-      config: $configs
+      config: $configs,
+      defaultTreatment: $defaultTreatment,
+      sets: ${sets.toString()}
     }''';
   }
 }

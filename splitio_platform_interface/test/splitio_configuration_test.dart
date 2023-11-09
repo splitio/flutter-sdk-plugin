@@ -3,7 +3,7 @@ import 'package:splitio_platform_interface/split_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
 void main() {
-  test('valuesAreMappedCorrectly', () async {
+  test('values are mapped correctly', () async {
     final SplitConfiguration config = SplitConfiguration(
         eventFlushInterval: 2000,
         eventsPerPush: 300,
@@ -65,10 +65,21 @@ void main() {
     expect(config.configurationMap['readyTimeout'], 1);
   });
 
-  test('noSpecialValuesLeavesMapEmpty', () async {
+  test('no special values leaves map empty', () async {
     final SplitConfiguration config = SplitConfiguration();
 
     expect(config.configurationMap.length, 1);
     expect(config.configurationMap['readyTimeout'], 10);
+  });
+
+  test('sets values are mapped correctly', () async {
+    final SplitConfiguration config = SplitConfiguration(
+        syncConfig: SyncConfig.flagSets(['one', 'two']),
+    );
+
+    expect(config.configurationMap['syncConfig']['syncConfigNames'], []);
+    expect(config.configurationMap['syncConfig']['syncConfigPrefixes'], []);
+    expect(config.configurationMap['syncConfig']['syncConfigFlagSets'],
+        ['one', 'two']);
   });
 }

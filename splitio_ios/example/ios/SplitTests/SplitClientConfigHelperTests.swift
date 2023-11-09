@@ -21,7 +21,6 @@ class SplitClientConfigHelperTests: XCTestCase {
             "ready": 25,
             "streamingEnabled": true,
             "persistentAttributesEnabled": true,
-            "syncConfig": ["syncConfigNames": ["split1", "split2"], "syncConfigPrefixes": ["split_", "my_split_"]],
             "impressionsMode": "none",
             "syncEnabled": false,
             "userConsent": "declined",
@@ -88,5 +87,31 @@ class SplitClientConfigHelperTests: XCTestCase {
             let config = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
             XCTAssertEqual(expectedImpressionsModes[index].rawValue, config.impressionsMode)
         }
+    }
+
+    func testSyncConfigWithoutFlagSetsIsMappedCorrectly() {
+        let configValues = [
+            "syncConfig": ["syncConfigNames": ["split1", "split2"], "syncConfigPrefixes": ["split_", "my_split_"]],
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+
+        XCTAssertEqual(2, splitClientConfig.sync.filters.count)
+        XCTAssertEqual(.byName, splitClientConfig.sync.filters[0].type)
+        XCTAssertEqual(["split1", "split2"], splitClientConfig.sync.filters[0].values)
+        XCTAssertEqual(.byPrefix, splitClientConfig.sync.filters[1].type)
+        XCTAssertEqual(["split_", "my_split_"], splitClientConfig.sync.filters[1].values)
+    }
+
+    func testSyncConfigWithFlagSetsIsMappedCorrectly() {
+        let configValues = [
+            "syncConfig": ["syncConfigNames": ["split1", "split2"], "syncConfigPrefixes": ["split_", "my_split_"] , "syncConfigFlagSets": ["set_1", "set_2"]],
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+
+        XCTAssertEqual(1, splitClientConfig.sync.filters.count)
+        XCTAssertEqual(.bySet, splitClientConfig.sync.filters[0].type)
+        XCTAssertEqual(["set_1", "set_2"], splitClientConfig.sync.filters[0].values)
     }
 }

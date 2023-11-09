@@ -49,6 +49,46 @@ abstract class SplitClient {
   Future<Map<String, String>> getTreatments(List<String> featureFlagNames,
       [Map<String, dynamic> attributes = const {}]);
 
+  /// Convenience method to perform multiple evaluations by flag set. Returns a [Map] in
+  /// which the keys are feature flag names and the values are treatments.
+  ///
+  /// A flag set needs to be specified in [flagSet].
+  ///
+  /// Optionally, a [Map] can be specified with the [attributes] parameter to
+  /// take into account when evaluating.
+  Future<Map<String, String>> getTreatmentsByFlagSet(String flagSet,
+      [Map<String, dynamic> attributes = const {}]);
+
+  /// Convenience method to perform multiple evaluations by flag sets. Returns a [Map] in
+  /// which the keys are feature flag names and the values are treatments.
+  ///
+  /// A list of flag sets needs to be specified in [flagSets].
+  ///
+  /// Optionally, a [Map] can be specified with the [attributes] parameter to
+  /// take into account when evaluating.
+  Future<Map<String, String>> getTreatmentsByFlagSets(List<String> flagSets,
+      [Map<String, dynamic> attributes = const {}]);
+
+  /// Convenience method to perform multiple evaluations by flag set. Returns a [Map] in
+  /// which the keys are feature flag names and the values are [SplitResult] objects.
+  ///
+  /// A flag set needs to be specified in [flagSet].
+  ///
+  /// Optionally, a [Map] can be specified with the [attributes] parameter to
+  /// take into account when evaluating.
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(String flagSet,
+      [Map<String, dynamic> attributes = const {}]);
+
+  /// Convenience method to perform multiple evaluations by flag sets. Returns a [Map] in
+  /// which the keys are feature flag names and the values are [SplitResult] objects.
+  ///
+  /// A list of flag sets needs to be specified in [flagSets].
+  ///
+  /// Optionally, a [Map] can be specified with the [attributes] parameter to
+  /// take into account when evaluating.
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(List<String> flagSets,
+      [Map<String, dynamic> attributes = const {}]);
+
   /// Convenience method to perform multiple evaluations. Returns a [Map] in
   /// which the keys are feature flag names and the values are [SplitResult] objects.
   ///
@@ -182,6 +222,42 @@ class DefaultSplitClient implements SplitClient {
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitNames: featureFlagNames,
+        attributes: attributes);
+  }
+
+  @override
+  Future<Map<String, String>> getTreatmentsByFlagSet(String flagSet, [Map<String, dynamic> attributes = const {}]) {
+    return _platform.getTreatmentsByFlagSet(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        flagSet: flagSet,
+        attributes: attributes);
+  }
+
+  @override
+  Future<Map<String, String>> getTreatmentsByFlagSets(List<String> flagSets, [Map<String, dynamic> attributes = const {}]) {
+    return _platform.getTreatmentsByFlagSets(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        flagSets: flagSets,
+        attributes: attributes);
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(String flagSet, [Map<String, dynamic> attributes = const {}]) {
+    return _platform.getTreatmentsWithConfigByFlagSet(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        flagSet: flagSet,
+        attributes: attributes);
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(List<String> flagSets, [Map<String, dynamic> attributes = const {}]) {
+    return _platform.getTreatmentsWithConfigByFlagSets(
+        matchingKey: _matchingKey,
+        bucketingKey: _bucketingKey,
+        flagSets: flagSets,
         attributes: attributes);
   }
 

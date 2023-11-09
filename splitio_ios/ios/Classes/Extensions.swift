@@ -22,7 +22,10 @@ extension SplitView {
                 "killed": splitView.killed,
                 "treatments": splitView.treatments,
                 "changeNumber": splitView.changeNumber,
-                "configs": splitView.configs]
+                "configs": splitView.configs,
+                "defaultTreatment": splitView.defaultTreatment,
+                "sets": splitView.sets
+            ]
         } else {
             return [:]
         }
