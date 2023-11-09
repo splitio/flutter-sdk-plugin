@@ -1,3 +1,13 @@
+# 0.1.7 (Nov 9, 2023)
+* Added support for Flag Sets, which enables grouping feature flags and interacting with the group rather than individually (more details in our documentation):
+  * Added new variations of the get treatment methods to support evaluating flags in given flag set/s.
+    * getTreatmentsByFlagSet and getTreatmentsByFlagSets
+    * getTreatmentWithConfigByFlagSets and getTreatmentsWithConfigByFlagSets
+  * Added a new optional Split Filter configuration option. This allows the SDK and Split services to only synchronize the flags in the specified flag sets, avoiding unused or unwanted flags from being synced on the SDK instance, bringing all the benefits from a reduced payload.
+  * Added `defaultTreatment` property to the `SplitView` object returned by the `split` and `splits` methods of the SDK manager.
+* Updated iOS SDK to `2.23.0`
+* Updated Android SDK to `3.4.0`
+
 # 0.1.7-rc.1 (Nov 9, 2023)
 
 # 0.1.6 (Aug 15, 2023)
