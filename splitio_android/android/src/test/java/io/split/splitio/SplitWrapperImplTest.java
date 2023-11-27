@@ -15,6 +15,7 @@ import org.mockito.MockitoAnnotations;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -98,6 +99,56 @@ public class SplitWrapperImplTest {
         mSplitWrapper.getTreatmentsWithConfig("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
 
         verify(clientMock).getTreatmentsWithConfig(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
+    }
+
+    @Test
+    public void testGetTreatmentsByFlagSet() {
+        SplitClient clientMock = mock(SplitClient.class);
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
+
+        Map<String, Object> attrs = Collections.singletonMap("age", 50);
+        mSplitWrapper.getTreatmentsByFlagSet("key", null, "flag-set", attrs);
+
+        verify(clientMock).getTreatmentsByFlagSet("flag-set", attrs);
+    }
+
+    @Test
+    public void testGetTreatmentsByFlagSets() {
+        SplitClient clientMock = mock(SplitClient.class);
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
+
+        Map<String, Object> attrs = Collections.singletonMap("age", 50);
+        List<String> sets = Arrays.asList("set_1", "set_2");
+        mSplitWrapper.getTreatmentsByFlagSets("key", null, sets, attrs);
+
+        verify(clientMock).getTreatmentsByFlagSets(sets, attrs);
+    }
+
+    @Test
+    public void testGetTreatmentsWithConfigByFlagSet() {
+        SplitClient clientMock = mock(SplitClient.class);
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
+
+        Map<String, Object> attrs = Collections.singletonMap("age", 50);
+        mSplitWrapper.getTreatmentsWithConfigByFlagSet("key", null,"set_1", attrs);
+
+        verify(clientMock).getTreatmentsWithConfigByFlagSet("set_1", attrs);
+    }
+
+    @Test
+    public void testGetTreatmentsWithConfigByFlagSets() {
+        SplitClient clientMock = mock(SplitClient.class);
+        when(mSplitFactory.client("key", null)).thenReturn(clientMock);
+        when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
+
+        Map<String, Object> attrs = Collections.singletonMap("age", 50);
+        List<String> sets = Arrays.asList("set_1", "set_2");
+        mSplitWrapper.getTreatmentsWithConfigByFlagSets("key", null, sets, attrs);
+
+        verify(clientMock).getTreatmentsWithConfigByFlagSets(sets, attrs);
     }
 
     @Test

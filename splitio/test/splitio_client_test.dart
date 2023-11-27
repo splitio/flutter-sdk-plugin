@@ -133,6 +133,118 @@ void main() {
         'attributes': {'attr1': true}
       });
     });
+
+    test('getTreatmentsByFlagSet without attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsByFlagSet('set_1');
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsByFlagSet with attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsByFlagSet('set_1', {'attr1': true});
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsByFlagSets without attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsByFlagSets(['set_1', 'set_2']);
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsByFlagSets with attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsByFlagSets(['set_1', 'set_2'], {'attr1': true});
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSet without attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsWithConfigByFlagSet('set_1');
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSet with attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsWithConfigByFlagSet('set_1', {'attr1': true});
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSets without attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsWithConfigByFlagSets(['set_1', 'set_2']);
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {}
+      });
+    });
+
+    test('getTreatmentsWithConfigByFlagSets with attributes', () async {
+      SplitClient client = _getClient();
+
+      client.getTreatmentsWithConfigByFlagSets(['set_1', 'set_2'], {'attr1': true});
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {'attr1': true}
+      });
+    });
   });
 
   group('track', () {

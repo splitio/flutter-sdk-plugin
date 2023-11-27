@@ -128,6 +128,46 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @Override
+    public Map<String, String> getTreatmentsByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes) {
+        SplitClient client = getInitializedClient(matchingKey, bucketingKey);
+        if (client == null) {
+            return new HashMap<>();
+        }
+
+        return client.getTreatmentsByFlagSet(flagSet, attributes);
+    }
+
+    @Override
+    public Map<String, String> getTreatmentsByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes) {
+        SplitClient client = getInitializedClient(matchingKey, bucketingKey);
+        if (client == null) {
+            return new HashMap<>();
+        }
+
+        return client.getTreatmentsByFlagSets(flagSets, attributes);
+    }
+
+    @Override
+    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes) {
+        SplitClient client = getInitializedClient(matchingKey, bucketingKey);
+        if (client == null) {
+            return new HashMap<>();
+        }
+
+        return client.getTreatmentsWithConfigByFlagSet(flagSet, attributes);
+    }
+
+    @Override
+    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes) {
+        SplitClient client = getInitializedClient(matchingKey, bucketingKey);
+        if (client == null) {
+            return new HashMap<>();
+        }
+
+        return client.getTreatmentsWithConfigByFlagSets(flagSets, attributes);
+    }
+
+    @Override
     public boolean setAttribute(String matchingKey, @Nullable String bucketingKey, String attributeName, Object value) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {

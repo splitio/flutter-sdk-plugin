@@ -1,3 +1,9 @@
+# 0.1.7 (Nov 9, 2023)
+
+* Updated iOS SDK to `2.23.0`
+
+# 0.1.7-rc.1 (Nov 9, 2023)
+
 # 0.1.6 (Aug 15, 2023)
 
 * Added `readyTimeout` configuration option.
