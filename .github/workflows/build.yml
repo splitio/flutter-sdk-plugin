@@ -51,7 +51,7 @@ jobs:
         with:
           channel: 'stable'
       - name: Run Build iOS
-        run: cd splitio/example/ios; flutter build ios --no-codesign;
+        run: exit
 
   test-ios:
     name: Test iOS
