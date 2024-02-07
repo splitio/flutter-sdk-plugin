@@ -19,8 +19,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  splitio_android: #^0.1.7+1-rc.1
-    path: ../splitio_android
+  splitio_android: ^0.1.7+1-rc.2
   splitio_ios: ^0.1.7+1-rc.1
   splitio_platform_interface: ^1.4.0
 
