@@ -1,3 +1,5 @@
+# 0.1.7+1-rc.1 (Feb 7, 2023)
+
 # 0.1.7 (Nov 9, 2023)
 * Added support for Flag Sets, which enables grouping feature flags and interacting with the group rather than individually (more details in our documentation):
   * Added new variations of the get treatment methods to support evaluating flags in given flag set/s.

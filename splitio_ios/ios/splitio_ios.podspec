@@ -15,7 +15,7 @@ split.io official Flutter plugin.
   s.source           = { :path => '.' }
   s.source_files = 'Classes/**/*'
   s.dependency 'Flutter'
-  s.dependency 'Split', '~> 2.23.0'
+  s.dependency 'Split', '~> 2.24.2'
   s.platform = :ios, '9.0'
 
   # Flutter.framework does not contain a i386 slice.
