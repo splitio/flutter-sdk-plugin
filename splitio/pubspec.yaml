@@ -1,6 +1,6 @@
 name: splitio
 description: Official plugin for split.io, the platform for controlled rollouts, which serves features to your users via feature flags to manage your complete customer experience.
-version: 0.1.7+1-rc.1
+version: 0.1.7+1-rc.2
 homepage: https://split.io/
 repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio/
 
