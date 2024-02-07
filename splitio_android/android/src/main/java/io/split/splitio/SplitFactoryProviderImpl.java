@@ -13,6 +13,7 @@ import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitFactoryBuilder;
 import io.split.android.client.api.Key;
+import io.split.android.client.exceptions.SplitInstantiationException;
 import io.split.android.client.utils.logger.Logger;
 
 class SplitFactoryProviderImpl implements SplitFactoryProvider {
