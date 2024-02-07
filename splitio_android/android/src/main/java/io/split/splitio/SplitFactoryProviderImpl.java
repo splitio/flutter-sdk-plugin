@@ -5,10 +5,6 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.concurrent.TimeoutException;
-
 import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitFactoryBuilder;
