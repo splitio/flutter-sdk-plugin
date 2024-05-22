@@ -71,4 +71,4 @@ jobs:
           xcode-version: 15.1.0
 
       - name: ios
-        run: cd splitio_ios/example/ios; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO ONLY_ACTIVE_ARCH=NO;
+        run: cd splitio_ios/example/ios; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO;
