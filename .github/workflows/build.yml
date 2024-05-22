@@ -43,7 +43,7 @@ jobs:
 
   build-ios:
     name: Build iOS
-    runs-on: [ macos-14 ]
+    runs-on: [ macos-latest ]
 
     steps:
       - uses: actions/checkout@v4
@@ -55,7 +55,7 @@ jobs:
 
   test-ios:
     name: Test iOS
-    runs-on: [ macos-14 ]
+    runs-on: [ macos-latest ]
 
     steps:
       - uses: actions/checkout@v4
@@ -71,4 +71,4 @@ jobs:
           xcode-version: 15.1.0
 
       - name: ios
-        run: cd splitio_ios/example/ios; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 12,OS=latest" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO;
+        run: cd splitio_ios/example/ios; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 15,OS=17.4" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO;
