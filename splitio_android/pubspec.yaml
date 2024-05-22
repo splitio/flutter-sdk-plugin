@@ -1,7 +1,7 @@
 name: splitio_android
 description: The official Android implementation of splitio Flutter plugin.
 repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio_android
-version: 0.1.8
+version: 0.1.9-rc.1
 
 environment:
   sdk: ">=2.16.2 <4.0.0"
