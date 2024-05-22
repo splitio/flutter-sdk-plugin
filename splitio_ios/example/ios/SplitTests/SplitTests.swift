@@ -334,7 +334,6 @@ class SplitFactoryStub: SplitFactory {
 }
 
 class SplitClientStub: SplitClient {
-
     var destroyCalled: Bool = false
     var methodCalls = [
         "getTreatment": false,
@@ -407,8 +406,20 @@ class SplitClientStub: SplitClient {
         return [:]
     }
 
+    func on(event: SplitEvent, runInBackground: Bool, execute action: @escaping SplitAction) {
+        if event == .sdkReady {
+            sdkReadyEventAction = action
+        }
+    }
+
+    func on(event: SplitEvent, queue: DispatchQueue, execute action: @escaping SplitAction) {
+        if event == .sdkReady {
+            sdkReadyEventAction = action
+        }
+    }
+
     func on(event: SplitEvent, execute action: @escaping SplitAction) {
-        if event == SplitEvent.sdkReady {
+        if event == .sdkReady {
             sdkReadyEventAction = action
         }
     }
