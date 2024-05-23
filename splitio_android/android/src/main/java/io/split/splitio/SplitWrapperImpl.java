@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
@@ -16,7 +17,6 @@ import io.split.android.client.SplitResult;
 import io.split.android.client.api.Key;
 import io.split.android.client.api.SplitView;
 import io.split.android.client.shared.UserConsent;
-import io.split.android.client.utils.ConcurrentSet;
 import io.split.android.grammar.Treatments;
 
 class SplitWrapperImpl implements SplitWrapper {
@@ -25,7 +25,7 @@ class SplitWrapperImpl implements SplitWrapper {
     private final Set<Key> mUsedKeys;
 
     SplitWrapperImpl(@NonNull SplitFactoryProvider splitFactoryProvider) {
-        this(splitFactoryProvider, new ConcurrentSet<>());
+        this(splitFactoryProvider, Collections.newSetFromMap(new ConcurrentHashMap<>()));
     }
 
     @VisibleForTesting

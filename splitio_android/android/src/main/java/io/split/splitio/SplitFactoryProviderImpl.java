@@ -5,14 +5,11 @@ import android.content.Context;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.util.concurrent.TimeoutException;
-
 import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitFactoryBuilder;
 import io.split.android.client.api.Key;
+import io.split.android.client.exceptions.SplitInstantiationException;
 import io.split.android.client.utils.logger.Logger;
 
 class SplitFactoryProviderImpl implements SplitFactoryProvider {
@@ -45,7 +42,7 @@ class SplitFactoryProviderImpl implements SplitFactoryProvider {
                 if (mSplitFactory == null) {
                     try {
                         mSplitFactory = SplitFactoryBuilder.build(mApiKey, mKey, mSplitClientConfig, mContext);
-                    } catch (IOException | InterruptedException | TimeoutException | URISyntaxException e) {
+                    } catch (SplitInstantiationException e) {
                         Logger.e("Failed to create SplitFactory", e.getLocalizedMessage());
                     }
                 }

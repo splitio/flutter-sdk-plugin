@@ -1,3 +1,13 @@
+# 0.1.9 (May 22, 2024)
+* Updated iOS SDK to `2.25.0`
+
+# 0.1.9-rc.1 (May 22, 2024)
+
+# 0.1.8 (Feb 7, 2024)
+* Updated iOS SDK to `2.24.3`
+
+# 0.1.7+1-rc.1 (Feb 7, 2024)
+
 # 0.1.7 (Nov 9, 2023)
 
 * Updated iOS SDK to `2.23.0`
