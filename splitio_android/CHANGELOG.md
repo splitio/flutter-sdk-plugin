@@ -1,3 +1,6 @@
+# 0.1.9+1 (Jun 7, 2024)
+* Updated Android SDK to `4.1.1`
+
 # 0.1.9 (May 22, 2024)
 * Updated Android SDK to `4.1.0`
 

@@ -170,9 +170,10 @@ packages:
   splitio_android:
     dependency: transitive
     description:
-      path: "../../splitio_android"
-      relative: true
-    source: path
+      name: splitio_android
+      sha256: b7ddd9f8a694ed610dd3ecd770f16d4ce016c3211d2f56fc5a094ef58bc543fb
+      url: "https://pub.dev"
+    source: hosted
     version: "0.1.9+1"
   splitio_ios:
     dependency: transitive
