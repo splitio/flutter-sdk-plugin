@@ -1,3 +1,4 @@
+import 'package:splitio_platform_interface/certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
 class SplitConfiguration {
@@ -44,6 +45,8 @@ class SplitConfiguration {
   /// [logLevel] Enables logging according to the level specified. Options are [SplitLogLevel.verbose], [SplitLogLevel.none], [SplitLogLevel.debug], [SplitLogLevel.info], [SplitLogLevel.warning], and [SplitLogLevel.error].
   ///
   /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
+  ///
+  /// [certificatePinningConfig] Certificate pinning configuration. It is a map where the key is the host and the value is a set of base64 SHA-256 or base64 SHA-1 hashes of the SPKI.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -70,6 +73,7 @@ class SplitConfiguration {
     bool? encryptionEnabled,
     SplitLogLevel? logLevel,
     int? readyTimeout = 10,
+    CertificatePinningConfiguration? certificatePinningConfig,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -174,6 +178,13 @@ class SplitConfiguration {
 
     if (readyTimeout != null) {
       configurationMap['readyTimeout'] = readyTimeout;
+    }
+
+    if (certificatePinningConfig != null &&
+        certificatePinningConfig.pins.isNotEmpty) {
+      configurationMap['certificatePinningConfiguration'] = {
+        'pins': certificatePinningConfig.pins
+      };
     }
   }
 }
