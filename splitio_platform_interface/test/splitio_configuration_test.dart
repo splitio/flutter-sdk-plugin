@@ -67,7 +67,7 @@ void main() {
     expect(config.configurationMap['encryptionEnabled'], true);
     expect(config.configurationMap['logLevel'], 'debug');
     expect(config.configurationMap['readyTimeout'], 1);
-    expect(config.configurationMap['certificatePinningConfiguration'], {
+    expect(config.configurationMap['certificatePinningConfiguration']['pins'], {
       'host1': ['pin1', 'pin2'],
       'host2': ['pin3']
     });
