@@ -11,14 +11,21 @@ import org.junit.Test;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFilter;
 import io.split.android.client.impressions.ImpressionListener;
+import io.split.android.client.network.CertificatePin;
+import io.split.android.client.network.CertificatePinningConfiguration;
 import io.split.android.client.service.impressions.ImpressionsMode;
 import io.split.android.client.shared.UserConsent;
+import io.split.android.client.utils.logger.LogPrinter;
+import io.split.android.client.utils.logger.Logger;
 import io.split.android.client.utils.logger.SplitLogLevel;
 
 public class SplitClientConfigHelperTest {
@@ -177,5 +184,39 @@ public class SplitClientConfigHelperTest {
         assertEquals(1, splitClientConfig.syncConfig().getFilters().size());
         assertEquals(Arrays.asList("set_1", "set_2"), splitClientConfig.syncConfig().getFilters().get(0).getValues());
         assertEquals(SplitFilter.Type.BY_SET, splitClientConfig.syncConfig().getFilters().get(0).getType());
+    }
+
+    @Test
+    public void certificatePinningConfigurationValuesAreMappedCorrectly() {
+        Logger.instance().setPrinter(mock(LogPrinter.class));
+
+        Map<String, Object> configValues = new HashMap<>();
+        Map<String, Object> pinningConfigValues = new HashMap<>();
+        Map<String, Set<String>> pins = new HashMap<>();
+
+        Set<String> hostOnePins = new HashSet<>();
+        hostOnePins.add("sha256/pin1");
+        hostOnePins.add("sha1/pin2");
+        pins.put("host1", hostOnePins);
+        pins.put("host2", Collections.singleton("sha256/pin2"));
+        pinningConfigValues.put("pins", pins);
+        configValues.put("certificatePinningConfiguration", pinningConfigValues);
+
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper
+                .fromMap(configValues, mock(ImpressionListener.class));
+
+        CertificatePinningConfiguration actualConfig = splitClientConfig.certificatePinningConfiguration();
+        assertNotNull(actualConfig);
+        assertEquals(2, actualConfig.getPins().size());
+        assertEquals(2, actualConfig.getPins().get("host1").size());
+        assertEquals(1, actualConfig.getPins().get("host2").size());
+
+        Set<CertificatePin> host1Pins = actualConfig.getPins().get("host1");
+        Iterator<CertificatePin> iterator = host1Pins.iterator();
+        assertEquals("sha256", iterator.next().getAlgorithm());
+        assertEquals("sha1", iterator.next().getAlgorithm());
+
+        Set<CertificatePin> host2Pins = actualConfig.getPins().get("host2");
+        assertEquals("sha256", host2Pins.iterator().next().getAlgorithm());
     }
 }
