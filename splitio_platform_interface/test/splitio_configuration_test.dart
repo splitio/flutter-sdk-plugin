@@ -1,4 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
+import 'package:splitio_platform_interface/certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
@@ -29,8 +30,11 @@ void main() {
         userConsent: UserConsent.declined,
         encryptionEnabled: true,
         logLevel: SplitLogLevel.debug,
-        readyTimeout: 1
-    );
+        readyTimeout: 1,
+        certificatePinningConfig: CertificatePinningConfiguration()
+            .addPin('host1', 'pin1')
+            .addPin('host2', 'pin3')
+            .addPin('host1', 'pin2'));
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
@@ -63,6 +67,10 @@ void main() {
     expect(config.configurationMap['encryptionEnabled'], true);
     expect(config.configurationMap['logLevel'], 'debug');
     expect(config.configurationMap['readyTimeout'], 1);
+    expect(config.configurationMap['certificatePinningConfiguration']['pins'], {
+      'host1': ['pin1', 'pin2'],
+      'host2': ['pin3']
+    });
   });
 
   test('no special values leaves map empty', () async {
@@ -74,7 +82,7 @@ void main() {
 
   test('sets values are mapped correctly', () async {
     final SplitConfiguration config = SplitConfiguration(
-        syncConfig: SyncConfig.flagSets(['one', 'two']),
+      syncConfig: SyncConfig.flagSets(['one', 'two']),
     );
 
     expect(config.configurationMap['syncConfig']['syncConfigNames'], []);
