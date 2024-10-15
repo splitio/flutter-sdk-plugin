@@ -170,10 +170,9 @@ packages:
   splitio_platform_interface:
     dependency: transitive
     description:
-      name: splitio_platform_interface
-      sha256: eb0ec278e782bb403856f0921d2023ed8ed1a9e97eafb0f3de5cc4a107d1e04f
-      url: "https://pub.dev"
-    source: hosted
+      path: "../../splitio_platform_interface"
+      relative: true
+    source: path
     version: "1.4.0"
   stack_trace:
     dependency: transitive
