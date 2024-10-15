@@ -1,4 +1,4 @@
-import 'package:splitio_platform_interface/certificate_pinning_configuration.dart';
+import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
 class SplitConfiguration {
