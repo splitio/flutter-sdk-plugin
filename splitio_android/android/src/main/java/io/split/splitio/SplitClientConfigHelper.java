@@ -4,8 +4,10 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import io.split.android.client.ServiceEndpoints;
@@ -13,6 +15,7 @@ import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFilter;
 import io.split.android.client.SyncConfig;
 import io.split.android.client.impressions.ImpressionListener;
+import io.split.android.client.network.CertificatePinningConfiguration;
 import io.split.android.client.shared.UserConsent;
 import io.split.android.client.utils.logger.SplitLogLevel;
 
@@ -46,6 +49,8 @@ class SplitClientConfigHelper {
     private static final String ENCRYPTION_ENABLED = "encryptionEnabled";
     private static final String LOG_LEVEL = "logLevel";
     private static final String READY_TIMEOUT = "readyTimeout";
+    private static final String CERTIFICATE_PINNING_CONFIGURATION = "certificatePinningConfiguration";
+    private static final String CERTIFICATE_PINNING_CONFIGURATION_PINS = "pins";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -219,6 +224,24 @@ class SplitClientConfigHelper {
             builder.ready((int) TimeUnit.SECONDS.toMillis(readyTimeout)); // Android SDK uses this parameter in millis
         }
 
+        Map<String, Object> certificatePinningConfig = getObjectMap(configurationMap, CERTIFICATE_PINNING_CONFIGURATION);
+        if (certificatePinningConfig != null) {
+            Map<String, List<String>> pins = getListMap(certificatePinningConfig, CERTIFICATE_PINNING_CONFIGURATION_PINS);
+            if (pins != null && !pins.isEmpty()) {
+                Set<String> hosts = pins.keySet();
+                CertificatePinningConfiguration.Builder certPinningConfigBuilder = CertificatePinningConfiguration.builder();
+                for (String host : hosts) {
+                    Set<String> hostPins = new HashSet<>(pins.get(host));
+                    if (!hostPins.isEmpty()) {
+                        for (String pin : hostPins) {
+                            certPinningConfigBuilder.addPin(host, pin);
+                        }
+                    }
+                }
+                builder.certificatePinningConfiguration(certPinningConfigBuilder.build());
+            }
+        }
+
         return builder.serviceEndpoints(serviceEndpointsBuilder.build()).build();
     }
 
@@ -269,6 +292,18 @@ class SplitClientConfigHelper {
             Object value = map.get(key);
             if (value != null && value.getClass().isAssignableFrom(HashMap.class)) {
                 return (HashMap<String, List<String>>) value;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private static Map<String, Object> getObjectMap(Map<String, Object> map, String key) {
+        if (map.containsKey(key)) {
+            Object value = map.get(key);
+            if (value != null && value.getClass().isAssignableFrom(HashMap.class)) {
+                return (HashMap<String, Object>) value;
             }
         }
 
