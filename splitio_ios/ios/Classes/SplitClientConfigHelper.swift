@@ -31,6 +31,8 @@ class SplitClientConfigHelper {
     static private let ENCRYPTION_ENABLED = "encryptionEnabled"
     static private let LOG_LEVEL = "logLevel"
     static private let READY_TIMEOUT = "readyTimeout"
+    static private let CERTIFICATE_PINNING_CONFIGURATION = "certificatePinningConfiguration"
+    static private let CERTIFICATE_PINNING_CONFIGURATION_PINS = "pins";
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -143,6 +145,8 @@ class SplitClientConfigHelper {
             }
         }
 
+        config.serviceEndpoints = serviceEndpointsBuilder.build()
+
         if let impressionListener = impressionListener {
             config.impressionListener = impressionListener
         }
@@ -168,11 +172,11 @@ class SplitClientConfigHelper {
                 config.sync = syncConfigBuilder.build()
             }
         }
-        
+
         if let impressionsMode = configurationMap[IMPRESSIONS_MODE] as? String {
             config.impressionsMode = impressionsMode.uppercased()
         }
-        
+
         if let syncEnabled = configurationMap[SYNC_ENABLED] as? Bool {
             config.syncEnabled = syncEnabled
         }
@@ -213,14 +217,29 @@ class SplitClientConfigHelper {
             config.sdkReadyTimeOut = readyTimeout * 1000 // iOS SDK uses this parameter in millis
         }
 
-        config.serviceEndpoints = serviceEndpointsBuilder.build()
+        if let certPinningConfig = configurationMap[CERTIFICATE_PINNING_CONFIGURATION] as? [String: Any?] {
+            if let pins = certPinningConfig[CERTIFICATE_PINNING_CONFIGURATION_PINS] as? [String: [String]] {
+                let pinningConfigBuilder = CertificatePinningConfig.builder()
+                for (hostName, hostPins) in pins {
+                    for hostPin in hostPins {
+                        pinningConfigBuilder.addPin(host: hostName, keyHash: hostPin)
+                    }
+                }
+
+                do {
+                    try config.certificatePinningConfig = pinningConfigBuilder.build()
+                } catch {
+
+                }
+            }
+        }
 
         return config
     }
 
     static func impressionListenerEnabled(configurationMap: [String: Any?]) -> Bool {
         if configurationMap[IMPRESSION_LISTENER] != nil {
-            if let impressionListenerEnabled = configurationMap[IMPRESSION_LISTENER] as? Bool {
+            if configurationMap[IMPRESSION_LISTENER] is Bool {
                 return true
             }
         }
