@@ -1,8 +1,8 @@
 class CertificatePinningConfiguration {
 
-  final Map<String, Set<String>> _pins = {};
+  final Map<String, List<String>> _pins = {};
 
-  Map<String, Set<String>> get pins => _pins;
+  Map<String, List<String>> get pins => _pins;
 
   CertificatePinningConfiguration addPin(String host, String pin) {
     pin = pin.trim();
@@ -11,7 +11,7 @@ class CertificatePinningConfiguration {
     }
 
     if (!_pins.containsKey(host)) {
-      _pins[host] = <String>{};
+      _pins[host] = [];
     }
 
     _pins[host]?.add(pin);
