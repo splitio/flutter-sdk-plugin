@@ -1,4 +1,4 @@
-import 'package:splitio_platform_interface/certificate_pinning_configuration.dart';
+import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
 class SplitConfiguration {
@@ -46,7 +46,7 @@ class SplitConfiguration {
   ///
   /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
   ///
-  /// [certificatePinningConfig] Certificate pinning configuration. It is a map where the key is the host and the value is a set of base64 SHA-256 or base64 SHA-1 hashes of the SPKI.
+  /// [certificatePinningConfiguration] Certificate pinning configuration. It is a map where the key is the host and the value is a set of base64 SHA-256 or base64 SHA-1 hashes of the SPKI.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -73,7 +73,7 @@ class SplitConfiguration {
     bool? encryptionEnabled,
     SplitLogLevel? logLevel,
     int? readyTimeout = 10,
-    CertificatePinningConfiguration? certificatePinningConfig,
+    CertificatePinningConfiguration? certificatePinningConfiguration,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -180,10 +180,10 @@ class SplitConfiguration {
       configurationMap['readyTimeout'] = readyTimeout;
     }
 
-    if (certificatePinningConfig != null &&
-        certificatePinningConfig.pins.isNotEmpty) {
+    if (certificatePinningConfiguration != null &&
+        certificatePinningConfiguration.pins.isNotEmpty) {
       configurationMap['certificatePinningConfiguration'] = {
-        'pins': certificatePinningConfig.pins
+        'pins': certificatePinningConfiguration.pins
       };
     }
   }

@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:splitio_platform_interface/certificate_pinning_configuration.dart';
+import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
@@ -31,7 +31,7 @@ void main() {
         encryptionEnabled: true,
         logLevel: SplitLogLevel.debug,
         readyTimeout: 1,
-        certificatePinningConfig: CertificatePinningConfiguration()
+        certificatePinningConfiguration: CertificatePinningConfiguration()
             .addPin('host1', 'pin1')
             .addPin('host2', 'pin3')
             .addPin('host1', 'pin2'));
