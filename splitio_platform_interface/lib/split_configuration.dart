@@ -46,7 +46,7 @@ class SplitConfiguration {
   ///
   /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
   ///
-  /// [certificatePinningConfiguration] Certificate pinning configuration. It is a map where the key is the host and the value is a set of base64 SHA-256 or base64 SHA-1 hashes of the SPKI.
+  /// [certificatePinningConfiguration] Certificate pinning configuration. Pins need to have the format of a base64 SHA-256 or base64 SHA-1 hashes of the SPKI (ex.: "sha256/7HIpactkIAq2Y49orFOOQKurWxmmSFZhBCoQYcRhJ3Y=").
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
