@@ -1,3 +1,7 @@
+# 1.5.0-rc.2 (Oct 17, 2024)
+
+# 1.5.0-rc.1 (Oct 17, 2024)
+
 # 1.4.0 (Nov 9, 2023)
 * Added support for Flag Sets, which enables grouping feature flags and interacting with the group rather than individually (more details in our documentation):
   * Added new variations of the get treatment methods to support evaluating flags in given flag set/s.
