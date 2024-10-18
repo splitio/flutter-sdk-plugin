@@ -1,3 +1,10 @@
+# 1.5.0 (Oct 18, 2024)
+* Added certificate pinning functionality. This feature allows you to pin a certificate to the SDK, ensuring that the SDK only communicates with servers that present this certificate. Read more in our documentation.
+
+# 1.5.0-rc.2 (Oct 17, 2024)
+
+# 1.5.0-rc.1 (Oct 17, 2024)
+
 # 1.4.0 (Nov 9, 2023)
 * Added support for Flag Sets, which enables grouping feature flags and interacting with the group rather than individually (more details in our documentation):
   * Added new variations of the get treatment methods to support evaluating flags in given flag set/s.

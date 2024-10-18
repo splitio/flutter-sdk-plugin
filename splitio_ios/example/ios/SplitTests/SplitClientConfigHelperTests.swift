@@ -48,6 +48,7 @@ class SplitClientConfigHelperTests: XCTestCase {
         XCTAssertTrue(splitClientConfig.encryptionEnabled)
         XCTAssertEqual(.verbose, splitClientConfig.logLevel)
         XCTAssertEqual(10000, splitClientConfig.sdkReadyTimeOut)
+        XCTAssertNil(splitClientConfig.certificatePinningConfig)
     }
 
     func testEnableDebugLogLevelIsMappedCorrectly() {
@@ -113,5 +114,25 @@ class SplitClientConfigHelperTests: XCTestCase {
         XCTAssertEqual(1, splitClientConfig.sync.filters.count)
         XCTAssertEqual(.bySet, splitClientConfig.sync.filters[0].type)
         XCTAssertEqual(["set_1", "set_2"], splitClientConfig.sync.filters[0].values)
+    }
+
+    func testCertificatePinningConfigurationValuesAreMappedCorrectly() {
+        let configValues = [
+            "certificatePinningConfiguration": [
+                "pins": [
+                    "host1": [ "sha256/pin1", "sha1/pin2" ],
+                    "host2": [ "sha256/pin2" ]
+                ]
+            ]
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+        let actualConfig = splitClientConfig.certificatePinningConfig?.pins
+
+        let containsPins = actualConfig?.contains { pin in
+            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha256) &&
+            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha1) &&
+            (pin.host == "host2" && pin.algo == KeyHashAlgo.sha256 )
+        }
     }
 }
