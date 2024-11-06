@@ -166,23 +166,23 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "0.1.10"
+    version: "0.2.0"
   splitio_android:
     dependency: transitive
     description:
       name: splitio_android
-      sha256: b2ebb1ef9c9f1399b5dca7b008dd90f1cdf3c05da4da74154ff0a5489bafd114
+      sha256: "44b0e1dddd374fc73fc1b5ef89598b96ea405d533a8211c06a45665f5d6187b5"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.10"
+    version: "0.2.0"
   splitio_ios:
     dependency: transitive
     description:
       name: splitio_ios
-      sha256: bf59562ef13c55b528886f3f9383ec4a5608d9de42e910256ba7fb025b310fa0
+      sha256: "7c7a2a60711b8e6267cde7e2754d30931dafc76b20b28e1356624963628cb166"
       url: "https://pub.dev"
     source: hosted
-    version: "0.1.10"
+    version: "0.2.0"
   splitio_platform_interface:
     dependency: transitive
     description:

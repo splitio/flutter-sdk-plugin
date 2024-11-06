@@ -1,3 +1,11 @@
+# 0.2.0 (Nov 6, 2024)
+* Added support for targeting rules based on large segments.
+* BREAKING CHANGE (for Split Proxy users):
+  * Dropped support for Split Proxy below version `5.9.0`.
+* Updated iOS SDK to `3.0.0` & Android SDK to `5.0.0`.
+
+# 0.2.0-rc.1 (Nov 6, 2024)
+
 # 0.1.10 (Oct 18, 2024)
 * Added certificate pinning functionality. This feature allows you to pin a certificate to the SDK, ensuring that the SDK only communicates with servers that present this certificate. Read more in our documentation.
 * Updated iOS SDK to `2.26.1` & Android SDK to `4.2.2`
