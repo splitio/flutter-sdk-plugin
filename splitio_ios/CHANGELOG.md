@@ -1,5 +1,4 @@
-# 0.2.0 (Nov 6, 2024)
-* Updated iOS SDK to `3.0.0`
+# 0.2.0-rc.1 (Nov 6, 2024)
 
 # 0.1.10 (Oct 18, 2024)
 * Updated iOS SDK to `2.26.1`
