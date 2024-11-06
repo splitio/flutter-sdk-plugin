@@ -1,7 +1,8 @@
 name: splitio_ios
+publish_to: 'none'
 description: The official iOS implementation of splitio Flutter plugin.
 repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio_ios
-version: 0.1.10
+version: 0.2.0-rc.1
 
 environment:
   sdk: ">=2.16.2 <4.0.0"
