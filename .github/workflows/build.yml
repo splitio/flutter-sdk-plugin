@@ -59,7 +59,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v4
-      - uses: subosito/flutter-action@v2.1.0
+      - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
       - name: Run Build iOS
