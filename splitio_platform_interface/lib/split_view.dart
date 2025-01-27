@@ -9,10 +9,11 @@ class SplitView {
   Map<String, String> configs = {};
   String defaultTreatment;
   List<String> sets = [];
+  bool impressionsDisabled = false;
 
   SplitView(this.name, this.trafficType, this.killed, this.treatments,
       this.changeNumber, this.configs,
-      [this.defaultTreatment = '', this.sets = const []]);
+      [this.defaultTreatment = '', this.sets = const [], this.impressionsDisabled = false]);
 
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
@@ -32,6 +33,10 @@ class SplitView {
       entry['sets'] = [];
     }
 
+    if (entry['impressionsDisabled'] == null) {
+      entry['impressionsDisabled'] = false;
+    }
+
     return SplitView(
         entry['name'],
         entry['trafficType'],
@@ -40,7 +45,8 @@ class SplitView {
         entry['changeNumber'],
         mappedConfig,
         entry['defaultTreatment'] ?? '',
-        (entry['sets'] as List).map((el) => el as String).toList()
+        (entry['sets'] as List).map((el) => el as String).toList(),
+        entry['impressionsDisabled'] ?? false
     );
   }
 

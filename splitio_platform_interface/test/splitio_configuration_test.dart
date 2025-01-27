@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
 void main() {
@@ -34,7 +35,8 @@ void main() {
         certificatePinningConfiguration: CertificatePinningConfiguration()
             .addPin('host1', 'pin1')
             .addPin('host2', 'pin3')
-            .addPin('host1', 'pin2'));
+            .addPin('host1', 'pin2'),
+        rolloutCacheConfiguration: RolloutCacheConfiguration(expirationDays: 15, clearOnInit: true));
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
@@ -71,6 +73,8 @@ void main() {
       'host1': ['pin1', 'pin2'],
       'host2': ['pin3']
     });
+    expect(config.configurationMap['rolloutCacheConfiguration']['expirationDays'], 15);
+    expect(config.configurationMap['rolloutCacheConfiguration']['clearOnInit'], true);
   });
 
   test('no special values leaves map empty', () async {
