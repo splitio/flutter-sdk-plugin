@@ -239,15 +239,15 @@ class SplitClientConfigHelper {
 
         if let rolloutCacheConfig = configurationMap[ROLLOUT_CACHE_CONFIGURATION] as? [String: Any?] {
             let rolloutCacheConfigurationBuilder = RolloutCacheConfiguration.builder()
-            if configurationMap[ROLLOUT_CACHE_CONFIGURATION][ROLLOUT_CACHE_CONFIGURATION_EXPIRATION] != nil {
+            if rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_EXPIRATION] != nil {
                 if let expirationDays = rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_EXPIRATION] as? Int {
-                    rolloutCacheConfigurationBuilder.set(expirationPeriod: expirationDays)
+                    rolloutCacheConfigurationBuilder.set(expirationDays: expirationDays)
                 }
             }
 
-            if configurationMap[ROLLOUT_CACHE_CONFIGURATION][ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT] != nil {
+            if rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT] != nil {
                 if let clearOnInit = rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT] as? Bool {
-                    rolloutCacheConfigurationBuilder.set(clearOnInitialization: clearOnInit)
+                    rolloutCacheConfigurationBuilder.set(clearOnInit: clearOnInit)
                 }
             }
             config.rolloutCacheConfiguration = rolloutCacheConfigurationBuilder.build()

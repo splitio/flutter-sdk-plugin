@@ -1,5 +1,6 @@
 import XCTest
 import Split
+@testable import splitio_ios
 
 class ExtensionsTests: XCTestCase {
 

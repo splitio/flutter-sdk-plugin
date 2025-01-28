@@ -1,29 +1,34 @@
 PODS:
   - Flutter (1.0.0)
-  - Split (3.0.0)
+  - Split (3.1.0)
   - splitio_ios (0.7.0):
     - Flutter
-    - Split (~> 3.0.0)
+    - Split
 
 DEPENDENCIES:
   - Flutter (from `Flutter`)
+  - Split (from `https://github.com/splitio/ios-client.git`, branch `SDKS-9073_baseline`)
   - splitio_ios (from `.symlinks/plugins/splitio_ios/ios`)
-
-SPEC REPOS:
-  trunk:
-    - Split
 
 EXTERNAL SOURCES:
   Flutter:
     :path: Flutter
+  Split:
+    :branch: SDKS-9073_baseline
+    :git: https://github.com/splitio/ios-client.git
   splitio_ios:
     :path: ".symlinks/plugins/splitio_ios/ios"
 
+CHECKOUT OPTIONS:
+  Split:
+    :commit: a7af0ff343daadee1df395b8e1038514026666c6
+    :git: https://github.com/splitio/ios-client.git
+
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  Split: 66424040ad573d052f58269f841e71b34578a916
-  splitio_ios: e4e3becbe89cae0a2fa9ca03a575c21f23af0d90
+  Split: 17f15abcc74b39c3a8d670f59e787163626ad6b5
+  splitio_ios: 00bf48283a9e3f9497a973d9b5cafc5d414dd427
 
-PODFILE CHECKSUM: aed42fc5c94ade572556b7ed357c5c57f1bd83a2
+PODFILE CHECKSUM: 79606d939bc65bb57cdc13d8613e7015102c2e64
 
 COCOAPODS: 1.15.0
