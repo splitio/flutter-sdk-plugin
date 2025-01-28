@@ -1,6 +1,17 @@
 import 'dart:core';
 
 class SplitView {
+
+  static const String _keyName = 'name';
+  static const String _keyTrafficType = 'trafficType';
+  static const String _keyKilled = 'killed';
+  static const String _keyTreatments = 'treatments';
+  static const String _keyChangeNumber = 'changeNumber';
+  static const String _keyConfigs = 'configs';
+  static const String _keyDefaultTreatment = 'defaultTreatment';
+  static const String _keySets = 'sets';
+  static const String _keyImpressionsDisabled = 'impressionsDisabled';
+
   String name;
   String trafficType;
   bool killed = false;
@@ -9,10 +20,11 @@ class SplitView {
   Map<String, String> configs = {};
   String defaultTreatment;
   List<String> sets = [];
+  bool impressionsDisabled = false;
 
   SplitView(this.name, this.trafficType, this.killed, this.treatments,
       this.changeNumber, this.configs,
-      [this.defaultTreatment = '', this.sets = const []]);
+      [this.defaultTreatment = '', this.sets = const [], this.impressionsDisabled = false]);
 
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
@@ -20,41 +32,47 @@ class SplitView {
     }
 
     final Map<String, String> mappedConfig = {};
-    entry['configs']?.entries.forEach((MapEntry<dynamic, dynamic> entry) => {
+    entry[_keyConfigs]?.entries.forEach((MapEntry<dynamic, dynamic> entry) => {
           mappedConfig.addAll({entry.key.toString(): entry.value.toString()})
         });
 
-    if (entry['treatments'] == null) {
-      entry['treatments'] = entry['treatments'] ?? [];
+    if (entry[_keyTreatments] == null) {
+      entry[_keyTreatments] = entry[_keyTreatments] ?? [];
     }
 
-    if (entry['sets'] == null) {
-      entry['sets'] = [];
+    if (entry[_keySets] == null) {
+      entry[_keySets] = [];
+    }
+
+    if (entry[_keyImpressionsDisabled] == null) {
+      entry[_keyImpressionsDisabled] = false;
     }
 
     return SplitView(
-        entry['name'],
-        entry['trafficType'],
-        entry['killed'],
-        (entry['treatments'] as List).map((el) => el as String).toList(),
-        entry['changeNumber'],
+        entry[_keyName],
+        entry[_keyTrafficType],
+        entry[_keyKilled],
+        (entry[_keyTreatments] as List).map((el) => el as String).toList(),
+        entry[_keyChangeNumber],
         mappedConfig,
-        entry['defaultTreatment'] ?? '',
-        (entry['sets'] as List).map((el) => el as String).toList()
+        entry[_keyDefaultTreatment] ?? '',
+        (entry[_keySets] as List).map((el) => el as String).toList(),
+        entry[_keyImpressionsDisabled] ?? false
     );
   }
 
   @override
   String toString() {
     return '''SplitView = {
-      name: $name,
-      trafficType: $trafficType,
-      killed: $killed,
-      treatments: ${treatments.toString()},
-      changeNumber: $changeNumber,
-      config: $configs,
-      defaultTreatment: $defaultTreatment,
-      sets: ${sets.toString()}
+      $_keyName: $name,
+      $_keyTrafficType: $trafficType,
+      $_keyKilled: $killed,
+      $_keyTreatments: ${treatments.toString()},
+      $_keyChangeNumber: $changeNumber,
+      $_keyConfigs: $configs,
+      $_keyDefaultTreatment: $defaultTreatment,
+      $_keySets: ${sets.toString()},
+      $_keyImpressionsDisabled: $impressionsDisabled
     }''';
   }
 }

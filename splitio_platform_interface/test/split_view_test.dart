@@ -24,6 +24,7 @@ void main() {
       'trafficType': 'default',
       'defaultTreatment': 'on',
       'sets': ['set1', 'set2'],
+      'impressionsDisabled': true,
     });
 
     expect(splitView?.name, 'my_split');
@@ -34,5 +35,6 @@ void main() {
     expect(splitView?.trafficType, 'default');
     expect(splitView?.defaultTreatment, 'on');
     expect(splitView?.sets, ['set1', 'set2']);
+    expect(splitView?.impressionsDisabled, true);
   });
 }

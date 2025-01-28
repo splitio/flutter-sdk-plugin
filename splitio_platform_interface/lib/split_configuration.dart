@@ -1,5 +1,6 @@
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
+import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 
 class SplitConfiguration {
   final Map<String, dynamic> configurationMap = {};
@@ -74,6 +75,7 @@ class SplitConfiguration {
     SplitLogLevel? logLevel,
     int? readyTimeout = 10,
     CertificatePinningConfiguration? certificatePinningConfiguration,
+    RolloutCacheConfiguration? rolloutCacheConfiguration,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -184,6 +186,13 @@ class SplitConfiguration {
         certificatePinningConfiguration.pins.isNotEmpty) {
       configurationMap['certificatePinningConfiguration'] = {
         'pins': certificatePinningConfiguration.pins
+      };
+    }
+
+    if (rolloutCacheConfiguration != null) {
+      configurationMap['rolloutCacheConfiguration'] = {
+        'expirationDays': rolloutCacheConfiguration.expirationDays,
+        'clearOnInit': rolloutCacheConfiguration.clearOnInit
       };
     }
   }
