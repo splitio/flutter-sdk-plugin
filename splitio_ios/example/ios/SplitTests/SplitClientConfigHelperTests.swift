@@ -135,4 +135,16 @@ class SplitClientConfigHelperTests: XCTestCase {
             (pin.host == "host2" && pin.algo == KeyHashAlgo.sha256 )
         }
     }
+
+    func testRolloutCacheConfigurationValuesAreMappedCorrectly() {
+        let configValues = [
+            "rolloutCacheConfiguration": [
+                "expirationDays": 5,
+                "clearOnInit": true
+            ]
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+        let actualConfig = splitClientConfig.rolloutCacheConfiguration
+    }
 }

@@ -24,7 +24,8 @@ extension SplitView {
                 "changeNumber": splitView.changeNumber,
                 "configs": splitView.configs,
                 "defaultTreatment": splitView.defaultTreatment,
-                "sets": splitView.sets
+                "sets": splitView.sets,
+                "impressionsDisabled": splitView.impressionsDisabled,
             ]
         } else {
             return [:]

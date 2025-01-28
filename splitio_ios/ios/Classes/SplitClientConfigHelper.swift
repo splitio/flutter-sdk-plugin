@@ -33,6 +33,9 @@ class SplitClientConfigHelper {
     static private let READY_TIMEOUT = "readyTimeout"
     static private let CERTIFICATE_PINNING_CONFIGURATION = "certificatePinningConfiguration"
     static private let CERTIFICATE_PINNING_CONFIGURATION_PINS = "pins";
+    static private let ROLLOUT_CACHE_CONFIGURATION = "rolloutCacheConfiguration"
+    static private let ROLLOUT_CACHE_CONFIGURATION_EXPIRATION = "expirationDays"
+    static private let ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT = "clearOnInit"
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -117,31 +120,31 @@ class SplitClientConfigHelper {
 
         if configurationMap[SDK_ENDPOINT] != nil {
             if let sdkEndpoint = configurationMap[SDK_ENDPOINT] as? String {
-                serviceEndpointsBuilder.set(sdkEndpoint: sdkEndpoint)
+                _ = serviceEndpointsBuilder.set(sdkEndpoint: sdkEndpoint)
             }
         }
 
         if configurationMap[EVENTS_ENDPOINT] != nil {
             if let eventsEndpoint = configurationMap[EVENTS_ENDPOINT] as? String {
-                serviceEndpointsBuilder.set(eventsEndpoint: eventsEndpoint)
+                _ = serviceEndpointsBuilder.set(eventsEndpoint: eventsEndpoint)
             }
         }
 
         if configurationMap[SSE_AUTH_SERVICE_ENDPOINT] != nil {
             if let sseAuthServiceEndpoint = configurationMap[SSE_AUTH_SERVICE_ENDPOINT] as? String {
-                serviceEndpointsBuilder.set(authServiceEndpoint: sseAuthServiceEndpoint)
+                _ = serviceEndpointsBuilder.set(authServiceEndpoint: sseAuthServiceEndpoint)
             }
         }
 
         if configurationMap[STREAMING_SERVICE_ENDPOINT] != nil {
             if let streamingServiceEndpoint = configurationMap[STREAMING_SERVICE_ENDPOINT] as? String {
-                serviceEndpointsBuilder.set(streamingServiceEndpoint: streamingServiceEndpoint)
+                _ = serviceEndpointsBuilder.set(streamingServiceEndpoint: streamingServiceEndpoint)
             }
         }
 
         if configurationMap[TELEMETRY_SERVICE_ENDPOINT] != nil {
             if let telemetryServiceEndpoint = configurationMap[TELEMETRY_SERVICE_ENDPOINT] as? String {
-                serviceEndpointsBuilder.set(telemetryServiceEndpoint: telemetryServiceEndpoint)
+                _ = serviceEndpointsBuilder.set(telemetryServiceEndpoint: telemetryServiceEndpoint)
             }
         }
 
@@ -232,6 +235,22 @@ class SplitClientConfigHelper {
 
                 }
             }
+        }
+
+        if let rolloutCacheConfig = configurationMap[ROLLOUT_CACHE_CONFIGURATION] as? [String: Any?] {
+            let rolloutCacheConfigurationBuilder = RolloutCacheConfiguration.builder()
+            if configurationMap[ROLLOUT_CACHE_CONFIGURATION][ROLLOUT_CACHE_CONFIGURATION_EXPIRATION] != nil {
+                if let expirationDays = rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_EXPIRATION] as? Int {
+                    rolloutCacheConfigurationBuilder.set(expirationPeriod: expirationDays)
+                }
+            }
+
+            if configurationMap[ROLLOUT_CACHE_CONFIGURATION][ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT] != nil {
+                if let clearOnInit = rolloutCacheConfig[ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT] as? Bool {
+                    rolloutCacheConfigurationBuilder.set(clearOnInitialization: clearOnInit)
+                }
+            }
+            config.rolloutCacheConfiguration = rolloutCacheConfigurationBuilder.build()
         }
 
         return config
