@@ -474,6 +474,7 @@ class SplitMethodParserImpl implements SplitMethodParser {
         splitViewMap.put("configs", splitView.configs);
         splitViewMap.put("defaultTreatment", splitView.defaultTreatment);
         splitViewMap.put("sets", splitView.sets);
+        splitViewMap.put("impressionsDisabled", splitView.impressionsDisabled);
 
         return splitViewMap;
     }

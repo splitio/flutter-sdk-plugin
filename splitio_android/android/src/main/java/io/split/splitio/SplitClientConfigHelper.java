@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.split.android.client.RolloutCacheConfiguration;
 import io.split.android.client.ServiceEndpoints;
 import io.split.android.client.SplitClientConfig;
 import io.split.android.client.SplitFilter;
@@ -51,6 +52,9 @@ class SplitClientConfigHelper {
     private static final String READY_TIMEOUT = "readyTimeout";
     private static final String CERTIFICATE_PINNING_CONFIGURATION = "certificatePinningConfiguration";
     private static final String CERTIFICATE_PINNING_CONFIGURATION_PINS = "pins";
+    private static final String ROLLOUT_CACHE_CONFIGURATION = "rolloutCacheConfiguration";
+    private static final String ROLLOUT_CACHE_CONFIGURATION_EXPIRATION = "expirationDays";
+    private static final String ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT = "clearOnInit";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -239,6 +243,22 @@ class SplitClientConfigHelper {
                     }
                 }
                 builder.certificatePinningConfiguration(certPinningConfigBuilder.build());
+            }
+        }
+
+        Map<String, Object> rolloutCacheConfiguration = getObjectMap(configurationMap, ROLLOUT_CACHE_CONFIGURATION);
+        if (rolloutCacheConfiguration != null) {
+            Integer expirationDays = getInteger(rolloutCacheConfiguration, ROLLOUT_CACHE_CONFIGURATION_EXPIRATION);
+            Boolean clearOnInit = getBoolean(rolloutCacheConfiguration, ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT);
+            if (expirationDays != null || clearOnInit != null) {
+                RolloutCacheConfiguration.Builder cacheConfigBuilder = RolloutCacheConfiguration.builder();
+                if (expirationDays != null) {
+                    cacheConfigBuilder.expirationDays(expirationDays);
+                }
+                if (clearOnInit != null) {
+                    cacheConfigBuilder.clearOnInit(clearOnInit);
+                }
+                builder.rolloutCacheConfiguration(cacheConfigBuilder.build());
             }
         }
 
