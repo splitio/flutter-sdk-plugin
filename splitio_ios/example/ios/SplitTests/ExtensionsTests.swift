@@ -1,5 +1,6 @@
 import XCTest
 import Split
+@testable import splitio_ios
 
 class ExtensionsTests: XCTestCase {
 
@@ -25,5 +26,31 @@ class ExtensionsTests: XCTestCase {
             "treatment": "on",
             "split": "my-split",
             "time": 16161616]))
+    }
+
+    func testSplitViewMapping() throws {
+        var splitView = SplitView()
+        splitView.name = "my-split"
+        splitView.trafficType = "account"
+        splitView.killed = true
+        splitView.treatments = ["on", "off"]
+        splitView.changeNumber = 121212
+        splitView.configs = ["key": "value"]
+        splitView.defaultTreatment = "off"
+        splitView.sets = ["set1", "set2"]
+        splitView.impressionsDisabled = true
+
+        let splitViewMap = SplitView.asMap(splitView: splitView)
+        XCTAssert(splitViewMap.count == 9)
+        XCTAssert(NSDictionary(dictionary: splitViewMap).isEqual(to: [
+            "name": "my-split",
+            "trafficType": "account",
+            "killed": true,
+            "treatments": ["on", "off"],
+            "changeNumber": 121212,
+            "configs": ["key": "value"],
+            "defaultTreatment": "off",
+            "sets": ["set1", "set2"],
+            "impressionsDisabled": true]))
     }
 }
