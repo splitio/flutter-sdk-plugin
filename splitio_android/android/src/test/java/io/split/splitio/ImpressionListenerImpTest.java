@@ -31,7 +31,7 @@ public class ImpressionListenerImpTest {
 
     @Test
     public void loggingInvokesMethodOnMethodChannel() {
-        Impression impression = new Impression("key", null, "my_split", "on", 20021002, "on treatment", 1002L, Collections.emptyMap());
+        Impression impression = new Impression("key", null, "my_split", "on", 20021002, "on treatment", 1002L, Collections.emptyMap(), "[{\"prop1\", \"value1\"}, {\"prop2\", \"value2\"}]");
         mImpressionListener.log(impression);
 
         verify(mMethodChannel).invokeMethod(eq("impressionLog"), any());
@@ -39,7 +39,7 @@ public class ImpressionListenerImpTest {
 
     @Test
     public void loggingInvokesMethodOnMethodChannelWithCorrectArgument() {
-        Impression impression = new Impression("key", null, "my_split", "on", 20021002, "on treatment", 1002L, Collections.singletonMap("age", 25));
+        Impression impression = new Impression("key", null, "my_split", "on", 20021002, "on treatment", 1002L, Collections.singletonMap("age", 25), "[{\"prop1\", \"value1\"}, {\"prop2\", \"value2\"}]");
         Map<String, Object> expectedImpressionMap = new HashMap<>();
         expectedImpressionMap.put("key", "key");
         expectedImpressionMap.put("bucketingKey", null);
@@ -49,6 +49,7 @@ public class ImpressionListenerImpTest {
         expectedImpressionMap.put("appliedRule", "on treatment");
         expectedImpressionMap.put("changeNumber", 1002L);
         expectedImpressionMap.put("attributes", Collections.singletonMap("age", 25));
+        expectedImpressionMap.put("properties", "[{\"prop1\", \"value1\"}, {\"prop2\", \"value2\"}]");
         mImpressionListener.log(impression);
 
         verify(mMethodChannel).invokeMethod("impressionLog", expectedImpressionMap);

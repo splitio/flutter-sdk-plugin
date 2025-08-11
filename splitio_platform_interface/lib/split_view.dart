@@ -1,7 +1,8 @@
 import 'dart:core';
 
-class SplitView {
+import 'package:splitio_platform_interface/split_prerequisite.dart';
 
+class SplitView {
   static const String _keyName = 'name';
   static const String _keyTrafficType = 'trafficType';
   static const String _keyKilled = 'killed';
@@ -11,6 +12,7 @@ class SplitView {
   static const String _keyDefaultTreatment = 'defaultTreatment';
   static const String _keySets = 'sets';
   static const String _keyImpressionsDisabled = 'impressionsDisabled';
+  static const String _keyPrerequisites = 'prerequisites';
 
   String name;
   String trafficType;
@@ -21,10 +23,14 @@ class SplitView {
   String defaultTreatment;
   List<String> sets = [];
   bool impressionsDisabled = false;
+  Set<Prerequisite> prerequisites = <Prerequisite>{};
 
   SplitView(this.name, this.trafficType, this.killed, this.treatments,
       this.changeNumber, this.configs,
-      [this.defaultTreatment = '', this.sets = const [], this.impressionsDisabled = false]);
+      [this.defaultTreatment = '',
+      this.sets = const [],
+      this.impressionsDisabled = false,
+      this.prerequisites = const <Prerequisite>{}]);
 
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
@@ -48,6 +54,14 @@ class SplitView {
       entry[_keyImpressionsDisabled] = false;
     }
 
+    if (entry[_keyPrerequisites] == null) {
+      entry[_keyPrerequisites] = [];
+    }
+
+    final List<dynamic> prereqRaw = (entry[_keyPrerequisites] as List?) ?? [];
+    final Set<Prerequisite> prerequisites =
+        prereqRaw.map((el) => Prerequisite.fromEntry(el)).toSet();
+
     return SplitView(
         entry[_keyName],
         entry[_keyTrafficType],
@@ -57,8 +71,8 @@ class SplitView {
         mappedConfig,
         entry[_keyDefaultTreatment] ?? '',
         (entry[_keySets] as List).map((el) => el as String).toList(),
-        entry[_keyImpressionsDisabled] ?? false
-    );
+        entry[_keyImpressionsDisabled] ?? false,
+        prerequisites);
   }
 
   @override
