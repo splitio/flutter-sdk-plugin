@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:splitio_platform_interface/method_channel_platform.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_impression.dart';
 import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_view.dart';
@@ -12,7 +13,9 @@ export 'package:splitio_platform_interface/impressions/impressions_method_call_h
 export 'package:splitio_platform_interface/method_call_handler.dart';
 export 'package:splitio_platform_interface/method_channel_platform.dart';
 export 'package:splitio_platform_interface/split_configuration.dart';
+export 'package:splitio_platform_interface/split_evaluation_options.dart';
 export 'package:splitio_platform_interface/split_impression.dart';
+export 'package:splitio_platform_interface/split_prerequisite.dart';
 export 'package:splitio_platform_interface/split_result.dart';
 export 'package:splitio_platform_interface/split_view.dart';
 export 'package:splitio_platform_interface/splitio_platform_interface.dart';
@@ -62,7 +65,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -70,7 +74,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -78,7 +83,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -86,7 +92,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -94,7 +101,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -102,7 +110,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -110,7 +119,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
@@ -118,7 +128,8 @@ abstract class _ClientPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     throw UnimplementedError();
   }
 
