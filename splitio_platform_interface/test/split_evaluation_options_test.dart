@@ -17,7 +17,7 @@ void main() {
       expect(eo.properties, equals(props));
     });
 
-    test('internal map is decoupled from external map (defensive copy)', () {
+    test('internal map is decoupled from external map', () {
       final props = {'k': 42};
       final eo = EvaluationOptions(props);
       // Not the same instance
@@ -27,8 +27,7 @@ void main() {
       expect(eo.properties['k'], 42);
     });
 
-    test('properties getter is unmodifiable (cannot mutate through accessor)',
-        () {
+    test('properties getter is unmodifiable', () {
       final eo = EvaluationOptions({'k': 1});
       expect(() => eo.properties['k'] = 2, throwsA(isA<UnsupportedError>()));
       expect(() => eo.properties.addAll({'z': 0}),
