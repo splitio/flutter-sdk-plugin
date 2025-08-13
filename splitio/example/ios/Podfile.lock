@@ -1,0 +1,29 @@
+PODS:
+  - Flutter (1.0.0)
+  - Split (3.3.2)
+  - splitio_ios (0.8.0):
+    - Flutter
+    - Split (~> 3.3.2)
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - splitio_ios (from `.symlinks/plugins/splitio_ios/ios`)
+
+SPEC REPOS:
+  trunk:
+    - Split
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  splitio_ios:
+    :path: ".symlinks/plugins/splitio_ios/ios"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  Split: 0d4962a6c15180e1857c1a3753e1ae9c91a6150b
+  splitio_ios: 438ad21d0dfe467670f8b9508773b77b16a71d6b
+
+PODFILE CHECKSUM: 4e8f8b2be68aeea4c0d5beb6ff1e79fface1d048
+
+COCOAPODS: 1.16.2
