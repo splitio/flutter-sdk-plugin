@@ -10,7 +10,7 @@ extension Impression {
          "appliedRule": label,
          "changeNumber": changeNumber,
          "attributes": attributes,
-         "properties": properties]
+         "properties": "properties"] // TODO
     }
 }
 
