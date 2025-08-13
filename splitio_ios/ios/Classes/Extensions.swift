@@ -9,7 +9,8 @@ extension Impression {
          "time": time,
          "appliedRule": label,
          "changeNumber": changeNumber,
-         "attributes": attributes]
+         "attributes": attributes,
+         "properties": properties]
     }
 }
 
@@ -26,6 +27,7 @@ extension SplitView {
                 "defaultTreatment": splitView.defaultTreatment,
                 "sets": splitView.sets,
                 "impressionsDisabled": splitView.impressionsDisabled,
+                "properties": splitView.properties
             ]
         } else {
             return [:]
