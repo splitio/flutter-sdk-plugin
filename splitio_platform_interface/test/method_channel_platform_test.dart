@@ -814,6 +814,7 @@ void main() {
         expect(impression.appliedRule, 'appliedRule');
         expect(impression.changeNumber, 200);
         expect(impression.attributes, {});
+        expect(impression.properties, {'prop1': 'value1', 'prop2': 'value2'});
       }),
     );
     _simulateMethodInvocation('impressionLog', key: 'matching-key', arguments: {
@@ -824,7 +825,8 @@ void main() {
       'time': 3000,
       'appliedRule': 'appliedRule',
       'changeNumber': 200,
-      'attributes': {}
+      'attributes': {},
+      'properties': {'prop1': 'value1', 'prop2': 'value2'}
     });
   });
 
