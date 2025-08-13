@@ -502,14 +502,20 @@ void main() {
           apiKey: 'api-key',
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
-          sdkConfiguration:
-              SplitConfiguration(logLevel: SplitLogLevel.error, streamingEnabled: false, readyTimeout: 1));
+          sdkConfiguration: SplitConfiguration(
+              logLevel: SplitLogLevel.error,
+              streamingEnabled: false,
+              readyTimeout: 1));
       expect(methodName, 'init');
       expect(methodArguments, {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'error', 'streamingEnabled': false, 'readyTimeout': 1},
+        'sdkConfiguration': {
+          'logLevel': 'error',
+          'streamingEnabled': false,
+          'readyTimeout': 1
+        },
       });
     });
   });
@@ -631,6 +637,7 @@ void main() {
         expect(impression.appliedRule, 'appliedRule');
         expect(impression.changeNumber, 200);
         expect(impression.attributes, {});
+        expect(impression.properties, {});
       }),
     );
     _simulateMethodInvocation('impressionLog', key: 'matching-key', arguments: {
@@ -641,7 +648,8 @@ void main() {
       'time': 3000,
       'appliedRule': 'appliedRule',
       'changeNumber': 200,
-      'attributes': {}
+      'attributes': {},
+      'properties': {},
     });
   });
 
