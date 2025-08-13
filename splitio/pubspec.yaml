@@ -1,7 +1,7 @@
 publish_to: none # TODO
 name: splitio
 description: Official plugin for split.io, the platform for controlled rollouts, which serves features to your users via feature flags to manage your complete customer experience.
-version: 0.2.0
+version: 1.0.0-rc.1
 homepage: https://split.io/
 repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio/
 
@@ -24,7 +24,7 @@ dependencies:
     path: ../splitio_android
   splitio_ios: # ^0.2.0
     path: ../splitio_ios
-  splitio_platform_interface: # ^1.5.0
+  splitio_platform_interface: # ^2.0.0-rc.1
     path: ../splitio_platform_interface
 dev_dependencies:
   flutter_test:

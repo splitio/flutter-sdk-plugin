@@ -22,6 +22,19 @@ class MethodChannelPlatform extends SplitioPlatform {
     }
   }
 
+  Map<String, dynamic> _withEvalOptions(
+    String matchingKey,
+    String? bucketingKey, {
+    required Map<String, dynamic> base,
+    required EvaluationOptions evaluationOptions,
+  }) {
+    final args = Map<String, dynamic>.from(base);
+    if (evaluationOptions.properties.isNotEmpty) {
+      args['evaluationOptions'] = evaluationOptions.toJson();
+    }
+    return _buildParameters(matchingKey, bucketingKey, args);
+  }
+
   @override
   Future<void> init(
       {required String apiKey,
@@ -107,11 +120,19 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) async {
-    return await methodChannel.invokeMethod(
-            'getTreatment',
-            _buildParameters(matchingKey, bucketingKey,
-                {'splitName': splitName, 'attributes': attributes})) ??
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'splitName': splitName,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    return await methodChannel.invokeMethod('getTreatment', params) ??
         _controlTreatment;
   }
 
@@ -120,14 +141,23 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) async {
-    Map? treatment = (await methodChannel.invokeMapMethod(
-            'getTreatmentWithConfig',
-            _buildParameters(matchingKey, bucketingKey,
-                {'splitName': splitName, 'attributes': attributes})))
-        ?.entries
-        .first
-        .value;
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'splitName': splitName,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    Map? treatment =
+        (await methodChannel.invokeMapMethod('getTreatmentWithConfig', params))
+            ?.entries
+            .first
+            .value;
     if (treatment == null) {
       return _controlResult;
     }
@@ -140,11 +170,20 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatments',
-        _buildParameters(matchingKey, bucketingKey,
-            {'splitName': splitNames, 'attributes': attributes}));
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'splitName': splitNames,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    Map? treatments =
+        await methodChannel.invokeMapMethod('getTreatments', params);
 
     return treatments
             ?.map((key, value) => MapEntry<String, String>(key, value)) ??
@@ -156,11 +195,20 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatmentsWithConfig',
-        _buildParameters(matchingKey, bucketingKey,
-            {'splitName': splitNames, 'attributes': attributes}));
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'splitName': splitNames,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    Map? treatments =
+        await methodChannel.invokeMapMethod('getTreatmentsWithConfig', params);
 
     return treatments?.map((key, value) =>
             MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
@@ -172,11 +220,20 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatmentsByFlagSet',
-        _buildParameters(matchingKey, bucketingKey,
-            {'flagSet': flagSet, 'attributes': attributes}));
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'flagSet': flagSet,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    Map? treatments =
+        await methodChannel.invokeMapMethod('getTreatmentsByFlagSet', params);
 
     return treatments
             ?.map((key, value) => MapEntry<String, String>(key, value)) ??
@@ -188,11 +245,20 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) async {
-    Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatmentsByFlagSets',
-        _buildParameters(matchingKey, bucketingKey,
-            {'flagSets': flagSets, 'attributes': attributes}));
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'flagSets': flagSets,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
+    Map? treatments =
+        await methodChannel.invokeMapMethod('getTreatmentsByFlagSets', params);
 
     return treatments
             ?.map((key, value) => MapEntry<String, String>(key, value)) ??
@@ -204,11 +270,20 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) async {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'flagSet': flagSet,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
     Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatmentsWithConfigByFlagSet',
-        _buildParameters(matchingKey, bucketingKey,
-            {'flagSet': flagSet, 'attributes': attributes}));
+        'getTreatmentsWithConfigByFlagSet', params);
 
     return treatments?.map((key, value) =>
             MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
@@ -220,14 +295,23 @@ class MethodChannelPlatform extends SplitioPlatform {
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) async {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
+    final params = _withEvalOptions(
+      matchingKey,
+      bucketingKey,
+      base: {
+        'flagSets': flagSets,
+        'attributes': attributes,
+      },
+      evaluationOptions: evaluationOptions,
+    );
     Map? treatments = await methodChannel.invokeMapMethod(
-        'getTreatmentsWithConfigByFlagSets',
-        _buildParameters(matchingKey, bucketingKey,
-            {'flagSets': flagSets, 'attributes': attributes}));
+        'getTreatmentsWithConfigByFlagSets', params);
 
     return treatments?.map((key, value) =>
-        MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
+            MapEntry(key, SplitResult(value['treatment'], value['config']))) ??
         {};
   }
 

@@ -21,6 +21,161 @@ void main() {
     _platform = SplitioPlatformStub();
   });
 
+  group('evaluationOptions tests', () {
+    test('getTreatment includes evaluationOptions when non-empty', () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatment('split', {}, eo);
+
+      expect(_platform.methodName, 'getTreatment');
+      expect(_platform.methodArguments, {
+        'splitName': 'split',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test('getTreatmentWithConfig includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatmentWithConfig('split1', {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentWithConfig');
+      expect(_platform.methodArguments, {
+        'splitName': 'split1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test('getTreatments includes evaluationOptions when non-empty', () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatments(['split1', 'split2'], {}, eo);
+
+      expect(_platform.methodName, 'getTreatments');
+      expect(_platform.methodArguments, {
+        'splitName': ['split1', 'split2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test('getTreatmentsWithConfig includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatmentsWithConfig(['split1', 'split2'], {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentsWithConfig');
+      expect(_platform.methodArguments, {
+        'splitName': ['split1', 'split2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test('getTreatmentsByFlagSet includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatmentsByFlagSet('set_1', {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test('getTreatmentsByFlagSets includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatmentsByFlagSets(['set_1', 'set_2'], {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentsByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test(
+        'getTreatmentsWithConfigByFlagSet includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client.getTreatmentsWithConfigByFlagSet('set_1', {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(_platform.methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+
+    test(
+        'getTreatmentsWithConfigByFlagSets includes evaluationOptions when non-empty',
+        () async {
+      final client = _getClient();
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+
+      await client
+          .getTreatmentsWithConfigByFlagSets(['set_1', 'set_2'], {}, eo);
+
+      expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(_platform.methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        }
+      });
+    });
+  });
+
   group('evaluation', () {
     test('getTreatment without attributes', () async {
       SplitClient client = _getClient();
@@ -235,7 +390,8 @@ void main() {
     test('getTreatmentsWithConfigByFlagSets with attributes', () async {
       SplitClient client = _getClient();
 
-      client.getTreatmentsWithConfigByFlagSets(['set_1', 'set_2'], {'attr1': true});
+      client.getTreatmentsWithConfigByFlagSets(
+          ['set_1', 'set_2'], {'attr1': true});
 
       expect(_platform.methodName, 'getTreatmentsWithConfigByFlagSets');
       expect(_platform.methodArguments, {

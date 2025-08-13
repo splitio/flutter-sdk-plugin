@@ -18,7 +18,8 @@ abstract class SplitClient {
   ///
   /// Returns the evaluated treatment, the default treatment of this feature flag, or 'control'.
   Future<String> getTreatment(String featureFlagName,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Performs and evaluation and returns a [SplitResult] object for the
   /// [featureFlagName] feature flag. This object contains the treatment alongside the
@@ -37,7 +38,8 @@ abstract class SplitClient {
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   Future<SplitResult> getTreatmentWithConfig(String featureFlagName,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations. Returns a [Map] in
   /// which the keys are feature flag names and the values are treatments.
@@ -47,7 +49,8 @@ abstract class SplitClient {
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   Future<Map<String, String>> getTreatments(List<String> featureFlagNames,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations by flag set. Returns a [Map] in
   /// which the keys are feature flag names and the values are treatments.
@@ -57,7 +60,8 @@ abstract class SplitClient {
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   Future<Map<String, String>> getTreatmentsByFlagSet(String flagSet,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations by flag sets. Returns a [Map] in
   /// which the keys are feature flag names and the values are treatments.
@@ -67,7 +71,8 @@ abstract class SplitClient {
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
   Future<Map<String, String>> getTreatmentsByFlagSets(List<String> flagSets,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations by flag set. Returns a [Map] in
   /// which the keys are feature flag names and the values are [SplitResult] objects.
@@ -76,8 +81,10 @@ abstract class SplitClient {
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
-  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(String flagSet,
-      [Map<String, dynamic> attributes = const {}]);
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      String flagSet,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations by flag sets. Returns a [Map] in
   /// which the keys are feature flag names and the values are [SplitResult] objects.
@@ -86,8 +93,10 @@ abstract class SplitClient {
   ///
   /// Optionally, a [Map] can be specified with the [attributes] parameter to
   /// take into account when evaluating.
-  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(List<String> flagSets,
-      [Map<String, dynamic> attributes = const {}]);
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      List<String> flagSets,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Convenience method to perform multiple evaluations. Returns a [Map] in
   /// which the keys are feature flag names and the values are [SplitResult] objects.
@@ -98,7 +107,8 @@ abstract class SplitClient {
   /// take into account when evaluating.
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> featureFlagNames,
-      [Map<String, dynamic> attributes = const {}]);
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]);
 
   /// Enqueue a new event to be sent to Split data collection services.
   ///
@@ -186,79 +196,105 @@ class DefaultSplitClient implements SplitClient {
 
   @override
   Future<String> getTreatment(String featureFlagName,
-      [Map<String, dynamic> attributes = const {}]) async {
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()]) async {
     return _platform.getTreatment(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitName: featureFlagName,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
   Future<SplitResult> getTreatmentWithConfig(String featureFlagName,
-      [Map<String, dynamic> attributes = const {}]) async {
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()]) async {
     return _platform.getTreatmentWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitName: featureFlagName,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
   Future<Map<String, String>> getTreatments(List<String> featureFlagNames,
-      [Map<String, dynamic> attributes = const {}]) async {
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()]) async {
     return _platform.getTreatments(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitNames: featureFlagNames,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfig(
       List<String> featureFlagNames,
-      [Map<String, dynamic> attributes = const {}]) async {
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()]) async {
     return _platform.getTreatmentsWithConfig(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         splitNames: featureFlagNames,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
-  Future<Map<String, String>> getTreatmentsByFlagSet(String flagSet, [Map<String, dynamic> attributes = const {}]) {
+  Future<Map<String, String>> getTreatmentsByFlagSet(String flagSet,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]) {
     return _platform.getTreatmentsByFlagSet(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         flagSet: flagSet,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
-  Future<Map<String, String>> getTreatmentsByFlagSets(List<String> flagSets, [Map<String, dynamic> attributes = const {}]) {
+  Future<Map<String, String>> getTreatmentsByFlagSets(List<String> flagSets,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]) {
     return _platform.getTreatmentsByFlagSets(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         flagSets: flagSets,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
-  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(String flagSet, [Map<String, dynamic> attributes = const {}]) {
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      String flagSet,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]) {
     return _platform.getTreatmentsWithConfigByFlagSet(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         flagSet: flagSet,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
-  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(List<String> flagSets, [Map<String, dynamic> attributes = const {}]) {
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      List<String> flagSets,
+      [Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()]) {
     return _platform.getTreatmentsWithConfigByFlagSets(
         matchingKey: _matchingKey,
         bucketingKey: _bucketingKey,
         flagSets: flagSets,
-        attributes: attributes);
+        attributes: attributes,
+        evaluationOptions: evaluationOptions);
   }
 
   @override
