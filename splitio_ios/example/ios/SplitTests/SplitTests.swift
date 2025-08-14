@@ -356,6 +356,7 @@ class SplitClientStub: SplitClient {
     var clearAttributesCalled: Bool = false
     var sdkReadyEventAction: SplitAction?
 
+    // MARK: Evaluation feature
     func getTreatment(_ split: String, attributes: [String: Any]?) -> String {
         methodCalls["getTreatment"] = true
         return SplitConstants.control
@@ -365,7 +366,7 @@ class SplitClientStub: SplitClient {
         methodCalls["getTreatment"] = true
         return SplitConstants.control
     }
-
+    
     func getTreatments(splits: [String], attributes: [String: Any]?) -> [String: String] {
         methodCalls["getTreatments"] = true
         return ["feature": SplitConstants.control]
@@ -385,45 +386,48 @@ class SplitClientStub: SplitClient {
         methodCalls["getTreatmentsWithConfig"] = true
         return ["feature": SplitResult(treatment: SplitConstants.control)]
     }
-
-    func getTreatmentsByFlagSet(_ flagSet: String, attributes: [String : Any]?) -> [String : String] {
-        methodCalls["getTreatmentsByFlagSet"] = true
-        return [:]
+    
+    // MARK: Evaluation with Properties (EvaluationOptions)
+    func getTreatment(_ split: String, attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> String {
+        methodCalls["getTreatment"] = true
+        return SplitConstants.control
+    }
+    
+    func getTreatments(splits: [String], attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: String] {
+        methodCalls["getTreatments"] = true
+        return ["feature": SplitConstants.control]
+    }
+    
+    func getTreatmentWithConfig(_ split: String, attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> SplitResult {
+        methodCalls["getTreatmentWithConfig"] = true
+        return SplitResult(treatment: SplitConstants.control)
+    }
+    
+    func getTreatmentsWithConfig(splits: [String], attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: SplitResult] {
+        methodCalls["getTreatmentsWithConfig"] = true
+        return ["feature": SplitResult(treatment: SplitConstants.control)]
     }
 
-    func getTreatmentsByFlagSets(_ flagSets: [String], attributes: [String : Any]?) -> [String : String] {
-        methodCalls["getTreatmentsByFlagSets"] = true
-        return [:]
+    // MARK: Event handling
+    func on(event: SplitEvent, execute action: @escaping SplitAction) {
+        if event == .sdkReady {
+            sdkReadyEventAction = action
+        }
     }
-
-    func getTreatmentsWithConfigByFlagSet(_ flagSet: String, attributes: [String : Any]?) -> [String : SplitResult] {
-        methodCalls["getTreatmentsWithConfigByFlagSet"] = true
-        return [:]
-    }
-
-    func getTreatmentsWithConfigByFlagSets(_ flagSets: [String], attributes: [String : Any]?) -> [String : SplitResult] {
-        methodCalls["getTreatmentsWithConfigByFlagSets"] = true
-        return [:]
-    }
-
+    
     func on(event: SplitEvent, runInBackground: Bool, execute action: @escaping SplitAction) {
         if event == .sdkReady {
             sdkReadyEventAction = action
         }
     }
-
+    
     func on(event: SplitEvent, queue: DispatchQueue, execute action: @escaping SplitAction) {
         if event == .sdkReady {
             sdkReadyEventAction = action
         }
     }
 
-    func on(event: SplitEvent, execute action: @escaping SplitAction) {
-        if event == .sdkReady {
-            sdkReadyEventAction = action
-        }
-    }
-
+    // MARK: Track feature
     func track(trafficType: String, eventType: String) -> Bool {
         return true
     }
@@ -470,6 +474,7 @@ class SplitClientStub: SplitClient {
         return true
     }
 
+    // MARK: Persistent attributes feature
     func setAttribute(name: String, value: Any) -> Bool {
         attributeNameValue = name
         attributeValue = value
@@ -499,6 +504,7 @@ class SplitClientStub: SplitClient {
         return true
     }
 
+    // MARK: Client lifecycle
     func flush() {
         methodCalls["flush"] = true
     }
@@ -509,6 +515,48 @@ class SplitClientStub: SplitClient {
 
     func destroy(completion: (() -> Void)?) {
         destroyCalled = true
+    }
+
+    // MARK: Evaluation with flagsets
+    func getTreatmentsByFlagSet(_ flagSet: String, attributes: [String: Any]?) -> [String: String] {
+        methodCalls["getTreatmentsByFlagSet"] = true
+        return [:]
+    }
+
+    func getTreatmentsByFlagSets(_ flagSets: [String], attributes: [String: Any]?) -> [String: String] {
+        methodCalls["getTreatmentsByFlagSets"] = true
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSet(_ flagSet: String, attributes: [String: Any]?) -> [String: SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSet"] = true
+        return [:]
+    }
+
+    func getTreatmentsWithConfigByFlagSets(_ flagSets: [String], attributes: [String: Any]?) -> [String: SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSets"] = true
+        return [:]
+    }
+    
+    // MARK: Evaluation with flagsets and properties (EvaluationOptions)
+    func getTreatmentsByFlagSet(_ flagSet: String, attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: String] {
+        methodCalls["getTreatmentsByFlagSet"] = true
+        return [:]
+    }
+    
+    func getTreatmentsByFlagSets(_ flagSets: [String], attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: String] {
+        methodCalls["getTreatmentsByFlagSets"] = true
+        return [:]
+    }
+    
+    func getTreatmentsWithConfigByFlagSet(_ flagSet: String, attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSet"] = true
+        return [:]
+    }
+    
+    func getTreatmentsWithConfigByFlagSets(_ flagSets: [String], attributes: [String: Any]?, evaluationOptions: EvaluationOptions?) -> [String: SplitResult] {
+        methodCalls["getTreatmentsWithConfigByFlagSets"] = true
+        return [:]
     }
 }
 

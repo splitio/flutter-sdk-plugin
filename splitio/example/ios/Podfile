@@ -32,8 +32,6 @@ target 'Runner' do
   use_modular_headers!
 
   flutter_install_all_ios_pods File.dirname(File.realpath(__FILE__))
-
-  pod 'Split', :git => 'https://github.com/splitio/ios-client.git', :branch => 'SDKS-9073_baseline' # TODO: remove; development only
 end
 
 post_install do |installer|

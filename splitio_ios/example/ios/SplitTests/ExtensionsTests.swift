@@ -14,9 +14,10 @@ class ExtensionsTests: XCTestCase {
         impression.label = "label"
         impression.treatment = "on"
         impression.time = 16161616
+        impression.properties = "{\"myProp\": true}"
 
         let impressionMap = impression.toMap()
-        XCTAssert(impressionMap.count == 8)
+        XCTAssert(impressionMap.count == 9)
         XCTAssert(NSDictionary(dictionary: impressionMap).isEqual(to: [
             "key": "matching-key",
             "bucketingKey": "bucketing-key",
@@ -25,7 +26,8 @@ class ExtensionsTests: XCTestCase {
             "appliedRule": "label",
             "treatment": "on",
             "split": "my-split",
-            "time": 16161616]))
+            "time": 16161616,
+            "properties": "{\"myProp\": true}"]))
     }
 
     func testSplitViewMapping() throws {
@@ -38,10 +40,21 @@ class ExtensionsTests: XCTestCase {
         splitView.configs = ["key": "value"]
         splitView.defaultTreatment = "off"
         splitView.sets = ["set1", "set2"]
+
+        let prerequisiteJSON = """
+        {
+            "n": "pre1",
+            "t": ["on", "off"]
+        }
+        """.data(using: .utf8)!
+
+        let prerequisite = try JSONDecoder().decode(Prerequisite.self, from: prerequisiteJSON)
+        splitView.prerequisites = [prerequisite]
         splitView.impressionsDisabled = true
 
         let splitViewMap = SplitView.asMap(splitView: splitView)
-        XCTAssert(splitViewMap.count == 9)
+
+        XCTAssert(splitViewMap.count == 10)
         XCTAssert(NSDictionary(dictionary: splitViewMap).isEqual(to: [
             "name": "my-split",
             "trafficType": "account",
@@ -51,6 +64,7 @@ class ExtensionsTests: XCTestCase {
             "configs": ["key": "value"],
             "defaultTreatment": "off",
             "sets": ["set1", "set2"],
-            "impressionsDisabled": true]))
+            "impressionsDisabled": true,
+            "prerequisites": [prerequisite]]))
     }
 }

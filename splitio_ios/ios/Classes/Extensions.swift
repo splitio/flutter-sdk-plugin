@@ -10,7 +10,7 @@ extension Impression {
          "appliedRule": label,
          "changeNumber": changeNumber,
          "attributes": attributes,
-         "properties": "properties"] // TODO
+         "properties": properties]
     }
 }
 
@@ -27,7 +27,7 @@ extension SplitView {
                 "defaultTreatment": splitView.defaultTreatment,
                 "sets": splitView.sets,
                 "impressionsDisabled": splitView.impressionsDisabled,
-                "properties": "" // TODO
+                "prerequisites": splitView.prerequisites
             ]
         } else {
             return [:]
