@@ -1,4 +1,3 @@
-publish_to: none # TODO
 name: splitio
 description: Official plugin for split.io, the platform for controlled rollouts, which serves features to your users via feature flags to manage your complete customer experience.
 version: 1.0.0-rc.1
