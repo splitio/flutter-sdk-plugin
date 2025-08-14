@@ -27,7 +27,7 @@ extension SplitView {
                 "defaultTreatment": splitView.defaultTreatment,
                 "sets": splitView.sets,
                 "impressionsDisabled": splitView.impressionsDisabled,
-                "prerequisites": splitView.prerequisites,
+                "prerequisites": splitView.prerequisites
             ]
         } else {
             return [:]
