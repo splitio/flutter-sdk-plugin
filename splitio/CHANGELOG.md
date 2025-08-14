@@ -1,3 +1,6 @@
+# 1.0.0-rc.1 (Aug 14, 2025)
+
+
 # 0.2.0 (Nov 6, 2024)
 * Added support for targeting rules based on large segments.
 * BREAKING CHANGE (for Split Proxy users):
