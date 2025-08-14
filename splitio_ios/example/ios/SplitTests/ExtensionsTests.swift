@@ -1,5 +1,6 @@
 import XCTest
 import Split
+@testable import splitio_ios
 
 class ExtensionsTests: XCTestCase {
 
@@ -13,9 +14,10 @@ class ExtensionsTests: XCTestCase {
         impression.label = "label"
         impression.treatment = "on"
         impression.time = 16161616
+        impression.properties = "{\"myProp\": true}"
 
         let impressionMap = impression.toMap()
-        XCTAssert(impressionMap.count == 8)
+        XCTAssert(impressionMap.count == 9)
         XCTAssert(NSDictionary(dictionary: impressionMap).isEqual(to: [
             "key": "matching-key",
             "bucketingKey": "bucketing-key",
@@ -24,6 +26,45 @@ class ExtensionsTests: XCTestCase {
             "appliedRule": "label",
             "treatment": "on",
             "split": "my-split",
-            "time": 16161616]))
+            "time": 16161616,
+            "properties": "{\"myProp\": true}"]))
+    }
+
+    func testSplitViewMapping() throws {
+        var splitView = SplitView()
+        splitView.name = "my-split"
+        splitView.trafficType = "account"
+        splitView.killed = true
+        splitView.treatments = ["on", "off"]
+        splitView.changeNumber = 121212
+        splitView.configs = ["key": "value"]
+        splitView.defaultTreatment = "off"
+        splitView.sets = ["set1", "set2"]
+
+        let prerequisiteJSON = """
+        {
+            "n": "pre1",
+            "t": ["on", "off"]
+        }
+        """.data(using: .utf8)!
+
+        let prerequisite = try JSONDecoder().decode(Prerequisite.self, from: prerequisiteJSON)
+        splitView.prerequisites = [prerequisite]
+        splitView.impressionsDisabled = true
+
+        let splitViewMap = SplitView.asMap(splitView: splitView)
+
+        XCTAssert(splitViewMap.count == 10)
+        XCTAssert(NSDictionary(dictionary: splitViewMap).isEqual(to: [
+            "name": "my-split",
+            "trafficType": "account",
+            "killed": true,
+            "treatments": ["on", "off"],
+            "changeNumber": 121212,
+            "configs": ["key": "value"],
+            "defaultTreatment": "off",
+            "sets": ["set1", "set2"],
+            "impressionsDisabled": true,
+            "prerequisites": [prerequisite]]))
     }
 }

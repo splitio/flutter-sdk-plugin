@@ -127,12 +127,31 @@ class SplitClientConfigHelperTests: XCTestCase {
         ]
 
         let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
-        let actualConfig = splitClientConfig.certificatePinningConfig?.pins
+        let actualConfig = splitClientConfig.certificatePinningConfig!.pins
 
-        let containsPins = actualConfig?.contains { pin in
-            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha256) &&
-            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha1) &&
+        let containsPins = actualConfig.contains { pin in
+            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha256) } &&
+        actualConfig.contains { pin in
+            (pin.host == "host1" && pin.algo == KeyHashAlgo.sha1) } &&
+        actualConfig.contains { pin in
             (pin.host == "host2" && pin.algo == KeyHashAlgo.sha256 )
         }
+
+        XCTAssertTrue(containsPins)
+    }
+
+    func testRolloutCacheConfigurationValuesAreMappedCorrectly() {
+        let configValues = [
+            "rolloutCacheConfiguration": [
+                "expirationDays": 5,
+                "clearOnInit": true
+            ]
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+        let actualConfig = splitClientConfig.rolloutCacheConfiguration!
+
+        XCTAssertEqual(5, actualConfig.expirationDays)
+        XCTAssertTrue(actualConfig.clearOnInit)
     }
 }

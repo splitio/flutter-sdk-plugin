@@ -219,4 +219,20 @@ public class SplitClientConfigHelperTest {
         Set<CertificatePin> host2Pins = actualConfig.getPins().get("host2");
         assertEquals("sha256", host2Pins.iterator().next().getAlgorithm());
     }
+
+    @Test
+    public void rolloutCacheConfigurationValuesAreMappedCorrectly() {
+        Map<String, Object> configValues = new HashMap<>();
+        Map<String, Object> rolloutCacheConfigValues = new HashMap<>();
+
+        rolloutCacheConfigValues.put("expirationDays", 5);
+        rolloutCacheConfigValues.put("clearOnInit", true);
+        configValues.put("rolloutCacheConfiguration", rolloutCacheConfigValues);
+
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper
+                .fromMap(configValues, mock(ImpressionListener.class));
+
+        assertEquals(5, splitClientConfig.rolloutCacheConfiguration().getExpirationDays());
+        assertTrue(splitClientConfig.rolloutCacheConfiguration().isClearOnInit());
+    }
 }

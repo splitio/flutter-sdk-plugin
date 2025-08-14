@@ -12,6 +12,7 @@ void main() {
       'appliedRule': 'appliedRule',
       'changeNumber': 12512512,
       'attributes': {'good': true},
+      'properties': {'bad': false, 'number': 10.5},
     };
 
     Impression expectedImpression = Impression(
@@ -23,6 +24,7 @@ void main() {
       'appliedRule',
       12512512,
       {'good': true},
+      {'bad': false, 'number': 10.5},
     );
 
     Impression impression = Impression.fromMap(sourceMap);
@@ -34,5 +36,6 @@ void main() {
     expect(impression.appliedRule, expectedImpression.appliedRule);
     expect(impression.changeNumber, expectedImpression.changeNumber);
     expect(impression.attributes, expectedImpression.attributes);
+    expect(impression.properties, expectedImpression.properties);
   });
 }

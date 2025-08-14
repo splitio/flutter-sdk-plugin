@@ -4,6 +4,7 @@ import static io.split.splitio.Constants.Argument.API_KEY;
 import static io.split.splitio.Constants.Argument.ATTRIBUTES;
 import static io.split.splitio.Constants.Argument.ATTRIBUTE_NAME;
 import static io.split.splitio.Constants.Argument.BUCKETING_KEY;
+import static io.split.splitio.Constants.Argument.EVALUATION_OPTIONS;
 import static io.split.splitio.Constants.Argument.EVENT_TYPE;
 import static io.split.splitio.Constants.Argument.FLAG_SET;
 import static io.split.splitio.Constants.Argument.FLAG_SETS;
@@ -57,9 +58,11 @@ import java.util.List;
 import java.util.Map;
 
 import io.flutter.plugin.common.MethodChannel;
+import io.split.android.client.EvaluationOptions;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
 import io.split.android.client.api.SplitView;
+import io.split.android.client.dtos.Prerequisite;
 import io.split.android.client.events.SplitEvent;
 import io.split.android.client.events.SplitEventTask;
 
@@ -115,56 +118,64 @@ class SplitMethodParserImpl implements SplitMethodParser {
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringArgument(SPLIT_NAME, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS:
                 result.success(getTreatments(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringListArgument(SPLIT_NAME, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENT_WITH_CONFIG:
                 result.success(getTreatmentWithConfig(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringArgument(SPLIT_NAME, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS_WITH_CONFIG:
                 result.success(getTreatmentsWithConfig(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringListArgument(SPLIT_NAME, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS_BY_FLAG_SET:
                 result.success(getTreatmentsByFlagSet(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringArgument(FLAG_SET, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS_BY_FLAG_SETS:
                 result.success(getTreatmentsByFlagSets(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringListArgument(FLAG_SETS, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SET:
                 result.success(getTreatmentsWithConfigByFlagSet(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringArgument(FLAG_SET, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case GET_TREATMENTS_WITH_CONFIG_BY_FLAG_SETS:
                 result.success(getTreatmentsWithConfigByFlagSets(
                         mArgumentParser.getStringArgument(MATCHING_KEY, arguments),
                         mArgumentParser.getStringArgument(BUCKETING_KEY, arguments),
                         mArgumentParser.getStringListArgument(FLAG_SETS, arguments),
-                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments)));
+                        mArgumentParser.getMapArgument(ATTRIBUTES, arguments),
+                        buildEvaluationOptions(mArgumentParser.getMapArgument(EVALUATION_OPTIONS, arguments))));
                 break;
             case TRACK:
                 result.success(track(
@@ -277,23 +288,26 @@ class SplitMethodParserImpl implements SplitMethodParser {
     private String getTreatment(String matchingKey,
                                 String bucketingKey,
                                 String splitName,
-                                Map<String, Object> attributes) {
-        return mSplitWrapper.getTreatment(matchingKey, bucketingKey, splitName, attributes);
+                                Map<String, Object> attributes,
+                                EvaluationOptions evaluationOptions) {
+        return mSplitWrapper.getTreatment(matchingKey, bucketingKey, splitName, attributes, evaluationOptions);
     }
 
     private Map<String, String> getTreatments(String matchingKey,
                                               String bucketingKey,
                                               List<String> splitNames,
-                                              Map<String, Object> attributes) {
-        return mSplitWrapper.getTreatments(matchingKey, bucketingKey, splitNames, attributes);
+                                              Map<String, Object> attributes,
+                                              EvaluationOptions evaluationOptions) {
+        return mSplitWrapper.getTreatments(matchingKey, bucketingKey, splitNames, attributes, evaluationOptions);
     }
 
     private Map<String, Map<String, String>> getTreatmentWithConfig(
             String matchingKey,
             String bucketingKey,
             String splitName,
-            Map<String, Object> attributes) {
-        SplitResult treatment = mSplitWrapper.getTreatmentWithConfig(matchingKey, bucketingKey, splitName, attributes);
+            Map<String, Object> attributes,
+            EvaluationOptions evaluationOptions) {
+        SplitResult treatment = mSplitWrapper.getTreatmentWithConfig(matchingKey, bucketingKey, splitName, attributes, evaluationOptions);
 
         return Collections.singletonMap(splitName, getSplitResultMap(treatment));
     }
@@ -302,8 +316,9 @@ class SplitMethodParserImpl implements SplitMethodParser {
             String matchingKey,
             String bucketingKey,
             List<String> splitNames,
-            Map<String, Object> attributes) {
-        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfig(matchingKey, bucketingKey, splitNames, attributes);
+            Map<String, Object> attributes,
+            EvaluationOptions evaluationOptions) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfig(matchingKey, bucketingKey, splitNames, attributes, evaluationOptions);
         return mapToSplitResults(treatmentsWithConfig);
     }
 
@@ -311,24 +326,27 @@ class SplitMethodParserImpl implements SplitMethodParser {
             String matchingKey,
             String bucketingKey,
             String flagSet,
-            Map<String, Object> attributes) {
-        return mSplitWrapper.getTreatmentsByFlagSet(matchingKey, bucketingKey, flagSet, attributes);
+            Map<String, Object> attributes,
+            EvaluationOptions evaluationOptions) {
+        return mSplitWrapper.getTreatmentsByFlagSet(matchingKey, bucketingKey, flagSet, attributes, evaluationOptions);
     }
 
     private Map<String, String> getTreatmentsByFlagSets(
             String matchingKey,
             String bucketingKey,
             List<String> flagSets,
-            Map<String, Object> attributes) {
-        return mSplitWrapper.getTreatmentsByFlagSets(matchingKey, bucketingKey, flagSets, attributes);
+            Map<String, Object> attributes,
+            EvaluationOptions evaluationOptions) {
+        return mSplitWrapper.getTreatmentsByFlagSets(matchingKey, bucketingKey, flagSets, attributes, evaluationOptions);
     }
 
     private Map<String, Map<String, String>> getTreatmentsWithConfigByFlagSet(
             String matchingKey,
             String bucketingKey,
             String flagSet,
-            Map<String, Object> attributes) {
-        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey, bucketingKey, flagSet, attributes);
+            Map<String, Object> attributes,
+                                              EvaluationOptions evaluationOptions) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSet(matchingKey, bucketingKey, flagSet, attributes, evaluationOptions);
         return mapToSplitResults(treatmentsWithConfig);
     }
 
@@ -336,8 +354,9 @@ class SplitMethodParserImpl implements SplitMethodParser {
             String matchingKey,
             String bucketingKey,
             List<String> flagSets,
-            Map<String, Object> attributes) {
-        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey, bucketingKey, flagSets, attributes);
+            Map<String, Object> attributes,
+                                              EvaluationOptions evaluationOptions) {
+        Map<String, SplitResult> treatmentsWithConfig = mSplitWrapper.getTreatmentsWithConfigByFlagSets(matchingKey, bucketingKey, flagSets, attributes, evaluationOptions);
         return mapToSplitResults(treatmentsWithConfig);
     }
 
@@ -474,7 +493,31 @@ class SplitMethodParserImpl implements SplitMethodParser {
         splitViewMap.put("configs", splitView.configs);
         splitViewMap.put("defaultTreatment", splitView.defaultTreatment);
         splitViewMap.put("sets", splitView.sets);
+        splitViewMap.put("prerequisites", getPrerequisiteMap(splitView.prerequisites));
+        splitViewMap.put("impressionsDisabled", splitView.impressionsDisabled);
 
         return splitViewMap;
+    }
+
+    private static List<Map<String, Object>> getPrerequisiteMap(List<Prerequisite> prerequisites) {
+        List<Map<String, Object>> prerequisiteList = new ArrayList<>();
+
+        for (Prerequisite prerequisite : prerequisites) {
+            Map<String, Object> prerequisiteMap = new HashMap<>();
+            prerequisiteMap.put("n", prerequisite.getFlagName());
+            prerequisiteMap.put("t", prerequisite.getTreatments());
+            prerequisiteList.add(prerequisiteMap);
+        }
+
+        return prerequisiteList;
+    }
+
+    @Nullable
+    private EvaluationOptions buildEvaluationOptions(Map<String, Object> properties) {
+        if (properties == null || properties.isEmpty()) {
+            return null;
+        }
+
+        return new EvaluationOptions(properties);
     }
 }

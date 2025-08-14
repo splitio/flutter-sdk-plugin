@@ -1,5 +1,6 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
+import 'package:splitio_platform_interface/split_evaluation_options.dart';
 
 class SplitioPlatformStub
     with MockPlatformInterfaceMixin
@@ -89,7 +90,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatment';
 
     methodArguments = {
@@ -99,6 +101,10 @@ class SplitioPlatformStub
       'attributes': attributes
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value('');
   }
 
@@ -107,7 +113,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required String splitName,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentWithConfig';
 
     methodArguments = {
@@ -117,6 +124,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value(const SplitResult('on', null));
   }
 
@@ -125,7 +136,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatments';
 
     methodArguments = {
@@ -135,6 +147,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value({});
   }
 
@@ -143,7 +159,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> splitNames,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentsWithConfig';
 
     methodArguments = {
@@ -153,6 +170,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value({});
   }
 
@@ -161,7 +182,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentsByFlagSet';
 
     methodArguments = {
@@ -171,6 +193,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value({});
   }
 
@@ -179,7 +205,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentsByFlagSets';
 
     methodArguments = {
@@ -189,6 +216,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value({});
   }
 
@@ -197,7 +228,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required String flagSet,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentsWithConfigByFlagSet';
 
     methodArguments = {
@@ -207,6 +239,10 @@ class SplitioPlatformStub
       'attributes': attributes,
     };
 
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
+
     return Future.value({});
   }
 
@@ -215,7 +251,8 @@ class SplitioPlatformStub
       {required String matchingKey,
       required String? bucketingKey,
       required List<String> flagSets,
-      Map<String, dynamic> attributes = const {}}) {
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) {
     methodName = 'getTreatmentsWithConfigByFlagSets';
 
     methodArguments = {
@@ -224,6 +261,10 @@ class SplitioPlatformStub
       'flagSets': flagSets,
       'attributes': attributes,
     };
+
+    if (evaluationOptions.properties.isNotEmpty) {
+      methodArguments['evaluationOptions'] = evaluationOptions.toJson();
+    }
 
     return Future.value({});
   }

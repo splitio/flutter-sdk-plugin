@@ -41,6 +41,7 @@ class Constants {
         static final String SDK_CONFIGURATION = "sdkConfiguration";
         static final String SPLIT_NAME = "splitName";
         static final String ATTRIBUTES = "attributes";
+        static final String EVALUATION_OPTIONS = "evaluationOptions";
         static final String EVENT_TYPE = "eventType";
         static final String TRAFFIC_TYPE = "trafficType";
         static final String VALUE = "value";
