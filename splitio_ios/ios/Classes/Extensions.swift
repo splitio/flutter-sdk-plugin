@@ -1,7 +1,7 @@
 import Split
 
 extension Impression {
-    public func toMap() -> [String: Any?] {
+    func toMap() -> [String: Any?] {
         ["key": keyName,
          "bucketingKey": bucketingKey,
          "split": feature,
@@ -9,7 +9,8 @@ extension Impression {
          "time": time,
          "appliedRule": label,
          "changeNumber": changeNumber,
-         "attributes": attributes]
+         "attributes": attributes,
+         "properties": properties]
     }
 }
 
@@ -24,7 +25,9 @@ extension SplitView {
                 "changeNumber": splitView.changeNumber,
                 "configs": splitView.configs,
                 "defaultTreatment": splitView.defaultTreatment,
-                "sets": splitView.sets
+                "sets": splitView.sets,
+                "impressionsDisabled": splitView.impressionsDisabled,
+                "prerequisites": splitView.prerequisites
             ]
         } else {
             return [:]

@@ -33,7 +33,6 @@ class ImpressionListenerImp implements ImpressionListener {
     public void close() {
 
     }
-
     private static Map<String, Object> impressionToMap(final Impression impression) {
         final Map<String, Object> impressionMap = new HashMap<>();
 
@@ -45,6 +44,7 @@ class ImpressionListenerImp implements ImpressionListener {
         impressionMap.put("appliedRule", impression.appliedRule());
         impressionMap.put("changeNumber", impression.changeNumber());
         impressionMap.put("attributes", impression.attributes());
+        impressionMap.put("properties", impression.properties());
 
         return impressionMap;
     }

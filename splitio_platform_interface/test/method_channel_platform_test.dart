@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_platform_interface/method_channel_platform.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_evaluation_options.dart';
 
 void main() {
   const MethodChannel _channel = MethodChannel('splitio');
@@ -62,6 +63,184 @@ void main() {
           return 'declined';
       }
       return null;
+    });
+  });
+
+  group('evaluationOptions serialization', () {
+    test('getTreatment includes evaluationOptions when non-empty', () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatment(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        splitName: 'split',
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatment');
+      expect(methodArguments, {
+        'splitName': 'split',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test('getTreatmentWithConfig includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentWithConfig(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        splitName: 'split1',
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentWithConfig');
+      expect(methodArguments, {
+        'splitName': 'split1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test('getTreatments includes evaluationOptions when non-empty', () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatments(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        splitNames: ['split1', 'split2'],
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatments');
+      expect(methodArguments, {
+        'splitName': ['split1', 'split2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test('getTreatmentsWithConfig includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentsWithConfig(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        splitNames: ['split1', 'split2'],
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentsWithConfig');
+      expect(methodArguments, {
+        'splitName': ['split1', 'split2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test('getTreatmentsByFlagSet includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentsByFlagSet(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        flagSet: 'set_1',
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentsByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test('getTreatmentsByFlagSets includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentsByFlagSets(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        flagSets: ['set_1', 'set_2'],
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentsByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test(
+        'getTreatmentsWithConfigByFlagSet includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentsWithConfigByFlagSet(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        flagSet: 'set_1',
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(methodArguments, {
+        'flagSet': 'set_1',
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
+    });
+
+    test(
+        'getTreatmentsWithConfigByFlagSets includes evaluationOptions when non-empty',
+        () async {
+      final eo = EvaluationOptions({'x': 1, 'y': 'z'});
+      await _platform.getTreatmentsWithConfigByFlagSets(
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key',
+        flagSets: ['set_1', 'set_2'],
+        evaluationOptions: eo,
+      );
+
+      expect(methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(methodArguments, {
+        'flagSets': ['set_1', 'set_2'],
+        'matchingKey': 'matching-key',
+        'bucketingKey': 'bucketing-key',
+        'attributes': {},
+        'evaluationOptions': {
+          'properties': {'x': 1, 'y': 'z'}
+        },
+      });
     });
   });
 
@@ -509,7 +688,11 @@ void main() {
         'apiKey': 'api-key',
         'matchingKey': 'matching-key',
         'bucketingKey': 'bucketing-key',
-        'sdkConfiguration': {'logLevel': 'debug', 'streamingEnabled': false, 'readyTimeout' : 10},
+        'sdkConfiguration': {
+          'logLevel': 'debug',
+          'streamingEnabled': false,
+          'readyTimeout': 10
+        },
       });
     });
   });
@@ -631,6 +814,7 @@ void main() {
         expect(impression.appliedRule, 'appliedRule');
         expect(impression.changeNumber, 200);
         expect(impression.attributes, {});
+        expect(impression.properties, {'prop1': 'value1', 'prop2': 'value2'});
       }),
     );
     _simulateMethodInvocation('impressionLog', key: 'matching-key', arguments: {
@@ -641,7 +825,8 @@ void main() {
       'time': 3000,
       'appliedRule': 'appliedRule',
       'changeNumber': 200,
-      'attributes': {}
+      'attributes': {},
+      'properties': {'prop1': 'value1', 'prop2': 'value2'}
     });
   });
 

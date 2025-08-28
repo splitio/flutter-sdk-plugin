@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import io.split.android.client.EvaluationOptions;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitResult;
@@ -78,17 +79,17 @@ class SplitWrapperImpl implements SplitWrapper {
     }
 
     @Override
-    public String getTreatment(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes) {
+    public String getTreatment(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return Treatments.CONTROL;
         }
 
-        return client.getTreatment(splitName, attributes);
+        return client.getTreatment(splitName, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, String> getTreatments(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
+    public Map<String, String> getTreatments(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             Map<String, String> defaultResult = new HashMap<>();
@@ -99,21 +100,21 @@ class SplitWrapperImpl implements SplitWrapper {
             return defaultResult;
         }
 
-        return client.getTreatments(splitNames, attributes);
+        return client.getTreatments(splitNames, attributes, evaluationOptions);
     }
 
     @Override
-    public SplitResult getTreatmentWithConfig(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes) {
+    public SplitResult getTreatmentWithConfig(String matchingKey, String bucketingKey, String splitName, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return new SplitResult(Treatments.CONTROL);
         }
 
-        return client.getTreatmentWithConfig(splitName, attributes);
+        return client.getTreatmentWithConfig(splitName, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, SplitResult> getTreatmentsWithConfig(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes) {
+    public Map<String, SplitResult> getTreatmentsWithConfig(String matchingKey, String bucketingKey, List<String> splitNames, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             Map<String, SplitResult> defaultResult = new HashMap<>();
@@ -124,47 +125,47 @@ class SplitWrapperImpl implements SplitWrapper {
             return defaultResult;
         }
 
-        return client.getTreatmentsWithConfig(splitNames, attributes);
+        return client.getTreatmentsWithConfig(splitNames, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, String> getTreatmentsByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes) {
+    public Map<String, String> getTreatmentsByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return new HashMap<>();
         }
 
-        return client.getTreatmentsByFlagSet(flagSet, attributes);
+        return client.getTreatmentsByFlagSet(flagSet, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, String> getTreatmentsByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes) {
+    public Map<String, String> getTreatmentsByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return new HashMap<>();
         }
 
-        return client.getTreatmentsByFlagSets(flagSets, attributes);
+        return client.getTreatmentsByFlagSets(flagSets, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes) {
+    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSet(String matchingKey, String bucketingKey, String flagSet, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return new HashMap<>();
         }
 
-        return client.getTreatmentsWithConfigByFlagSet(flagSet, attributes);
+        return client.getTreatmentsWithConfigByFlagSet(flagSet, attributes, evaluationOptions);
     }
 
     @Override
-    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes) {
+    public Map<String, SplitResult> getTreatmentsWithConfigByFlagSets(String matchingKey, String bucketingKey, List<String> flagSets, Map<String, Object> attributes, EvaluationOptions evaluationOptions) {
         SplitClient client = getInitializedClient(matchingKey, bucketingKey);
         if (client == null) {
             return new HashMap<>();
         }
 
-        return client.getTreatmentsWithConfigByFlagSets(flagSets, attributes);
+        return client.getTreatmentsWithConfigByFlagSets(flagSets, attributes, evaluationOptions);
     }
 
     @Override

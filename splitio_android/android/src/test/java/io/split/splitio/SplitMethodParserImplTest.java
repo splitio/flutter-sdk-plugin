@@ -1,5 +1,7 @@
 package io.split.splitio;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
@@ -8,19 +10,29 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import androidx.annotation.NonNull;
+
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import io.flutter.plugin.common.MethodChannel;
+import io.split.android.client.EvaluationOptions;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitResult;
+import io.split.android.client.api.SplitView;
+import io.split.android.client.dtos.Prerequisite;
 
 public class SplitMethodParserImplTest {
 
@@ -55,7 +67,7 @@ public class SplitMethodParserImplTest {
         mMethodParser.onMethodCall("getClient", map, mResult);
 
         verify(mResult).success(null);
-        verify(mSplitWrapper).getClient("user-key", "bucketing-key");
+        verify(mSplitWrapper).getClient(eq("user-key"), eq("bucketing-key"));
     }
 
     @Test
@@ -127,11 +139,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn(null);
         when(mArgumentParser.getStringArgument("splitName", map)).thenReturn("split-name");
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatment(any(), any(), any(), any())).thenReturn("on");
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatment(any(), any(), any(), any(), any())).thenReturn("on");
 
         mMethodParser.onMethodCall("getTreatment", map, mResult);
 
-        verify(mSplitWrapper).getTreatment("user-key", null, "split-name", Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatment(eq("user-key"), eq((String) null), eq("split-name"), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success("on");
     }
 
@@ -150,11 +164,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn(null);
         when(mArgumentParser.getStringListArgument("splitName", map)).thenReturn(Arrays.asList("split1", "split2"));
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatments(any(), any(), any(), any())).thenReturn(expectedResponse);
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatments(any(), any(), any(), any(), any())).thenReturn(expectedResponse);
 
         mMethodParser.onMethodCall("getTreatments", map, mResult);
 
-        verify(mSplitWrapper).getTreatments("user-key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatments(eq("user-key"), eq((String) null), eq(Arrays.asList("split1", "split2")), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(expectedResponse);
     }
 
@@ -184,11 +200,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringListArgument("splitName", map)).thenReturn(Arrays.asList("split1", "split2"));
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentsWithConfig(any(), any(), any(), any())).thenReturn(mockResult);
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentsWithConfig(any(), any(), any(), any(), any())).thenReturn(mockResult);
 
         mMethodParser.onMethodCall("getTreatmentsWithConfig", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentsWithConfig("user-key", "bucketing-key", Arrays.asList("split1", "split2"), Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentsWithConfig(eq("user-key"), eq("bucketing-key"), eq(Arrays.asList("split1", "split2")), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(finalResultMap);
     }
 
@@ -204,11 +222,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringArgument("splitName", map)).thenReturn("split-name");
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentWithConfig(any(), any(), any(), any())).thenReturn(new SplitResult("on", "{config}"));
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentWithConfig(any(), any(), any(), any(), any())).thenReturn(new SplitResult("on", "{config}"));
 
         mMethodParser.onMethodCall("getTreatmentWithConfig", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentWithConfig("user-key", "bucketing-key", "split-name", Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentWithConfig(eq("user-key"), eq("bucketing-key"), eq("split-name"), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         Map<String, String> resultMap = new HashMap<>();
         resultMap.put("treatment", "on");
         resultMap.put("config", "{config}");
@@ -231,7 +251,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("track", map, mResult);
 
-        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, 25.20, Collections.emptyMap());
+        verify(mSplitWrapper).track(eq("user-key"), eq("bucketing-key"), eq("my-event"), eq((String) null), eq(25.20), eq(Collections.emptyMap()));
     }
 
     @Test
@@ -249,7 +269,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("track", map, mResult);
 
-        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, null, Collections.emptyMap());
+        verify(mSplitWrapper).track(eq("user-key"), eq("bucketing-key"), eq("my-event"), eq((String) null), eq((Double) null), eq(Collections.emptyMap()));
     }
 
     @Test
@@ -269,7 +289,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("track", map, mResult);
 
-        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", null, 25.20, Collections.singletonMap("age", 50));
+        verify(mSplitWrapper).track(eq("user-key"), eq("bucketing-key"), eq("my-event"), eq((String) null), eq(25.20), eq(Collections.singletonMap("age", 50)));
     }
 
     @Test
@@ -291,7 +311,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("track", map, mResult);
 
-        verify(mSplitWrapper).track("user-key", "bucketing-key", "my-event", "account", 25.20, Collections.singletonMap("age", 50));
+        verify(mSplitWrapper).track(eq("user-key"), eq("bucketing-key"), eq("my-event"), eq("account"), eq(25.20), eq(Collections.singletonMap("age", 50)));
     }
 
     @Test
@@ -307,7 +327,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("getAttribute", map, mResult);
 
-        verify(mSplitWrapper).getAttribute("user-key", "bucketing-key", "my_attribute");
+        verify(mSplitWrapper).getAttribute(eq("user-key"), eq("bucketing-key"), eq("my_attribute"));
     }
 
     @Test
@@ -321,7 +341,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("getAllAttributes", map, mResult);
 
-        verify(mSplitWrapper).getAllAttributes("user-key", "bucketing-key");
+        verify(mSplitWrapper).getAllAttributes(eq("user-key"), eq("bucketing-key"));
     }
 
     @Test
@@ -339,7 +359,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("setAttribute", map, mResult);
 
-        verify(mSplitWrapper).setAttribute("user-key", "bucketing-key", "my_attr", "attr_value");
+        verify(mSplitWrapper).setAttribute(eq("user-key"), eq("bucketing-key"), eq("my_attr"), eq("attr_value"));
     }
 
     @Test
@@ -361,7 +381,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("setAttributes", map, mResult);
 
-        verify(mSplitWrapper).setAttributes("user-key", "bucketing-key", attributesMap);
+        verify(mSplitWrapper).setAttributes(eq("user-key"), eq("bucketing-key"), eq(attributesMap));
     }
 
     @Test
@@ -377,7 +397,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("removeAttribute", map, mResult);
 
-        verify(mSplitWrapper).removeAttribute("user-key", "bucketing-key", "my_attr");
+        verify(mSplitWrapper).removeAttribute(eq("user-key"), eq("bucketing-key"), eq("my_attr"));
     }
 
     @Test
@@ -391,7 +411,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("clearAttributes", map, mResult);
 
-        verify(mSplitWrapper).clearAttributes("user-key", "bucketing-key");
+        verify(mSplitWrapper).clearAttributes(eq("user-key"), eq("bucketing-key"));
     }
 
     @Test
@@ -405,7 +425,7 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("flush", map, mResult);
 
-        verify(mSplitWrapper).flush("user-key", "bucketing-key");
+        verify(mSplitWrapper).flush(eq("user-key"), eq("bucketing-key"));
         verify(mResult).success(null);
     }
 
@@ -420,8 +440,82 @@ public class SplitMethodParserImplTest {
 
         mMethodParser.onMethodCall("destroy", map, mResult);
 
-        verify(mSplitWrapper).destroy("user-key", "bucketing-key");
+        verify(mSplitWrapper).destroy(eq("user-key"), eq("bucketing-key"));
         verify(mResult).success(null);
+    }
+
+    @Test
+    public void splitViews() {
+        Prerequisite prerequisite1 = mock(Prerequisite.class);
+        when(prerequisite1.getFlagName()).thenReturn("flag1");
+        when(prerequisite1.getTreatments()).thenReturn(new HashSet<>(Arrays.asList("on", "true")));
+        
+        Prerequisite prerequisite2 = mock(Prerequisite.class);
+        when(prerequisite2.getFlagName()).thenReturn("flag2");
+        when(prerequisite2.getTreatments()).thenReturn(new HashSet<>(Arrays.asList("on", "true")));
+        
+        List<Prerequisite> prerequisites = Arrays.asList(prerequisite1, prerequisite2);
+
+        SplitView splitView = mock(SplitView.class);
+        splitView.name = "test_split";
+        splitView.trafficType = "user";
+        splitView.killed = false;
+        splitView.treatments = Arrays.asList("on", "off");
+        splitView.changeNumber = 123L;
+        splitView.configs = Collections.singletonMap("on", "{\"color\": \"blue\"}");
+        splitView.defaultTreatment = "off";
+        splitView.sets = Arrays.asList("set1", "set2");
+        splitView.prerequisites = prerequisites;
+        splitView.impressionsDisabled = true;
+        
+        when(mSplitWrapper.splits()).thenReturn(Arrays.asList(splitView));
+        
+        mMethodParser.onMethodCall("splits", Collections.emptyMap(), mResult);
+        
+        verify(mSplitWrapper).splits();
+        
+        // Verify that the result includes the correctly formatted prerequisites
+        ArgumentCaptor<List<Map<String, Object>>> captor = ArgumentCaptor.forClass(List.class);
+        verify(mResult).success(captor.capture());
+        
+        List<Map<String, Object>> result = captor.getValue();
+        assertEquals(1, result.size());
+        
+        Map<String, Object> splitViewMap = result.get(0);
+        
+        // Verify all SplitView fields are correctly mapped
+        assertEquals("test_split", splitViewMap.get("name"));
+        assertEquals("user", splitViewMap.get("trafficType"));
+        assertEquals(false, splitViewMap.get("killed"));
+        assertEquals(Arrays.asList("on", "off"), splitViewMap.get("treatments"));
+        assertEquals(123L, splitViewMap.get("changeNumber"));
+        assertEquals(Collections.singletonMap("on", "{\"color\": \"blue\"}"), splitViewMap.get("configs"));
+        assertEquals("off", splitViewMap.get("defaultTreatment"));
+        assertEquals(Arrays.asList("set1", "set2"), splitViewMap.get("sets"));
+        assertEquals(true, splitViewMap.get("impressionsDisabled"));
+        
+        // Verify prerequisites
+        assertTrue(splitViewMap.containsKey("prerequisites"));
+        
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> prerequisitesResult = (List<Map<String, Object>>) splitViewMap.get("prerequisites");
+        assertEquals(2, prerequisitesResult.size());
+        
+        // Verify first prerequisite
+        Map<String, Object> prereq1 = prerequisitesResult.get(0);
+        assertEquals("flag1", prereq1.get("n"));
+        Set<String> treatments = (Set<String>) prereq1.get("t");
+        assertEquals(2, treatments.size());
+        assertTrue(treatments.contains("on"));
+        assertTrue(treatments.contains("true"));
+        
+        // Verify second prerequisite
+        Map<String, Object> prereq2 = prerequisitesResult.get(1);
+        assertEquals("flag2", prereq2.get("n"));
+        Set<String> treatments1 = (Set<String>) prereq2.get("t");
+        assertEquals(2, treatments1.size());
+        assertTrue(treatments1.contains("on"));
+        assertTrue(treatments1.contains("true"));
     }
 
     @Test
@@ -432,19 +526,12 @@ public class SplitMethodParserImplTest {
     }
 
     @Test
-    public void splits() {
-        mMethodParser.onMethodCall("splits", Collections.emptyMap(), mResult);
-
-        verify(mSplitWrapper).splits();
-    }
-
-    @Test
     public void split() {
         when(mArgumentParser.getStringArgument(eq("splitName"), any())).thenReturn("my_split");
 
         mMethodParser.onMethodCall("split", Collections.singletonMap("splitName", "my_split"), mResult);
 
-        verify(mSplitWrapper).split("my_split");
+        verify(mSplitWrapper).split(eq("my_split"));
     }
 
     @Test
@@ -492,7 +579,7 @@ public class SplitMethodParserImplTest {
         mMethodParser.onMethodCall("setUserConsent", Collections.singletonMap("value", true), mResult);
 
         verify(mResult).success(null);
-        verify(mSplitWrapper).setUserConsent(true);
+        verify(mSplitWrapper).setUserConsent(eq(true));
     }
 
     @Test
@@ -502,7 +589,7 @@ public class SplitMethodParserImplTest {
         mMethodParser.onMethodCall("setUserConsent", Collections.singletonMap("value", false), mResult);
 
         verify(mResult).success(null);
-        verify(mSplitWrapper).setUserConsent(false);
+        verify(mSplitWrapper).setUserConsent(eq(false));
     }
 
     @Test
@@ -517,11 +604,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringArgument("flagSet", map)).thenReturn("set_1");
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentsByFlagSet(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentsByFlagSet(any(), any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
 
         mMethodParser.onMethodCall("getTreatmentsByFlagSet", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentsByFlagSet("user-key", "bucketing-key", "set_1", Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentsByFlagSet(eq("user-key"), eq("bucketing-key"), eq("set_1"), eq(Collections.singletonMap("age", 10)),
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(Collections.singletonMap("flag_1", "on"));
     }
 
@@ -537,11 +626,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringListArgument("flagSets", map)).thenReturn(Arrays.asList("set_1", "set_2"));
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentsByFlagSets(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentsByFlagSets(any(), any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", "on"));
 
         mMethodParser.onMethodCall("getTreatmentsByFlagSets", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentsByFlagSets("user-key", "bucketing-key", Arrays.asList("set_1", "set_2"), Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentsByFlagSets(eq("user-key"), eq("bucketing-key"), eq(Arrays.asList("set_1", "set_2")), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(Collections.singletonMap("flag_1", "on"));
     }
 
@@ -561,11 +652,13 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringArgument("flagSet", map)).thenReturn("set_1");
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentsWithConfigByFlagSet(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentsWithConfigByFlagSet(any(), any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
 
         mMethodParser.onMethodCall("getTreatmentsWithConfigByFlagSet", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSet("user-key", "bucketing-key", "set_1", Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSet(eq("user-key"), eq("bucketing-key"), eq("set_1"), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(Collections.singletonMap("flag_1", resultMap1));
     }
 
@@ -585,11 +678,18 @@ public class SplitMethodParserImplTest {
         when(mArgumentParser.getStringArgument("bucketingKey", map)).thenReturn("bucketing-key");
         when(mArgumentParser.getStringListArgument("flagSets", map)).thenReturn(Arrays.asList("set_1", "set_2"));
         when(mArgumentParser.getMapArgument("attributes", map)).thenReturn(Collections.singletonMap("age", 10));
-        when(mSplitWrapper.getTreatmentsWithConfigByFlagSets(any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
+        when(mArgumentParser.getMapArgument("evaluationOptions", map)).thenReturn(Collections.singletonMap("boolean", true));
+        when(mSplitWrapper.getTreatmentsWithConfigByFlagSets(any(), any(), any(), any(), any())).thenReturn(Collections.singletonMap("flag_1", new SplitResult("on", "{config}")));
 
         mMethodParser.onMethodCall("getTreatmentsWithConfigByFlagSets", map, mResult);
 
-        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSets("user-key", "bucketing-key", Arrays.asList("set_1", "set_2"), Collections.singletonMap("age", 10));
+        verify(mSplitWrapper).getTreatmentsWithConfigByFlagSets(eq("user-key"), eq("bucketing-key"), eq(Arrays.asList("set_1", "set_2")), eq(Collections.singletonMap("age", 10)), 
+                argThat(evaluationOptionsPropertiesMatcher()));
         verify(mResult).success(Collections.singletonMap("flag_1", resultMap1));
+    }
+
+    @NonNull
+    private static ArgumentMatcher<EvaluationOptions> evaluationOptionsPropertiesMatcher() {
+        return options -> options != null && options.getProperties().size() == 1 && options.getProperties().containsKey("boolean") && (Boolean) options.getProperties().get("boolean");
     }
 }

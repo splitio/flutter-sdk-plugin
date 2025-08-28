@@ -10,6 +10,7 @@ export 'package:splitio_platform_interface/split_result.dart';
 export 'package:splitio_platform_interface/split_sync_config.dart';
 export 'package:splitio_platform_interface/split_view.dart';
 export 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
+export 'package:splitio_platform_interface/split_evaluation_options.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 

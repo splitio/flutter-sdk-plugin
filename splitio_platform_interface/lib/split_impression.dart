@@ -7,11 +7,18 @@ class Impression {
   final String? appliedRule;
   final num? changeNumber;
   final Map<String, dynamic> attributes;
+  final Map<String, dynamic>? properties;
 
   Impression(this.key, this.bucketingKey, this.split, this.treatment, this.time,
-      this.appliedRule, this.changeNumber, this.attributes);
+      this.appliedRule, this.changeNumber, this.attributes, this.properties);
 
   static Impression fromMap(Map<dynamic, dynamic> map) {
+    var properties = null;
+    if (map['properties'] != null) {
+      properties = Map<String, dynamic>.from(map['properties'] as Map);
+    } else {
+      properties = null;
+    }
     return Impression(
         map['key'] as String?,
         map['bucketingKey'] as String?,
@@ -20,11 +27,12 @@ class Impression {
         map['time'] as num?,
         map['appliedRule'] as String?,
         map['changeNumber'] as num?,
-        Map<String, dynamic>.from(map['attributes'] as Map));
+        Map<String, dynamic>.from(map['attributes'] as Map),
+        properties);
   }
 
   @override
   String toString() {
-    return 'Impression = {"key":$key, "bucketingKey":$bucketingKey, "split":$split, "treatment":$treatment, "time":$time, "appliedRule": $appliedRule, "changeNumber":$changeNumber, "attributes":$attributes}';
+    return 'Impression = {"key":$key, "bucketingKey":$bucketingKey, "split":$split, "treatment":$treatment, "time":$time, "appliedRule": $appliedRule, "changeNumber":$changeNumber, "attributes":$attributes, "properties":$properties}';
   }
 }

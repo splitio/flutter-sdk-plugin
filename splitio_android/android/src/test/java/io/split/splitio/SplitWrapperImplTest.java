@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import io.split.android.client.EvaluationOptions;
 import io.split.android.client.SplitClient;
 import io.split.android.client.SplitFactory;
 import io.split.android.client.SplitManager;
@@ -60,9 +61,10 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
-        mSplitWrapper.getTreatment("key", null, "split-name", Collections.singletonMap("age", 50));
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatment("key", null, "split-name", Collections.singletonMap("age", 50), evaluationOptions);
 
-        verify(clientMock).getTreatment("split-name", Collections.singletonMap("age", 50));
+        verify(clientMock).getTreatment("split-name", Collections.singletonMap("age", 50), evaluationOptions);
     }
 
     @Test
@@ -72,9 +74,10 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
-        mSplitWrapper.getTreatments("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatments("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50), evaluationOptions);
 
-        verify(clientMock).getTreatments(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
+        verify(clientMock).getTreatments(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50), evaluationOptions);
     }
 
     @Test
@@ -84,9 +87,10 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
-        mSplitWrapper.getTreatmentWithConfig("key", null, "split-name", Collections.singletonMap("age", 50));
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentWithConfig("key", null, "split-name", Collections.singletonMap("age", 50), evaluationOptions);
 
-        verify(clientMock).getTreatmentWithConfig("split-name", Collections.singletonMap("age", 50));
+        verify(clientMock).getTreatmentWithConfig("split-name", Collections.singletonMap("age", 50), evaluationOptions);
     }
 
     @Test
@@ -96,9 +100,10 @@ public class SplitWrapperImplTest {
         when(mSplitFactory.client("key", null)).thenReturn(clientMock);
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
-        mSplitWrapper.getTreatmentsWithConfig("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentsWithConfig("key", null, Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50), evaluationOptions);
 
-        verify(clientMock).getTreatmentsWithConfig(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50));
+        verify(clientMock).getTreatmentsWithConfig(Arrays.asList("split1", "split2"), Collections.singletonMap("age", 50), evaluationOptions);
     }
 
     @Test
@@ -108,9 +113,10 @@ public class SplitWrapperImplTest {
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         Map<String, Object> attrs = Collections.singletonMap("age", 50);
-        mSplitWrapper.getTreatmentsByFlagSet("key", null, "flag-set", attrs);
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentsByFlagSet("key", null, "flag-set", attrs, evaluationOptions);
 
-        verify(clientMock).getTreatmentsByFlagSet("flag-set", attrs);
+        verify(clientMock).getTreatmentsByFlagSet("flag-set", attrs, evaluationOptions);
     }
 
     @Test
@@ -121,9 +127,10 @@ public class SplitWrapperImplTest {
 
         Map<String, Object> attrs = Collections.singletonMap("age", 50);
         List<String> sets = Arrays.asList("set_1", "set_2");
-        mSplitWrapper.getTreatmentsByFlagSets("key", null, sets, attrs);
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentsByFlagSets("key", null, sets, attrs, evaluationOptions);
 
-        verify(clientMock).getTreatmentsByFlagSets(sets, attrs);
+        verify(clientMock).getTreatmentsByFlagSets(sets, attrs, evaluationOptions);
     }
 
     @Test
@@ -133,9 +140,10 @@ public class SplitWrapperImplTest {
         when(mUsedKeys.contains(new Key("key", null))).thenReturn(true);
 
         Map<String, Object> attrs = Collections.singletonMap("age", 50);
-        mSplitWrapper.getTreatmentsWithConfigByFlagSet("key", null,"set_1", attrs);
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentsWithConfigByFlagSet("key", null,"set_1", attrs, evaluationOptions);
 
-        verify(clientMock).getTreatmentsWithConfigByFlagSet("set_1", attrs);
+        verify(clientMock).getTreatmentsWithConfigByFlagSet("set_1", attrs, evaluationOptions);
     }
 
     @Test
@@ -146,9 +154,10 @@ public class SplitWrapperImplTest {
 
         Map<String, Object> attrs = Collections.singletonMap("age", 50);
         List<String> sets = Arrays.asList("set_1", "set_2");
-        mSplitWrapper.getTreatmentsWithConfigByFlagSets("key", null, sets, attrs);
+        EvaluationOptions evaluationOptions = new EvaluationOptions(Collections.singletonMap("boolean", true));
+        mSplitWrapper.getTreatmentsWithConfigByFlagSets("key", null, sets, attrs, evaluationOptions);
 
-        verify(clientMock).getTreatmentsWithConfigByFlagSets(sets, attrs);
+        verify(clientMock).getTreatmentsWithConfigByFlagSets(sets, attrs, evaluationOptions);
     }
 
     @Test
