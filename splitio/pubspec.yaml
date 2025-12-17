@@ -15,12 +15,16 @@ flutter:
         default_package: splitio_android
       ios:
         default_package: splitio_ios
+      web:
+        default_package: splitio_web
 
 dependencies:
   flutter:
     sdk: flutter
   splitio_android: ^1.0.0
   splitio_ios: ^1.0.0
+  splitio_web: # ^1.0.0
+    path: ../splitio_web # @TODO remove when splitio_web is published
   splitio_platform_interface: ^2.0.0
 dev_dependencies:
   flutter_test:
