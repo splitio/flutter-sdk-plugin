@@ -66,6 +66,22 @@ class SplitioWeb extends SplitioPlatform {
         this._impressionListener =
             sdkConfiguration.configurationMap['impressionListener'];
       }
+
+      // Log warnings regarding unsupported configs. Not done in _buildConfig to reuse the factory logger
+      final unsupportedConfigs = [
+        'encryptionEnabled',
+        'certificatePinningConfiguration',
+        'persistentAttributesEnabled',
+        'eventsPerPush'
+      ];
+      for (final configName in unsupportedConfigs) {
+        if (sdkConfiguration.configurationMap[configName] != null) {
+          this._factory.settings.log.warn.callAsFunction(
+              this._factory.settings.log,
+              'Config $configName is not supported by the Web package. This config will be ignored.'
+                  .toJS);
+        }
+      }
     }
 
     return;
