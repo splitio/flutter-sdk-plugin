@@ -69,10 +69,10 @@ class SplitioWeb extends SplitioPlatform {
 
       // Log warnings regarding unsupported configs. Not done in _buildConfig to reuse the factory logger
       final unsupportedConfigs = [
-        'encryptionEnabled',
         'certificatePinningConfiguration',
-        'persistentAttributesEnabled',
-        'eventsPerPush'
+        'encryptionEnabled',
+        'eventsPerPush',
+        'persistentAttributesEnabled'
       ];
       for (final configName in unsupportedConfigs) {
         if (sdkConfiguration.configurationMap[configName] != null) {
