@@ -33,7 +33,11 @@ class SplitioWeb extends SplitioPlatform {
     SplitConfiguration? sdkConfiguration,
   }) async {
     if (_initFuture == null) {
-      _initFuture = this._init(apiKey: apiKey, matchingKey: matchingKey, bucketingKey: bucketingKey, sdkConfiguration: sdkConfiguration);
+      _initFuture = this._init(
+          apiKey: apiKey,
+          matchingKey: matchingKey,
+          bucketingKey: bucketingKey,
+          sdkConfiguration: sdkConfiguration);
     }
     return _initFuture;
   }
@@ -46,10 +50,12 @@ class SplitioWeb extends SplitioPlatform {
   }) async {
     await _loadSplitSdk();
 
-    final config = _buildConfig(apiKey, matchingKey, bucketingKey, sdkConfiguration);
+    final config =
+        _buildConfig(apiKey, matchingKey, bucketingKey, sdkConfiguration);
 
     // Create factory instance
-    this._factory = window.splitio!.SplitFactory.callAsFunction(null, config) as JS_IBrowserSDK;
+    this._factory = window.splitio!.SplitFactory.callAsFunction(null, config)
+        as JS_IBrowserSDK;
 
     if (sdkConfiguration != null) {
       if (sdkConfiguration.configurationMap['trafficType'] is String) {
@@ -114,7 +120,8 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  static JSObject _buildConfig(String apiKey, String matchingKey, String? bucketingKey, SplitConfiguration? configuration) {
+  static JSObject _buildConfig(String apiKey, String matchingKey,
+      String? bucketingKey, SplitConfiguration? configuration) {
     final config = JSObject();
 
     final core = JSObject();
