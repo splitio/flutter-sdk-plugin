@@ -6,6 +6,7 @@ import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'utils/js_interop_test_utils.dart';
@@ -84,8 +85,8 @@ void main() {
             'attrDouble': 1.1,
             'attrList': ['value1', 100, false],
             'attrSet': {'value3', 100, true},
-            'attrNull': null, // ignored
-            'attrInvalid': {'value5': true} // ignored
+            'attrNull': null, // not valid attribute value
+            'attrMap': {'value5': true} // not valid attribute value
           });
 
       expect(result, 'on');
@@ -108,13 +109,68 @@ void main() {
       expect(
           jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
           equals(
-              'Invalid attribute value: {value5: true}, for key: attrInvalid, will be ignored'));
+              'Invalid attribute value: {value5: true}, for key: attrMap, will be ignored'));
       expect(calls[calls.length - 3].methodName, 'warn');
       expect(
           jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
           equals(
               'Invalid attribute value: null, for key: attrNull, will be ignored'));
     });
+
+    test('getTreatment with evaluation properties', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split',
+          evaluationOptions: EvaluationOptions({
+            'propBool': true,
+            'propString': 'value',
+            'propInt': 1,
+            'propDouble': 1.1,
+            'propList': ['value1', 100, false], // not valid property value
+            'propSet': {'value3', 100, true}, // not valid property value
+            'propNull': null, // not valid property value
+            'propMap': {'value5': true} // not valid property value
+          }));
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'split',
+        {},
+        {
+          'properties': {
+            'propBool': true,
+            'propString': 'value',
+            'propInt': 1,
+            'propDouble': 1.1,
+          }
+        }
+      ]);
+
+      // assert warnings
+      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          equals(
+              'Invalid property value: {value5: true}, for key: propMap, will be ignored'));
+      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          equals(
+              'Invalid property value: null, for key: propNull, will be ignored'));
+      expect(calls[calls.length - 4].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 4].methodArguments[0]),
+          equals(
+              'Invalid property value: {value3, 100, true}, for key: propSet, will be ignored'));
+      expect(calls[calls.length - 5].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
+          equals(
+              'Invalid property value: [value1, 100, false], for key: propList, will be ignored'));
+    });
+
   });
 
   group('initialization', () {
