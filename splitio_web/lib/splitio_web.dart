@@ -25,6 +25,8 @@ class SplitioWeb extends SplitioPlatform {
   String? _trafficType;
   bool _impressionListener = false;
 
+  final Map<String, JS_IBrowserClient> _clients = {};
+
   @override
   Future<void> init({
     required String apiKey,
@@ -107,7 +109,8 @@ class SplitioWeb extends SplitioPlatform {
     }.toJS;
 
     script.onerror = (Event event) {
-      completer.completeError(Exception('Failed to load Split SDK'));
+      completer.completeError(
+          Exception('Failed to load Split SDK, with error: $event'));
     }.toJS;
 
     document.head!.appendChild(script);
@@ -310,5 +313,104 @@ class SplitioWeb extends SplitioPlatform {
       return splitKey;
     }
     return matchingKey.toJS;
+  }
+
+  static String _buildKeyString(String matchingKey, String? bucketingKey) {
+    return bucketingKey == null ? matchingKey : '${matchingKey}_$bucketingKey';
+  }
+
+  @override
+  Future<void> getClient({
+    required String matchingKey,
+    required String? bucketingKey,
+  }) async {
+    await this._initFuture;
+
+    final key = _buildKeyString(matchingKey, bucketingKey);
+
+    if (_clients.containsKey(key)) {
+      return;
+    }
+
+    final client = this._factory.client.callAsFunction(
+        null, _buildKey(matchingKey, bucketingKey)) as JS_IBrowserClient;
+
+    _clients[key] = client;
+  }
+
+  Future<JS_IBrowserClient> _getClient({
+    required String matchingKey,
+    required String? bucketingKey,
+  }) async {
+    await getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
+
+    final key = _buildKeyString(matchingKey, bucketingKey);
+
+    return _clients[key]!;
+  }
+
+  JSAny? _convertValue(dynamic value, bool attributes) {
+    if (value is bool) return value.toJS;
+    if (value is num) return value.toJS; // covers int + double
+    if (value is String) return value.toJS;
+
+    // properties do not support lists and sets
+    if (attributes) {
+      if (value is List) return value.jsify();
+      if (value is Set) return value.jsify();
+    }
+
+    return null;
+  }
+
+  JSObject _convertMap(Map<String, dynamic> dartMap, bool areAttributes) {
+    final jsMap = JSObject();
+
+    dartMap.forEach((key, value) {
+      final jsValue = _convertValue(value, areAttributes);
+
+      if (jsValue != null) {
+        jsMap.setProperty(key.toJS, jsValue);
+      } else {
+        this._factory.settings.log.warn.callAsFunction(
+            null,
+            'Invalid ${areAttributes ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
+                .toJS);
+      }
+    });
+
+    return jsMap;
+  }
+
+  JSObject _convertEvaluationOptions(EvaluationOptions evaluationOptions) {
+    final jsEvalOptions = JSObject();
+
+    if (evaluationOptions.properties.isNotEmpty) {
+      jsEvalOptions.setProperty(
+          'properties'.toJS, _convertMap(evaluationOptions.properties, false));
+    }
+
+    return jsEvalOptions;
+  }
+
+  @override
+  Future<String> getTreatment({
+    required String matchingKey,
+    required String? bucketingKey,
+    required String splitName,
+    Map<String, dynamic> attributes = const {},
+    EvaluationOptions evaluationOptions = const EvaluationOptions.empty(),
+  }) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatment.callAsFunction(
+        null,
+        splitName.toJS,
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSString;
+    return result.toDart;
   }
 }

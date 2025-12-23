@@ -16,17 +16,32 @@ extension on web.Window {
 }
 
 void main() {
-  final List<({String methodName, List<dynamic> methodArguments})> calls = [];
+  final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
+
+  final mockClient = JSObject();
+  mockClient['getTreatment'] =
+      (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatment',
+      methodArguments: [flagName, attributes, evaluationOptions]
+    ));
+    return 'on'.toJS;
+  }.toJS;
 
   final mockLog = JSObject();
   mockLog['warn'] = (JSAny? arg1) {
     calls.add((methodName: 'warn', methodArguments: [arg1]));
   }.toJS;
+
   final mockSettings = JSObject();
   mockSettings['log'] = mockLog;
 
   final mockFactory = JSObject();
   mockFactory['settings'] = mockSettings;
+  mockFactory['client'] = (JSAny? splitKey) {
+    calls.add((methodName: 'client', methodArguments: [splitKey]));
+    return mockClient;
+  }.toJS;
 
   final mockSplitio = JSObject();
   mockSplitio['SplitFactory'] = (JSAny? arg1) {
@@ -34,8 +49,72 @@ void main() {
     return mockFactory;
   }.toJS;
 
+  SplitioWeb _platform = SplitioWeb();
+
   setUp(() {
-    (web.window as JSObject).setProperty('splitio'.toJS, mockSplitio);
+    (web.window as JSObject)['splitio'] = mockSplitio;
+
+    _platform.init(
+        apiKey: 'apiKey',
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key');
+  });
+
+  group('evaluation', () {
+    test('getTreatment without attributes', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split');
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
+    });
+
+    test('getTreatment with attributes', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split',
+          attributes: {
+            'attrBool': true,
+            'attrString': 'value',
+            'attrInt': 1,
+            'attrDouble': 1.1,
+            'attrList': ['value1', 100, false],
+            'attrSet': {'value3', 100, true},
+            'attrNull': null, // ignored
+            'attrInvalid': {'value5': true} // ignored
+          });
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'split',
+        {
+          'attrBool': true,
+          'attrString': 'value',
+          'attrInt': 1,
+          'attrDouble': 1.1,
+          'attrList': ['value1', 100, false],
+          'attrSet': ['value3', 100, true]
+        },
+        {}
+      ]);
+
+      // assert warnings
+      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          equals(
+              'Invalid attribute value: {value5: true}, for key: attrInvalid, will be ignored'));
+      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          equals(
+              'Invalid attribute value: null, for key: attrNull, will be ignored'));
+    });
   });
 
   group('initialization', () {
@@ -47,7 +126,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -66,7 +145,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -89,7 +168,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -152,7 +231,7 @@ void main() {
 
       expect(calls[calls.length - 5].methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls[calls.length - 5].methodArguments[0]),
+          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -241,7 +320,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',

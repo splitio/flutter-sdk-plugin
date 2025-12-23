@@ -25,7 +25,7 @@ dynamic jsAnyToDart(JSAny? value) {
   } else if (value is JSString) {
     return value.toDart;
   } else if (value is JSNumber) {
-    return value.toDartInt;
+    return value.toDartDouble;
   } else if (value is JSBoolean) {
     return value.toDart;
   } else {
