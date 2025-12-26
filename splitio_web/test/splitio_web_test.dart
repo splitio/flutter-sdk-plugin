@@ -128,6 +128,14 @@ void main() {
     result.setProperty('split2'.toJS, treatmentWithConfig);
     return result;
   }.toJS;
+  mockClient['track'] =
+      (JSAny? trafficType, JSAny? eventType, JSAny? value, JSAny? properties) {
+    calls.add((
+      methodName: 'track',
+      methodArguments: [trafficType, eventType, value, properties]
+    ));
+    return trafficType != null ? true.toJS : false.toJS;
+  }.toJS;
 
   final mockLog = JSObject();
   mockLog['warn'] = (JSAny? arg1) {
@@ -510,6 +518,74 @@ void main() {
         {'attr1': true},
         {}
       ]);
+    });
+  });
+
+  group('track', () {
+    test('track with traffic type, value & properties', () async {
+      final result = await _platform.track(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          eventType: 'my_event',
+          trafficType: 'my_traffic_type',
+          value: 25.10,
+          properties: {
+            'propBool': true,
+            'propString': 'value',
+            'propInt': 1,
+            'propDouble': 1.1,
+            'propList': ['value1', 100, false], // not valid property value
+            'propSet': {'value3', 100, true}, // not valid property value
+            'propNull': null, // not valid property value
+            'propMap': {'value5': true} // not valid property value
+          });
+
+      expect(result, true);
+      expect(calls.last.methodName, 'track');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'my_traffic_type',
+        'my_event',
+        25.10,
+        {
+          'propBool': true,
+          'propString': 'value',
+          'propInt': 1,
+          'propDouble': 1.1,
+        }
+      ]);
+    });
+
+    test('track with value, and no traffic type in config', () async {
+      final result = await _platform.track(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          eventType: 'my_event',
+          value: 25.20);
+
+      expect(result, false); // false because no traffic type is provided
+      expect(calls.last.methodName, 'track');
+      expect(calls.last.methodArguments.map(jsAnyToDart),
+          [null, 'my_event', 25.20, {}]);
+    });
+
+    test('track without value, and traffic type in config', () async {
+      SplitioWeb _platform = SplitioWeb();
+      await _platform.init(
+          apiKey: 'api-key',
+          matchingKey: 'matching-key',
+          bucketingKey: null,
+          sdkConfiguration:
+              SplitConfiguration(trafficType: 'my_traffic_type_in_config'));
+
+      final result = await _platform.track(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          eventType: 'my_event');
+
+      expect(result, true);
+      expect(calls.last.methodName, 'track');
+      expect(calls.last.methodArguments.map(jsAnyToDart),
+          ['my_traffic_type_in_config', 'my_event', null, {}]);
     });
   });
 

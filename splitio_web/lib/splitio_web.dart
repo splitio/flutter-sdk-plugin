@@ -565,4 +565,30 @@ class SplitioWeb extends SplitioPlatform {
 
     return jsTreatmentsWithConfigToMap(result);
   }
+
+  Future<bool> track(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String eventType,
+      String? trafficType,
+      double? value,
+      Map<String, dynamic> properties = const {}}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.track.callAsFunction(
+        null,
+        trafficType != null
+            ? trafficType.toJS
+            : this._trafficType != null
+                ? this._trafficType!.toJS
+                : null,
+        eventType.toJS,
+        value != null ? value.toJS : null,
+        _convertMap(properties, false)) as JSBoolean;
+
+    return result.toDart;
+  }
 }
