@@ -10,6 +10,7 @@ import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
+import 'utils/js_interop_test_utils.dart';
 
 extension on web.Window {
   @JS()
@@ -17,151 +18,12 @@ extension on web.Window {
 }
 
 void main() {
-  final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
-
-  final mockClient = JSObject();
-  mockClient['getTreatment'] =
-      (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatment',
-      methodArguments: [flagName, attributes, evaluationOptions]
-    ));
-    return 'on'.toJS;
-  }.toJS;
-  mockClient['getTreatments'] =
-      (JSAny? flagNames, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatments',
-      methodArguments: [flagNames, attributes, evaluationOptions]
-    ));
-    if (flagNames is JSArray) {
-      return flagNames.toDart.fold(JSObject(), (previousValue, element) {
-        if (element is JSString) {
-          previousValue.setProperty(element, 'on'.toJS);
-        }
-        return previousValue;
-      });
-    }
-    return JSObject();
-  }.toJS;
-  mockClient['getTreatmentWithConfig'] =
-      (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentWithConfig',
-      methodArguments: [flagName, attributes, evaluationOptions]
-    ));
-    final result = JSObject();
-    result.setProperty('treatment'.toJS, 'on'.toJS);
-    result.setProperty('config'.toJS, 'some-config'.toJS);
-    return result;
-  }.toJS;
-  mockClient['getTreatmentsWithConfig'] =
-      (JSAny? flagNames, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentsWithConfig',
-      methodArguments: [flagNames, attributes, evaluationOptions]
-    ));
-    if (flagNames is JSArray) {
-      return flagNames.toDart.fold(JSObject(), (previousValue, element) {
-        if (element is JSString) {
-          final result = JSObject();
-          result.setProperty('treatment'.toJS, 'on'.toJS);
-          result.setProperty('config'.toJS, 'some-config'.toJS);
-          previousValue.setProperty(element, result);
-        }
-        return previousValue;
-      });
-    }
-    return JSObject();
-  }.toJS;
-  mockClient['getTreatmentsByFlagSet'] =
-      (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentsByFlagSet',
-      methodArguments: [flagSetName, attributes, evaluationOptions]
-    ));
-    final result = JSObject();
-    result.setProperty('split1'.toJS, 'on'.toJS);
-    result.setProperty('split2'.toJS, 'on'.toJS);
-    return result;
-  }.toJS;
-  mockClient['getTreatmentsByFlagSets'] =
-      (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentsByFlagSets',
-      methodArguments: [flagSetNames, attributes, evaluationOptions]
-    ));
-    final result = JSObject();
-    result.setProperty('split1'.toJS, 'on'.toJS);
-    result.setProperty('split2'.toJS, 'on'.toJS);
-    return result;
-  }.toJS;
-  mockClient['getTreatmentsWithConfigByFlagSet'] =
-      (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentsWithConfigByFlagSet',
-      methodArguments: [flagSetName, attributes, evaluationOptions]
-    ));
-
-    final treatmentWithConfig = JSObject();
-    treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
-    treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
-
-    final result = JSObject();
-    result.setProperty('split1'.toJS, treatmentWithConfig);
-    result.setProperty('split2'.toJS, treatmentWithConfig);
-    return result;
-  }.toJS;
-  mockClient['getTreatmentsWithConfigByFlagSets'] =
-      (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
-    calls.add((
-      methodName: 'getTreatmentsWithConfigByFlagSets',
-      methodArguments: [flagSetNames, attributes, evaluationOptions]
-    ));
-
-    final treatmentWithConfig = JSObject();
-    treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
-    treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
-
-    final result = JSObject();
-    result.setProperty('split1'.toJS, treatmentWithConfig);
-    result.setProperty('split2'.toJS, treatmentWithConfig);
-    return result;
-  }.toJS;
-  mockClient['track'] =
-      (JSAny? trafficType, JSAny? eventType, JSAny? value, JSAny? properties) {
-    calls.add((
-      methodName: 'track',
-      methodArguments: [trafficType, eventType, value, properties]
-    ));
-    return trafficType != null ? true.toJS : false.toJS;
-  }.toJS;
-
-  final mockLog = JSObject();
-  mockLog['warn'] = (JSAny? arg1) {
-    calls.add((methodName: 'warn', methodArguments: [arg1]));
-  }.toJS;
-
-  final mockSettings = JSObject();
-  mockSettings['log'] = mockLog;
-
-  final mockFactory = JSObject();
-  mockFactory['settings'] = mockSettings;
-  mockFactory['client'] = (JSAny? splitKey) {
-    calls.add((methodName: 'client', methodArguments: [splitKey]));
-    return mockClient;
-  }.toJS;
-
-  final mockSplitio = JSObject();
-  mockSplitio['SplitFactory'] = (JSAny? arg1) {
-    calls.add((methodName: 'SplitFactory', methodArguments: [arg1]));
-    return mockFactory;
-  }.toJS;
 
   SplitioWeb _platform = SplitioWeb();
+  final mock = SplitioMock();
 
   setUp(() {
-    (web.window as JSObject)['splitio'] = mockSplitio;
+    (web.window as JSObject)['splitio'] = mock.splitio;
 
     _platform.init(
         apiKey: 'apiKey',
@@ -177,8 +39,8 @@ void main() {
           splitName: 'split');
 
       expect(result, 'on');
-      expect(calls.last.methodName, 'getTreatment');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
+      expect(mock.calls.last.methodName, 'getTreatment');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
     });
 
     test('getTreatment with attributes', () async {
@@ -198,8 +60,8 @@ void main() {
           });
 
       expect(result, 'on');
-      expect(calls.last.methodName, 'getTreatment');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatment');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split',
         {
           'attrBool': true,
@@ -213,14 +75,14 @@ void main() {
       ]);
 
       // assert warnings
-      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 2].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 2].methodArguments[0]),
           equals(
               'Invalid attribute value: {value5: true}, for key: attrMap, will be ignored'));
-      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 3].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 3].methodArguments[0]),
           equals(
               'Invalid attribute value: null, for key: attrNull, will be ignored'));
     });
@@ -242,8 +104,8 @@ void main() {
           }));
 
       expect(result, 'on');
-      expect(calls.last.methodName, 'getTreatment');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatment');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split',
         {},
         {
@@ -257,24 +119,24 @@ void main() {
       ]);
 
       // assert warnings
-      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 2].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 2].methodArguments[0]),
           equals(
               'Invalid property value: {value5: true}, for key: propMap, will be ignored'));
-      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 3].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 3].methodArguments[0]),
           equals(
               'Invalid property value: null, for key: propNull, will be ignored'));
-      expect(calls[calls.length - 4].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 4].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 4].methodArguments[0]),
           equals(
               'Invalid property value: {value3, 100, true}, for key: propSet, will be ignored'));
-      expect(calls[calls.length - 5].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 5].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]),
           equals(
               'Invalid property value: [value1, 100, false], for key: propList, will be ignored'));
     });
@@ -286,8 +148,8 @@ void main() {
           splitNames: ['split1', 'split2']);
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatments');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatments');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {},
         {}
@@ -302,8 +164,8 @@ void main() {
           attributes: {'attr1': true});
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatments');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatments');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {'attr1': true},
         {}
@@ -318,8 +180,8 @@ void main() {
           attributes: {'attr1': true});
 
       expect(result.toString(), SplitResult('on', 'some-config').toString());
-      expect(calls.last.methodName, 'getTreatmentWithConfig');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split1',
         {'attr1': true},
         {}
@@ -333,8 +195,8 @@ void main() {
           splitName: 'split1');
 
       expect(result.toString(), SplitResult('on', 'some-config').toString());
-      expect(calls.last.methodName, 'getTreatmentWithConfig');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
+      expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
     });
 
     test('getTreatmentsWithConfig without attributes', () async {
@@ -350,8 +212,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfig');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {},
         {}
@@ -372,8 +234,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfig');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {'attr1': true},
         {}
@@ -387,8 +249,8 @@ void main() {
           flagSet: 'set_1');
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatmentsByFlagSet');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+      expect(mock.calls.last.methodName, 'getTreatmentsByFlagSet');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
     test('getTreatmentsByFlagSet with attributes', () async {
@@ -399,8 +261,8 @@ void main() {
           attributes: {'attr1': true});
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatmentsByFlagSet');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsByFlagSet');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'set_1',
         {'attr1': true},
         {}
@@ -414,8 +276,8 @@ void main() {
           flagSets: ['set_1', 'set_2']);
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatmentsByFlagSets');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsByFlagSets');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {},
         {}
@@ -430,8 +292,8 @@ void main() {
           attributes: {'attr1': true});
 
       expect(result, {'split1': 'on', 'split2': 'on'});
-      expect(calls.last.methodName, 'getTreatmentsByFlagSets');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsByFlagSets');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {'attr1': true},
         {}
@@ -451,8 +313,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
     test('getTreatmentsWithConfigByFlagSet with attributes', () async {
@@ -469,8 +331,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'set_1',
         {'attr1': true},
         {}
@@ -490,8 +352,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {},
         {}
@@ -512,8 +374,8 @@ void main() {
             result['split2'].toString() ==
                 SplitResult('on', 'some-config').toString();
       }));
-      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {'attr1': true},
         {}
@@ -541,8 +403,8 @@ void main() {
           });
 
       expect(result, true);
-      expect(calls.last.methodName, 'track');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'track');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'my_traffic_type',
         'my_event',
         25.10,
@@ -563,8 +425,8 @@ void main() {
           value: 25.20);
 
       expect(result, false); // false because no traffic type is provided
-      expect(calls.last.methodName, 'track');
-      expect(calls.last.methodArguments.map(jsAnyToDart),
+      expect(mock.calls.last.methodName, 'track');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart),
           [null, 'my_event', 25.20, {}]);
     });
 
@@ -583,8 +445,8 @@ void main() {
           eventType: 'my_event');
 
       expect(result, true);
-      expect(calls.last.methodName, 'track');
-      expect(calls.last.methodArguments.map(jsAnyToDart),
+      expect(mock.calls.last.methodName, 'track');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart),
           ['my_traffic_type_in_config', 'my_event', null, {}]);
     });
   });
@@ -596,9 +458,9 @@ void main() {
       await _platform.init(
           apiKey: 'api-key', matchingKey: 'matching-key', bucketingKey: null);
 
-      expect(calls.last.methodName, 'SplitFactory');
+      expect(mock.calls.last.methodName, 'SplitFactory');
       expect(
-          jsAnyToDart(calls.last.methodArguments[0]),
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -615,9 +477,9 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key');
 
-      expect(calls.last.methodName, 'SplitFactory');
+      expect(mock.calls.last.methodName, 'SplitFactory');
       expect(
-          jsAnyToDart(calls.last.methodArguments[0]),
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -638,9 +500,9 @@ void main() {
           bucketingKey: 'bucketing-key',
           sdkConfiguration: SplitConfiguration());
 
-      expect(calls.last.methodName, 'SplitFactory');
+      expect(mock.calls.last.methodName, 'SplitFactory');
       expect(
-          jsAnyToDart(calls.last.methodArguments[0]),
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -701,9 +563,9 @@ void main() {
                 clearOnInit: true,
               )));
 
-      expect(calls[calls.length - 5].methodName, 'SplitFactory');
+      expect(mock.calls[mock.calls.length - 5].methodName, 'SplitFactory');
       expect(
-          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -755,27 +617,27 @@ void main() {
             }
           }));
 
-      expect(calls[calls.length - 4].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 4].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 4].methodArguments[0]),
           equals(
               'Config certificatePinningConfiguration is not supported by the Web package. This config will be ignored.'));
 
-      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 3].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 3].methodArguments[0]),
           equals(
               'Config encryptionEnabled is not supported by the Web package. This config will be ignored.'));
 
-      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 2].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 2].methodArguments[0]),
           equals(
               'Config eventsPerPush is not supported by the Web package. This config will be ignored.'));
 
-      expect(calls[calls.length - 1].methodName, 'warn');
+      expect(mock.calls[mock.calls.length - 1].methodName, 'warn');
       expect(
-          jsAnyToDart(calls[calls.length - 1].methodArguments[0]),
+          jsAnyToDart(mock.calls[mock.calls.length - 1].methodArguments[0]),
           equals(
               'Config persistentAttributesEnabled is not supported by the Web package. This config will be ignored.'));
     });
@@ -790,9 +652,9 @@ void main() {
           sdkConfiguration: SplitConfiguration(
               syncConfig: SyncConfig.flagSets(['flag_set_1', 'flag_set_2'])));
 
-      expect(calls.last.methodName, 'SplitFactory');
+      expect(mock.calls.last.methodName, 'SplitFactory');
       expect(
-          jsAnyToDart(calls.last.methodArguments[0]),
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -824,24 +686,24 @@ void main() {
       await _platform.getClient(
           matchingKey: 'matching-key', bucketingKey: null);
 
-      expect(calls.last.methodName, 'client');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
+      expect(mock.calls.last.methodName, 'client');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
     });
 
     test('get client with new matching key', () async {
       await _platform.getClient(
           matchingKey: 'new-matching-key', bucketingKey: null);
 
-      expect(calls.last.methodName, 'client');
-      expect(calls.last.methodArguments.map(jsAnyToDart), ['new-matching-key']);
+      expect(mock.calls.last.methodName, 'client');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['new-matching-key']);
     });
 
     test('get client with new matching key and bucketing key', () async {
       await _platform.getClient(
           matchingKey: 'new-matching-key', bucketingKey: 'bucketing-key');
 
-      expect(calls.last.methodName, 'client');
-      expect(calls.last.methodArguments.map(jsAnyToDart), [
+      expect(mock.calls.last.methodName, 'client');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'}
       ]);
     });

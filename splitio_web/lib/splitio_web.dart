@@ -482,6 +482,7 @@ class SplitioWeb extends SplitioPlatform {
     return jsTreatmentsWithConfigToMap(result);
   }
 
+  @override
   Future<Map<String, String>> getTreatmentsByFlagSet(
       {required String matchingKey,
       required String? bucketingKey,
@@ -503,6 +504,7 @@ class SplitioWeb extends SplitioPlatform {
     return jsTreatmentsToMap(result);
   }
 
+  @override
   Future<Map<String, String>> getTreatmentsByFlagSets(
       {required String matchingKey,
       required String? bucketingKey,
@@ -524,6 +526,7 @@ class SplitioWeb extends SplitioPlatform {
     return jsTreatmentsToMap(result);
   }
 
+  @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
       {required String matchingKey,
       required String? bucketingKey,
@@ -545,6 +548,7 @@ class SplitioWeb extends SplitioPlatform {
     return jsTreatmentsWithConfigToMap(result);
   }
 
+  @override
   Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
       {required String matchingKey,
       required String? bucketingKey,
@@ -566,6 +570,7 @@ class SplitioWeb extends SplitioPlatform {
     return jsTreatmentsWithConfigToMap(result);
   }
 
+  @override
   Future<bool> track(
       {required String matchingKey,
       required String? bucketingKey,
