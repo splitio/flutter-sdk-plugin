@@ -413,4 +413,68 @@ class SplitioWeb extends SplitioPlatform {
         _convertEvaluationOptions(evaluationOptions)) as JSString;
     return result.toDart;
   }
+
+  @override
+  Future<Map<String, String>> getTreatments({
+    required String matchingKey,
+    required String? bucketingKey,
+    required List<String> splitNames,
+    Map<String, dynamic> attributes = const {},
+    EvaluationOptions evaluationOptions = const EvaluationOptions.empty(),
+  }) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatments.callAsFunction(
+        null,
+        splitNames.jsify(),
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsToMap(result);
+  }
+
+  @override
+  Future<SplitResult> getTreatmentWithConfig({
+    required String matchingKey,
+    required String? bucketingKey,
+    required String splitName,
+    Map<String, dynamic> attributes = const {},
+    EvaluationOptions evaluationOptions = const EvaluationOptions.empty(),
+  }) async {
+    await this._initFuture;
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentWithConfig.callAsFunction(
+        null,
+        splitName.toJS,
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentWithConfigToSplitResult(result);
+  }
+
+  @override
+  Future<Map<String, SplitResult>> getTreatmentsWithConfig({
+    required String matchingKey,
+    required String? bucketingKey,
+    required List<String> splitNames,
+    Map<String, dynamic> attributes = const {},
+    EvaluationOptions evaluationOptions = const EvaluationOptions.empty(),
+  }) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentsWithConfig.callAsFunction(
+        null,
+        splitNames.jsify(),
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsWithConfigToMap(result);
+  }
 }
