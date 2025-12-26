@@ -4,6 +4,7 @@ import 'package:web/web.dart' as web;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
+import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
@@ -14,19 +15,25 @@ extension on web.Window {
 }
 
 void main() {
-  String methodName = '';
-  dynamic methodArguments;
+  final List<({String methodName, List<dynamic> methodArguments})> calls = [];
+
+  final mockLog = JSObject();
+  mockLog['warn'] = (JSAny? arg1) {
+    calls.add((methodName: 'warn', methodArguments: [arg1]));
+  }.toJS;
+  final mockSettings = JSObject();
+  mockSettings['log'] = mockLog;
+
+  final mockFactory = JSObject();
+  mockFactory['settings'] = mockSettings;
+
+  final mockSplitio = JSObject();
+  mockSplitio['SplitFactory'] = (JSAny? arg1) {
+    calls.add((methodName: 'SplitFactory', methodArguments: [arg1]));
+    return mockFactory;
+  }.toJS;
 
   setUp(() {
-    final mockFactory = JSObject();
-
-    final mockSplitio = JSObject();
-    mockSplitio['SplitFactory'] = (JSAny? arg1) {
-      methodName = 'SplitFactory';
-      methodArguments = [arg1];
-      return mockFactory;
-    }.toJS;
-
     (web.window as JSObject).setProperty('splitio'.toJS, mockSplitio);
   });
 
@@ -37,9 +44,9 @@ void main() {
       await _platform.init(
           apiKey: 'api-key', matchingKey: 'matching-key', bucketingKey: null);
 
-      expect(methodName, 'SplitFactory');
+      expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(methodArguments[0]),
+          jsObjectToMap(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -56,9 +63,9 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key');
 
-      expect(methodName, 'SplitFactory');
+      expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(methodArguments[0]),
+          jsObjectToMap(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -79,9 +86,9 @@ void main() {
           bucketingKey: 'bucketing-key',
           sdkConfiguration: SplitConfiguration());
 
-      expect(methodName, 'SplitFactory');
+      expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(methodArguments[0]),
+          jsObjectToMap(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -100,7 +107,6 @@ void main() {
           }));
     });
 
-    // @TODO validate warning for unsupported config options
     // @TODO validate full config with pluggable Browser SDK modules
     test('init with config: full config', () async {
       SplitioWeb _platform = SplitioWeb();
@@ -117,11 +123,11 @@ void main() {
               eventsQueueSize: 5,
               impressionsQueueSize: 6,
               eventFlushInterval: 7,
-              // eventsPerPush: 8, // unsupported in Web
+              eventsPerPush: 8, // unsupported in Web
               trafficType: 'user',
               enableDebug: false, // deprecated, logLevel has precedence
               streamingEnabled: false,
-              // persistentAttributesEnabled: true, // unsupported in Web
+              persistentAttributesEnabled: true, // unsupported in Web
               impressionListener: true,
               sdkEndpoint: 'sdk-endpoint',
               eventsEndpoint: 'events-endpoint',
@@ -133,19 +139,19 @@ void main() {
               impressionsMode: ImpressionsMode.none,
               syncEnabled: true,
               userConsent: UserConsent.granted,
-              // encryptionEnabled: true, // unsupported in Web
+              encryptionEnabled: true, // unsupported in Web
               logLevel: SplitLogLevel.info,
               readyTimeout: 1,
-              // certificatePinningConfiguration:
-              //     CertificatePinningConfiguration(), // unsupported in Web
+              certificatePinningConfiguration: CertificatePinningConfiguration()
+                  .addPin('host', 'pin'), // unsupported in Web
               rolloutCacheConfiguration: RolloutCacheConfiguration(
                 expirationDays: 100,
                 clearOnInit: true,
               )));
 
-      expect(methodName, 'SplitFactory');
+      expect(calls[calls.length - 5].methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(methodArguments[0]),
+          jsObjectToMap(calls[calls.length - 5].methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -196,6 +202,30 @@ void main() {
               'clearOnInit': true
             }
           }));
+
+      expect(calls[calls.length - 4].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 4].methodArguments[0]),
+          equals(
+              'Config certificatePinningConfiguration is not supported by the Web package. This config will be ignored.'));
+
+      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          equals(
+              'Config encryptionEnabled is not supported by the Web package. This config will be ignored.'));
+
+      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          equals(
+              'Config eventsPerPush is not supported by the Web package. This config will be ignored.'));
+
+      expect(calls[calls.length - 1].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 1].methodArguments[0]),
+          equals(
+              'Config persistentAttributesEnabled is not supported by the Web package. This config will be ignored.'));
     });
 
     test('init with config: SyncConfig.flagSets', () async {
@@ -208,9 +238,9 @@ void main() {
           sdkConfiguration: SplitConfiguration(
               syncConfig: SyncConfig.flagSets(['flag_set_1', 'flag_set_2'])));
 
-      expect(methodName, 'SplitFactory');
+      expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(methodArguments[0]),
+          jsObjectToMap(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
