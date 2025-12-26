@@ -7,7 +7,6 @@ import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
-import 'utils/js_interop_test_utils.dart';
 
 extension on web.Window {
   @JS()
