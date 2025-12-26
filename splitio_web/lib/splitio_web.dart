@@ -411,6 +411,7 @@ class SplitioWeb extends SplitioPlatform {
         splitName.toJS,
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSString;
+
     return result.toDart;
   }
 
@@ -432,6 +433,7 @@ class SplitioWeb extends SplitioPlatform {
         splitNames.jsify(),
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsToMap(result);
   }
 
@@ -454,6 +456,7 @@ class SplitioWeb extends SplitioPlatform {
         splitName.toJS,
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentWithConfigToSplitResult(result);
   }
 
@@ -475,6 +478,7 @@ class SplitioWeb extends SplitioPlatform {
         splitNames.jsify(),
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsWithConfigToMap(result);
   }
 
@@ -483,7 +487,8 @@ class SplitioWeb extends SplitioPlatform {
       required String? bucketingKey,
       required String flagSet,
       Map<String, dynamic> attributes = const {},
-      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
       bucketingKey: bucketingKey,
@@ -494,6 +499,7 @@ class SplitioWeb extends SplitioPlatform {
         flagSet.toJS,
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsToMap(result);
   }
 
@@ -502,7 +508,8 @@ class SplitioWeb extends SplitioPlatform {
       required String? bucketingKey,
       required List<String> flagSets,
       Map<String, dynamic> attributes = const {},
-      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
       bucketingKey: bucketingKey,
@@ -513,6 +520,7 @@ class SplitioWeb extends SplitioPlatform {
         flagSets.jsify(),
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsToMap(result);
   }
 
@@ -521,7 +529,8 @@ class SplitioWeb extends SplitioPlatform {
       required String? bucketingKey,
       required String flagSet,
       Map<String, dynamic> attributes = const {},
-      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
       bucketingKey: bucketingKey,
@@ -532,6 +541,7 @@ class SplitioWeb extends SplitioPlatform {
         flagSet.toJS,
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsWithConfigToMap(result);
   }
 
@@ -540,7 +550,8 @@ class SplitioWeb extends SplitioPlatform {
       required String? bucketingKey,
       required List<String> flagSets,
       Map<String, dynamic> attributes = const {},
-      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+      EvaluationOptions evaluationOptions =
+          const EvaluationOptions.empty()}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
       bucketingKey: bucketingKey,
@@ -551,6 +562,7 @@ class SplitioWeb extends SplitioPlatform {
         flagSets.jsify(),
         _convertMap(attributes, true),
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
+
     return jsTreatmentsWithConfigToMap(result);
   }
 }

@@ -84,10 +84,12 @@ Map<String, String> jsTreatmentsToMap(JSObject obj) {
 }
 
 Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
-  return jsObjectToMap(obj).map((k, v) => MapEntry(k, SplitResult(v['treatment'] as String, v['config'] as String?)));
+  return jsObjectToMap(obj).map((k, v) => MapEntry(
+      k, SplitResult(v['treatment'] as String, v['config'] as String?)));
 }
 
 SplitResult jsTreatmentWithConfigToSplitResult(JSObject obj) {
   final config = _reflectGet(obj, 'config'.toJS);
-  return SplitResult((_reflectGet(obj, 'treatment'.toJS) as JSString).toDart, (config is JSString) ? config.toDart : null);
+  return SplitResult((_reflectGet(obj, 'treatment'.toJS) as JSString).toDart,
+      (config is JSString) ? config.toDart : null);
 }
