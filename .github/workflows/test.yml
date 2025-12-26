@@ -25,3 +25,5 @@ jobs:
         run: cd splitio_android/; flutter test
       - name: Run flutter splitio_ios test
         run: cd splitio_ios/; flutter test
+      - name: Run flutter splitio_web test
+        run: cd splitio_web/; flutter test --platform=chrome
