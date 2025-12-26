@@ -74,6 +74,60 @@ void main() {
     }
     return JSObject();
   }.toJS;
+  mockClient['getTreatmentsByFlagSet'] =
+      (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatmentsByFlagSet',
+      methodArguments: [flagSetName, attributes, evaluationOptions]
+    ));
+    final result = JSObject();
+    result.setProperty('split1'.toJS, 'on'.toJS);
+    result.setProperty('split2'.toJS, 'on'.toJS);
+    return result;
+  }.toJS;
+  mockClient['getTreatmentsByFlagSets'] =
+      (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatmentsByFlagSets',
+      methodArguments: [flagSetNames, attributes, evaluationOptions]
+    ));
+    final result = JSObject();
+    result.setProperty('split1'.toJS, 'on'.toJS);
+    result.setProperty('split2'.toJS, 'on'.toJS);
+    return result;
+  }.toJS;
+  mockClient['getTreatmentsWithConfigByFlagSet'] =
+      (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatmentsWithConfigByFlagSet',
+      methodArguments: [flagSetName, attributes, evaluationOptions]
+    ));
+
+    final treatmentWithConfig = JSObject();
+    treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
+    treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
+
+    final result = JSObject();
+    result.setProperty('split1'.toJS, treatmentWithConfig);
+    result.setProperty('split2'.toJS, treatmentWithConfig);
+    return result;
+  }.toJS;
+  mockClient['getTreatmentsWithConfigByFlagSets'] =
+      (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatmentsWithConfigByFlagSets',
+      methodArguments: [flagSetNames, attributes, evaluationOptions]
+    ));
+
+    final treatmentWithConfig = JSObject();
+    treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
+    treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
+
+    final result = JSObject();
+    result.setProperty('split1'.toJS, treatmentWithConfig);
+    result.setProperty('split2'.toJS, treatmentWithConfig);
+    return result;
+  }.toJS;
 
   final mockLog = JSObject();
   mockLog['warn'] = (JSAny? arg1) {
@@ -313,6 +367,146 @@ void main() {
       expect(calls.last.methodName, 'getTreatmentsWithConfig');
       expect(calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
+        {'attr1': true},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsByFlagSet without attributes', () async {
+      final result = await _platform.getTreatmentsByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1');
+
+      expect(result, {'split1': 'on', 'split2': 'on'});
+      expect(calls.last.methodName, 'getTreatmentsByFlagSet');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+    });
+
+    test('getTreatmentsByFlagSet with attributes', () async {
+      final result = await _platform.getTreatmentsByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1',
+          attributes: {'attr1': true});
+
+      expect(result, {'split1': 'on', 'split2': 'on'});
+      expect(calls.last.methodName, 'getTreatmentsByFlagSet');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'set_1',
+        {'attr1': true},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsByFlagSets without attributes', () async {
+      final result = await _platform.getTreatmentsByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2']);
+
+      expect(result, {'split1': 'on', 'split2': 'on'});
+      expect(calls.last.methodName, 'getTreatmentsByFlagSets');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        ['set_1', 'set_2'],
+        {},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsByFlagSets with attributes', () async {
+      final result = await _platform.getTreatmentsByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2'],
+          attributes: {'attr1': true});
+
+      expect(result, {'split1': 'on', 'split2': 'on'});
+      expect(calls.last.methodName, 'getTreatmentsByFlagSets');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        ['set_1', 'set_2'],
+        {'attr1': true},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsWithConfigByFlagSet without attributes', () async {
+      final result = await _platform.getTreatmentsWithConfigByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1');
+
+      expect(result, predicate<Map<String, SplitResult>>((result) {
+        return result.length == 2 &&
+            result['split1'].toString() ==
+                SplitResult('on', 'some-config').toString() &&
+            result['split2'].toString() ==
+                SplitResult('on', 'some-config').toString();
+      }));
+      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+    });
+
+    test('getTreatmentsWithConfigByFlagSet with attributes', () async {
+      final result = await _platform.getTreatmentsWithConfigByFlagSet(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSet: 'set_1',
+          attributes: {'attr1': true});
+
+      expect(result, predicate<Map<String, SplitResult>>((result) {
+        return result.length == 2 &&
+            result['split1'].toString() ==
+                SplitResult('on', 'some-config').toString() &&
+            result['split2'].toString() ==
+                SplitResult('on', 'some-config').toString();
+      }));
+      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'set_1',
+        {'attr1': true},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsWithConfigByFlagSets without attributes', () async {
+      final result = await _platform.getTreatmentsWithConfigByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2']);
+
+      expect(result, predicate<Map<String, SplitResult>>((result) {
+        return result.length == 2 &&
+            result['split1'].toString() ==
+                SplitResult('on', 'some-config').toString() &&
+            result['split2'].toString() ==
+                SplitResult('on', 'some-config').toString();
+      }));
+      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        ['set_1', 'set_2'],
+        {},
+        {}
+      ]);
+    });
+
+    test('getTreatmentsWithConfigByFlagSets with attributes', () async {
+      final result = await _platform.getTreatmentsWithConfigByFlagSets(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          flagSets: ['set_1', 'set_2'],
+          attributes: {'attr1': true});
+
+      expect(result, predicate<Map<String, SplitResult>>((result) {
+        return result.length == 2 &&
+            result['split1'].toString() ==
+                SplitResult('on', 'some-config').toString() &&
+            result['split2'].toString() ==
+                SplitResult('on', 'some-config').toString();
+      }));
+      expect(calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        ['set_1', 'set_2'],
         {'attr1': true},
         {}
       ]);

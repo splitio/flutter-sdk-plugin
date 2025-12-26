@@ -477,4 +477,80 @@ class SplitioWeb extends SplitioPlatform {
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
     return jsTreatmentsWithConfigToMap(result);
   }
+
+  Future<Map<String, String>> getTreatmentsByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentsByFlagSet.callAsFunction(
+        null,
+        flagSet.toJS,
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsToMap(result);
+  }
+
+  Future<Map<String, String>> getTreatmentsByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentsByFlagSets.callAsFunction(
+        null,
+        flagSets.jsify(),
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsToMap(result);
+  }
+
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSet(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String flagSet,
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentsWithConfigByFlagSet.callAsFunction(
+        null,
+        flagSet.toJS,
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsWithConfigToMap(result);
+  }
+
+  Future<Map<String, SplitResult>> getTreatmentsWithConfigByFlagSets(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required List<String> flagSets,
+      Map<String, dynamic> attributes = const {},
+      EvaluationOptions evaluationOptions = const EvaluationOptions.empty()}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getTreatmentsWithConfigByFlagSets.callAsFunction(
+        null,
+        flagSets.jsify(),
+        _convertMap(attributes, true),
+        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+    return jsTreatmentsWithConfigToMap(result);
+  }
 }
