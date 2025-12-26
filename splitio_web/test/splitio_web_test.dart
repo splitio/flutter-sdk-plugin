@@ -61,7 +61,7 @@ void main() {
   });
 
   group('evaluation', () {
-    test('getTreatment without attributes', () async {
+    test('getTreatment', () async {
       final result = await _platform.getTreatment(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -401,4 +401,33 @@ void main() {
           }));
     });
   });
+
+  group('client', () {
+    test('get client with no keys', () async {
+      await _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: null);
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
+    });
+
+    test('get client with new matching key', () async {
+      await _platform.getClient(
+          matchingKey: 'new-matching-key', bucketingKey: null);
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['new-matching-key']);
+    });
+
+    test('get client with new matching key and bucketing key', () async {
+      await _platform.getClient(
+          matchingKey: 'new-matching-key', bucketingKey: 'bucketing-key');
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'}
+      ]);
+    });
+  });
+
 }
