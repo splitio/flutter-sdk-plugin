@@ -349,13 +349,13 @@ class SplitioWeb extends SplitioPlatform {
     return _clients[key]!;
   }
 
-  JSAny? _convertValue(dynamic value, bool attributes) {
+  JSAny? _convertValue(dynamic value, bool isAttributes) {
     if (value is bool) return value.toJS;
     if (value is num) return value.toJS; // covers int + double
     if (value is String) return value.toJS;
 
     // properties do not support lists and sets
-    if (attributes) {
+    if (isAttributes) {
       if (value is List) return value.jsify();
       if (value is Set) return value.jsify();
     }
@@ -363,18 +363,18 @@ class SplitioWeb extends SplitioPlatform {
     return null;
   }
 
-  JSObject _convertMap(Map<String, dynamic> dartMap, bool areAttributes) {
+  JSObject _convertMap(Map<String, dynamic> dartMap, bool isAttributes) {
     final jsMap = JSObject();
 
     dartMap.forEach((key, value) {
-      final jsValue = _convertValue(value, areAttributes);
+      final jsValue = _convertValue(value, isAttributes);
 
       if (jsValue != null) {
         jsMap.setProperty(key.toJS, jsValue);
       } else {
         this._factory.settings.log.warn.callAsFunction(
             null,
-            'Invalid ${areAttributes ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
+            'Invalid ${isAttributes ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
                 .toJS);
       }
     });
