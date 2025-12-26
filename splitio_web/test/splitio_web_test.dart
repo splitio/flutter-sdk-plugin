@@ -6,6 +6,7 @@ import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 
@@ -15,17 +16,32 @@ extension on web.Window {
 }
 
 void main() {
-  final List<({String methodName, List<dynamic> methodArguments})> calls = [];
+  final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
+
+  final mockClient = JSObject();
+  mockClient['getTreatment'] =
+      (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
+    calls.add((
+      methodName: 'getTreatment',
+      methodArguments: [flagName, attributes, evaluationOptions]
+    ));
+    return 'on'.toJS;
+  }.toJS;
 
   final mockLog = JSObject();
   mockLog['warn'] = (JSAny? arg1) {
     calls.add((methodName: 'warn', methodArguments: [arg1]));
   }.toJS;
+
   final mockSettings = JSObject();
   mockSettings['log'] = mockLog;
 
   final mockFactory = JSObject();
   mockFactory['settings'] = mockSettings;
+  mockFactory['client'] = (JSAny? splitKey) {
+    calls.add((methodName: 'client', methodArguments: [splitKey]));
+    return mockClient;
+  }.toJS;
 
   final mockSplitio = JSObject();
   mockSplitio['SplitFactory'] = (JSAny? arg1) {
@@ -33,8 +49,127 @@ void main() {
     return mockFactory;
   }.toJS;
 
+  SplitioWeb _platform = SplitioWeb();
+
   setUp(() {
-    (web.window as JSObject).setProperty('splitio'.toJS, mockSplitio);
+    (web.window as JSObject)['splitio'] = mockSplitio;
+
+    _platform.init(
+        apiKey: 'apiKey',
+        matchingKey: 'matching-key',
+        bucketingKey: 'bucketing-key');
+  });
+
+  group('evaluation', () {
+    test('getTreatment', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split');
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
+    });
+
+    test('getTreatment with attributes', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split',
+          attributes: {
+            'attrBool': true,
+            'attrString': 'value',
+            'attrInt': 1,
+            'attrDouble': 1.1,
+            'attrList': ['value1', 100, false],
+            'attrSet': {'value3', 100, true},
+            'attrNull': null, // not valid attribute value
+            'attrMap': {'value5': true} // not valid attribute value
+          });
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'split',
+        {
+          'attrBool': true,
+          'attrString': 'value',
+          'attrInt': 1,
+          'attrDouble': 1.1,
+          'attrList': ['value1', 100, false],
+          'attrSet': ['value3', 100, true]
+        },
+        {}
+      ]);
+
+      // assert warnings
+      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          equals(
+              'Invalid attribute value: {value5: true}, for key: attrMap, will be ignored'));
+      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          equals(
+              'Invalid attribute value: null, for key: attrNull, will be ignored'));
+    });
+
+    test('getTreatment with evaluation properties', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split',
+          evaluationOptions: EvaluationOptions({
+            'propBool': true,
+            'propString': 'value',
+            'propInt': 1,
+            'propDouble': 1.1,
+            'propList': ['value1', 100, false], // not valid property value
+            'propSet': {'value3', 100, true}, // not valid property value
+            'propNull': null, // not valid property value
+            'propMap': {'value5': true} // not valid property value
+          }));
+
+      expect(result, 'on');
+      expect(calls.last.methodName, 'getTreatment');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        'split',
+        {},
+        {
+          'properties': {
+            'propBool': true,
+            'propString': 'value',
+            'propInt': 1,
+            'propDouble': 1.1,
+          }
+        }
+      ]);
+
+      // assert warnings
+      expect(calls[calls.length - 2].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 2].methodArguments[0]),
+          equals(
+              'Invalid property value: {value5: true}, for key: propMap, will be ignored'));
+      expect(calls[calls.length - 3].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 3].methodArguments[0]),
+          equals(
+              'Invalid property value: null, for key: propNull, will be ignored'));
+      expect(calls[calls.length - 4].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 4].methodArguments[0]),
+          equals(
+              'Invalid property value: {value3, 100, true}, for key: propSet, will be ignored'));
+      expect(calls[calls.length - 5].methodName, 'warn');
+      expect(
+          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
+          equals(
+              'Invalid property value: [value1, 100, false], for key: propList, will be ignored'));
+    });
+
   });
 
   group('initialization', () {
@@ -46,7 +181,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -65,7 +200,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -88,7 +223,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -151,7 +286,7 @@ void main() {
 
       expect(calls[calls.length - 5].methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls[calls.length - 5].methodArguments[0]),
+          jsAnyToDart(calls[calls.length - 5].methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -240,7 +375,7 @@ void main() {
 
       expect(calls.last.methodName, 'SplitFactory');
       expect(
-          jsObjectToMap(calls.last.methodArguments[0]),
+          jsAnyToDart(calls.last.methodArguments[0]),
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -266,4 +401,33 @@ void main() {
           }));
     });
   });
+
+  group('client', () {
+    test('get client with no keys', () async {
+      await _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: null);
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
+    });
+
+    test('get client with new matching key', () async {
+      await _platform.getClient(
+          matchingKey: 'new-matching-key', bucketingKey: null);
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), ['new-matching-key']);
+    });
+
+    test('get client with new matching key and bucketing key', () async {
+      await _platform.getClient(
+          matchingKey: 'new-matching-key', bucketingKey: 'bucketing-key');
+
+      expect(calls.last.methodName, 'client');
+      expect(calls.last.methodArguments.map(jsAnyToDart), [
+        {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'}
+      ]);
+    });
+  });
+
 }

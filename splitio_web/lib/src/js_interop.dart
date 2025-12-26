@@ -13,7 +13,13 @@ extension type JS_ISettings._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_IBrowserClient._(JSObject _) implements JSObject {
+  external JSFunction getTreatment;
+}
+
+@JS()
 extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
+  external JSFunction client;
   external JS_ISettings settings;
 }
 
