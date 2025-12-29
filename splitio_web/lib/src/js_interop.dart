@@ -24,6 +24,14 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSFunction getTreatmentsWithConfigByFlagSet;
   external JSFunction getTreatmentsWithConfigByFlagSets;
   external JSFunction track;
+  external JSFunction setAttribute;
+  external JSFunction getAttribute;
+  external JSFunction removeAttribute;
+  external JSFunction setAttributes;
+  external JSFunction getAttributes;
+  external JSFunction clearAttributes;
+  external JSFunction flush;
+  external JSFunction destroy;
 }
 
 @JS()

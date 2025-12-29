@@ -1,6 +1,9 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
 
+@JS('Promise.resolve')
+external JSPromise<Null> _promiseResolve();
+
 class SplitioMock {
   final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
   final JSObject splitio = JSObject();
@@ -122,6 +125,48 @@ class SplitioMock {
         methodArguments: [trafficType, eventType, value, properties]
       ));
       return trafficType != null ? true.toJS : false.toJS;
+    }.toJS;
+    mockClient['setAttribute'] = (JSAny? attributeName, JSAny? attributeValue) {
+      calls.add((
+        methodName: 'setAttribute',
+        methodArguments: [attributeName, attributeValue]
+      ));
+      return true.toJS;
+    }.toJS;
+    mockClient['getAttribute'] = (JSAny? attributeName) {
+      calls.add((methodName: 'getAttribute', methodArguments: [attributeName]));
+      return 'attr-value'.toJS;
+    }.toJS;
+    mockClient['removeAttribute'] = (JSAny? attributeName) {
+      calls.add(
+          (methodName: 'removeAttribute', methodArguments: [attributeName]));
+      return true.toJS;
+    }.toJS;
+    mockClient['setAttributes'] = (JSAny? attributes) {
+      calls.add((methodName: 'setAttributes', methodArguments: [attributes]));
+      return true.toJS;
+    }.toJS;
+    mockClient['getAttributes'] = () {
+      calls.add((methodName: 'getAttributes', methodArguments: []));
+      return {
+        'attrBool': true,
+        'attrString': 'value',
+        'attrInt': 1,
+        'attrDouble': 1.1,
+        'attrList': ['value1', 100, false],
+      }.jsify();
+    }.toJS;
+    mockClient['clearAttributes'] = () {
+      calls.add((methodName: 'clearAttributes', methodArguments: []));
+      return true.toJS;
+    }.toJS;
+    mockClient['flush'] = () {
+      calls.add((methodName: 'flush', methodArguments: []));
+      return _promiseResolve();
+    }.toJS;
+    mockClient['destroy'] = () {
+      calls.add((methodName: 'destroy', methodArguments: []));
+      return _promiseResolve();
     }.toJS;
 
     final mockLog = JSObject();
