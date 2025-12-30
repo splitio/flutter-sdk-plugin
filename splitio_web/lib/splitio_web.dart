@@ -349,13 +349,13 @@ class SplitioWeb extends SplitioPlatform {
     return _clients[key]!;
   }
 
-  JSAny? _convertValue(dynamic value, bool isAttributes) {
+  JSAny? _convertValue(dynamic value, bool isAttribute) {
     if (value is bool) return value.toJS;
     if (value is num) return value.toJS; // covers int + double
     if (value is String) return value.toJS;
 
     // properties do not support lists and sets
-    if (isAttributes) {
+    if (isAttribute) {
       if (value is List) return value.jsify();
       if (value is Set) return value.jsify();
     }
@@ -363,18 +363,18 @@ class SplitioWeb extends SplitioPlatform {
     return null;
   }
 
-  JSObject _convertMap(Map<String, dynamic> dartMap, bool isAttributes) {
+  JSObject _convertMap(Map<String, dynamic> dartMap, bool isAttribute) {
     final jsMap = JSObject();
 
     dartMap.forEach((key, value) {
-      final jsValue = _convertValue(value, isAttributes);
+      final jsValue = _convertValue(value, isAttribute);
 
       if (jsValue != null) {
         jsMap.setProperty(key.toJS, jsValue);
       } else {
         this._factory.settings.log.warn.callAsFunction(
             null,
-            'Invalid ${isAttributes ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
+            'Invalid ${isAttribute ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
                 .toJS);
       }
     });
@@ -568,5 +568,32 @@ class SplitioWeb extends SplitioPlatform {
         _convertEvaluationOptions(evaluationOptions)) as JSObject;
 
     return jsTreatmentsWithConfigToMap(result);
+  }
+
+  @override
+  Future<bool> track(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String eventType,
+      String? trafficType,
+      double? value,
+      Map<String, dynamic> properties = const {}}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.track.callAsFunction(
+        null,
+        trafficType != null
+            ? trafficType.toJS
+            : this._trafficType != null
+                ? this._trafficType!.toJS
+                : null,
+        eventType.toJS,
+        value != null ? value.toJS : null,
+        _convertMap(properties, false)) as JSBoolean;
+
+    return result.toDart;
   }
 }
