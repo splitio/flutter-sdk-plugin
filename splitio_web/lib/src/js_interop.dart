@@ -1,4 +1,5 @@
 import 'dart:js_interop';
+import 'package:splitio_platform_interface/split_result.dart';
 
 // JS SDK types
 
@@ -15,6 +16,13 @@ extension type JS_ISettings._(JSObject _) implements JSObject {
 @JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSFunction getTreatment;
+  external JSFunction getTreatments;
+  external JSFunction getTreatmentWithConfig;
+  external JSFunction getTreatmentsWithConfig;
+  external JSFunction getTreatmentsByFlagSet;
+  external JSFunction getTreatmentsByFlagSets;
+  external JSFunction getTreatmentsWithConfigByFlagSet;
+  external JSFunction getTreatmentsWithConfigByFlagSets;
 }
 
 @JS()
@@ -67,4 +75,21 @@ dynamic jsAnyToDart(JSAny? value) {
   } else {
     return value; // JS null and undefined are null in Dart
   }
+}
+
+// Conversion utils: JS SDK to Flutter SDK types
+
+Map<String, String> jsTreatmentsToMap(JSObject obj) {
+  return jsObjectToMap(obj).map((k, v) => MapEntry(k, v as String));
+}
+
+Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
+  return jsObjectToMap(obj).map((k, v) => MapEntry(
+      k, SplitResult(v['treatment'] as String, v['config'] as String?)));
+}
+
+SplitResult jsTreatmentWithConfigToSplitResult(JSObject obj) {
+  final config = _reflectGet(obj, 'config'.toJS);
+  return SplitResult((_reflectGet(obj, 'treatment'.toJS) as JSString).toDart,
+      (config is JSString) ? config.toDart : null);
 }
