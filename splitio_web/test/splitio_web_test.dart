@@ -18,7 +18,6 @@ extension on web.Window {
 }
 
 void main() {
-
   SplitioWeb _platform = SplitioWeb();
   final mock = SplitioMock();
 
@@ -40,7 +39,8 @@ void main() {
 
       expect(result, 'on');
       expect(mock.calls.last.methodName, 'getTreatment');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
     });
 
     test('getTreatment with attributes', () async {
@@ -196,7 +196,8 @@ void main() {
 
       expect(result.toString(), SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
     });
 
     test('getTreatmentsWithConfig without attributes', () async {
@@ -250,7 +251,8 @@ void main() {
 
       expect(result, {'split1': 'on', 'split2': 'on'});
       expect(mock.calls.last.methodName, 'getTreatmentsByFlagSet');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
     test('getTreatmentsByFlagSet with attributes', () async {
@@ -314,7 +316,8 @@ void main() {
                 SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
     test('getTreatmentsWithConfigByFlagSet with attributes', () async {
@@ -448,6 +451,111 @@ void main() {
       expect(mock.calls.last.methodName, 'track');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart),
           ['my_traffic_type_in_config', 'my_event', null, {}]);
+    });
+  });
+
+  group('other client methods: attributes, destroy, flush', () {
+    test('get single attribute', () async {
+      final result = await _platform.getAttribute(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          attributeName: 'attribute-name');
+
+      expect(result, 'attr-value');
+      expect(mock.calls.last.methodName, 'getAttribute');
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['attribute-name']);
+    });
+
+    test('get all attributes', () async {
+      final result = await _platform.getAllAttributes(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(
+          result,
+          equals({
+            'attrBool': true,
+            'attrString': 'value',
+            'attrInt': 1,
+            'attrDouble': 1.1,
+            'attrList': ['value1', 100, false],
+          }));
+      expect(mock.calls.last.methodName, 'getAttributes');
+      expect(mock.calls.last.methodArguments, []);
+    });
+
+    test('set attribute', () async {
+      final result = await _platform.setAttribute(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          attributeName: 'my_attr',
+          value: 'attr_value');
+
+      expect(result, true);
+      expect(mock.calls.last.methodName, 'setAttribute');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart),
+          ['my_attr', 'attr_value']);
+    });
+
+    test('set multiple attributes', () async {
+      final result = await _platform.setAttributes(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          attributes: {
+            'bool_attr': true,
+            'number_attr': 25.56,
+            'string_attr': 'attr-value',
+            'list_attr': ['one', true],
+            'attrNull': null, // not valid. ignored
+            'attrMap': {'value5': true} // not valid. ignored
+          });
+
+      expect(result, true);
+      expect(mock.calls.last.methodName, 'setAttributes');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
+        {
+          'bool_attr': true,
+          'number_attr': 25.56,
+          'string_attr': 'attr-value',
+          'list_attr': ['one', true],
+        }
+      ]);
+    });
+
+    test('remove attribute', () async {
+      final result = await _platform.removeAttribute(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          attributeName: 'attr-name');
+
+      expect(result, true);
+      expect(mock.calls.last.methodName, 'removeAttribute');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['attr-name']);
+    });
+
+    test('clear attributes', () async {
+      final result = await _platform.clearAttributes(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(result, true);
+      expect(mock.calls.last.methodName, 'clearAttributes');
+      expect(mock.calls.last.methodArguments, []);
+    });
+
+    test('flush', () async {
+      await _platform.flush(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(mock.calls.last.methodName, 'flush');
+      expect(mock.calls.last.methodArguments, []);
+    });
+
+    test('destroy', () async {
+      await _platform.destroy(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
+
+      expect(mock.calls.last.methodName, 'destroy');
+      expect(mock.calls.last.methodArguments, []);
     });
   });
 
@@ -687,7 +795,8 @@ void main() {
           matchingKey: 'matching-key', bucketingKey: null);
 
       expect(mock.calls.last.methodName, 'client');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
+      expect(
+          mock.calls.last.methodArguments.map(jsAnyToDart), ['matching-key']);
     });
 
     test('get client with new matching key', () async {
@@ -695,7 +804,8 @@ void main() {
           matchingKey: 'new-matching-key', bucketingKey: null);
 
       expect(mock.calls.last.methodName, 'client');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['new-matching-key']);
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart),
+          ['new-matching-key']);
     });
 
     test('get client with new matching key and bucketing key', () async {

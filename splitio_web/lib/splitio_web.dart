@@ -596,4 +596,120 @@ class SplitioWeb extends SplitioPlatform {
 
     return result.toDart;
   }
+
+  @override
+  Future<Map<String, dynamic>> getAllAttributes(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getAttributes.callAsFunction(null) as JSObject;
+
+    return jsObjectToMap(result);
+  }
+
+  @override
+  Future<bool> setAttribute(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String attributeName,
+      required dynamic value}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.setAttribute.callAsFunction(
+        null, attributeName.toJS, _convertValue(value, true)) as JSBoolean;
+
+    return result.toDart;
+  }
+
+  @override
+  Future<bool> setAttributes(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required Map<String, dynamic> attributes}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.setAttributes
+        .callAsFunction(null, _convertMap(attributes, true)) as JSBoolean;
+
+    return result.toDart;
+  }
+
+  @override
+  Future<dynamic> getAttribute(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String attributeName}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.getAttribute.callAsFunction(null, attributeName.toJS);
+
+    return jsAnyToDart(result);
+  }
+
+  @override
+  Future<bool> removeAttribute(
+      {required String matchingKey,
+      required String? bucketingKey,
+      required String attributeName}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.removeAttribute
+        .callAsFunction(null, attributeName.toJS) as JSBoolean;
+
+    return result.toDart;
+  }
+
+  @override
+  Future<bool> clearAttributes(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.clearAttributes.callAsFunction(null) as JSBoolean;
+
+    return result.toDart;
+  }
+
+  @override
+  Future<void> flush(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.flush.callAsFunction(null) as JSPromise<Null>;
+
+    return result.toDart;
+  }
+
+  @override
+  Future<void> destroy(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    final result = client.destroy.callAsFunction(null) as JSPromise<Null>;
+
+    return result.toDart;
+  }
 }
