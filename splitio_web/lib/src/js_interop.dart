@@ -41,8 +41,16 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_IBrowserManager._(JSObject _) implements JSObject {
+  external JSFunction names;
+  external JSFunction split;
+  external JSFunction splits;
+}
+
+@JS()
 extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
   external JSFunction client;
+  external JSFunction manager;
   external JS_ISettings settings;
   external JS_IUserConsentAPI UserConsent;
 }
@@ -108,4 +116,32 @@ SplitResult jsTreatmentWithConfigToSplitResult(JSObject obj) {
   final config = _reflectGet(obj, 'config'.toJS);
   return SplitResult((_reflectGet(obj, 'treatment'.toJS) as JSString).toDart,
       (config is JSString) ? config.toDart : null);
+}
+
+Prerequisite jsObjectToPrerequisite(JSObject obj) {
+  return Prerequisite(
+    (_reflectGet(obj, 'flagName'.toJS) as JSString).toDart,
+    jsArrayToList(_reflectGet(obj, 'treatments'.toJS) as JSArray<JSString>)
+        .toSet().cast<String>(),
+  );
+}
+
+SplitView jsObjectToSplitView(JSObject obj) {
+  return SplitView(
+      (_reflectGet(obj, 'name'.toJS) as JSString).toDart,
+      (_reflectGet(obj, 'trafficType'.toJS) as JSString).toDart,
+      (_reflectGet(obj, 'killed'.toJS) as JSBoolean).toDart,
+      jsArrayToList(_reflectGet(obj, 'treatments'.toJS) as JSArray<JSString>)
+          .cast<String>(),
+      (_reflectGet(obj, 'changeNumber'.toJS) as JSNumber).toDartInt,
+      jsObjectToMap(_reflectGet(obj, 'configs'.toJS) as JSObject)
+          .cast<String, String>(),
+      (_reflectGet(obj, 'defaultTreatment'.toJS) as JSString).toDart,
+      jsArrayToList(_reflectGet(obj, 'sets'.toJS) as JSArray<JSString>)
+          .cast<String>(),
+      (_reflectGet(obj, 'impressionsDisabled'.toJS) as JSBoolean).toDart,
+      (_reflectGet(obj, 'prerequisites'.toJS) as JSArray<JSObject>)
+          .toDart
+          .map(jsObjectToPrerequisite)
+          .toSet());
 }
