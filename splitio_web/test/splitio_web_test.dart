@@ -886,6 +886,71 @@ void main() {
     });
   });
 
+  group('events', () {
+    test('onReady (SDK_READY event is emitted after onReady is called)', () {
+      Future<void>? onReady = _platform
+          .onReady(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      // Emit SDK_READY event
+      final mockClient = mock.mockFactory.client
+              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
+          as JS_IBrowserClient;
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_READY);
+
+      expect(onReady, completion(equals(true)));
+    });
+
+    test(
+        'onReadyFromCache (SDK_READY_FROM_CACHE event is emitted before onReadyFromCache is called)',
+        () {
+      // Emit SDK_READY_FROM_CACHE event
+      final mockClient = mock.mockFactory.client
+              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
+          as JS_IBrowserClient;
+      mockClient.emit
+          .callAsFunction(null, mockClient.Event.SDK_READY_FROM_CACHE);
+
+      Future<void>? onReadyFromCache = _platform
+          .onReadyFromCache(
+              matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      expect(onReadyFromCache, completion(equals(true)));
+    });
+
+    test('onTimeout', () {
+      Future<void>? onTimeout = _platform
+          .onTimeout(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.then((value) => true);
+
+      // Emit SDK_READY_TIMED_OUT event
+      final mockClient = mock.mockFactory.client
+              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
+          as JS_IBrowserClient;
+      mockClient.emit
+          .callAsFunction(null, mockClient.Event.SDK_READY_TIMED_OUT);
+
+      expect(onTimeout, completion(equals(true)));
+    });
+
+    test('onUpdated', () async {
+      Future<void>? onUpdated = _platform
+          .onUpdated(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
+          ?.first
+          .then((value) => true);
+
+      // Emit SDK_UPDATE event in next event loop iteration because the JS listener registration inside `onUpdated` is async
+      await Future.delayed(Duration.zero);
+      final mockClient = mock.mockFactory.client
+              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
+          as JS_IBrowserClient;
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+
+      expect(onUpdated, completion(equals(true)));
+    });
+  });
+
   group('userConsent', () {
     test('get user consent', () async {
       UserConsent userConsent = await _platform.getUserConsent();

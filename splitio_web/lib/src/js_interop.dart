@@ -20,6 +20,21 @@ extension type JS_IUserConsentAPI._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_EventConsts._(JSObject _) implements JSObject {
+  external JSString SDK_READY;
+  external JSString SDK_READY_FROM_CACHE;
+  external JSString SDK_READY_TIMED_OUT;
+  external JSString SDK_UPDATE;
+}
+
+@JS()
+extension type JS_ReadinessStatus._(JSObject _) implements JSObject {
+  external JSBoolean isReady;
+  external JSBoolean isReadyFromCache;
+  external JSBoolean hasTimedout;
+}
+
+@JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSFunction getTreatment;
   external JSFunction getTreatments;
@@ -38,6 +53,11 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSFunction clearAttributes;
   external JSFunction flush;
   external JSFunction destroy;
+  external JSFunction on;
+  external JSFunction off;
+  external JSFunction emit;
+  external JS_EventConsts Event;
+  external JSFunction getStatus;
 }
 
 @JS()
@@ -122,7 +142,8 @@ Prerequisite jsObjectToPrerequisite(JSObject obj) {
   return Prerequisite(
     (_reflectGet(obj, 'flagName'.toJS) as JSString).toDart,
     jsArrayToList(_reflectGet(obj, 'treatments'.toJS) as JSArray<JSString>)
-        .toSet().cast<String>(),
+        .toSet()
+        .cast<String>(),
   );
 }
 
@@ -144,4 +165,14 @@ SplitView jsObjectToSplitView(JSObject obj) {
           .toDart
           .map(jsObjectToPrerequisite)
           .toSet());
+}
+
+JSAny buildJsKey(String matchingKey, String? bucketingKey) {
+  if (bucketingKey != null) {
+    return {
+      'matchingKey': matchingKey,
+      'bucketingKey': bucketingKey,
+    }.jsify()!;
+  }
+  return matchingKey.toJS;
 }
