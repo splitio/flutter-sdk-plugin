@@ -9,7 +9,48 @@ class SplitioMock {
   final JSObject splitio = JSObject();
   JSString _userConsent = 'UNKNOWN'.toJS;
 
+  JSObject _createSplitViewJSObject(JSString splitName) {
+    return {
+      "name": splitName.toDart,
+      "trafficType": "user",
+      "killed": false,
+      "treatments": ["on", "off"],
+      "changeNumber": 1478881219393,
+      "configs": {"on": "\"color\": \"green\""},
+      "defaultTreatment": "off",
+      "sets": ["set_a"],
+      "impressionsDisabled": false,
+      "prerequisites": [
+        {
+          "flagName": "some_flag",
+          "treatments": ["on"]
+        }
+      ]
+    }.jsify() as JSObject;
+  }
+
   SplitioMock() {
+    final mockManager = JSObject();
+    mockManager['split'] = (JSString splitName) {
+      calls.add((methodName: 'split', methodArguments: [splitName]));
+
+      if (splitName.toDart == 'inexistent_split') {
+        return null;
+      }
+      return _createSplitViewJSObject(splitName);
+    }.toJS;
+    mockManager['splits'] = () {
+      calls.add((methodName: 'splits', methodArguments: []));
+      return [
+        _createSplitViewJSObject('split1'.toJS),
+        _createSplitViewJSObject('split2'.toJS),
+      ].jsify();
+    }.toJS;
+    mockManager['names'] = () {
+      calls.add((methodName: 'names', methodArguments: []));
+      return ['split1'.toJS, 'split2'.toJS].jsify();
+    }.toJS;
+
     final mockClient = JSObject();
     mockClient['getTreatment'] =
         (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
@@ -194,6 +235,10 @@ class SplitioMock {
     mockFactory['client'] = (JSAny? splitKey) {
       calls.add((methodName: 'client', methodArguments: [splitKey]));
       return mockClient;
+    }.toJS;
+    mockFactory['manager'] = () {
+      calls.add((methodName: 'manager', methodArguments: []));
+      return mockManager;
     }.toJS;
     mockFactory['UserConsent'] = mockUserConsent;
 

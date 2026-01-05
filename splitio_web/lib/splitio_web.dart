@@ -349,6 +349,12 @@ class SplitioWeb extends SplitioPlatform {
     return _clients[key]!;
   }
 
+  Future<JS_IBrowserManager> _getManager() async {
+    await this._initFuture;
+
+    return _factory.manager.callAsFunction(null) as JS_IBrowserManager;
+  }
+
   JSAny? _convertValue(dynamic value, bool isAttribute) {
     if (value is bool) return value.toJS;
     if (value is num) return value.toJS; // covers int + double
@@ -711,6 +717,34 @@ class SplitioWeb extends SplitioPlatform {
     final result = client.destroy.callAsFunction(null) as JSPromise<Null>;
 
     return result.toDart;
+  }
+
+  @override
+  Future<SplitView?> split({required String splitName}) async {
+    final manager = await _getManager();
+
+    final result =
+        manager.split.callAsFunction(null, splitName.toJS) as JSObject?;
+
+    return result != null ? jsObjectToSplitView(result) : null;
+  }
+
+  @override
+  Future<List<SplitView>> splits() async {
+    final manager = await _getManager();
+
+    final result = manager.splits.callAsFunction(null) as JSArray<JSObject>;
+
+    return result.toDart.map(jsObjectToSplitView).toList();
+  }
+
+  @override
+  Future<List<String>> splitNames() async {
+    final manager = await _getManager();
+
+    final result = manager.names.callAsFunction(null) as JSArray<JSString>;
+
+    return jsArrayToList(result).cast<String>();
   }
 
   @override

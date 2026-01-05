@@ -1,5 +1,6 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_web/splitio_web.dart';
@@ -812,6 +813,76 @@ void main() {
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'}
       ]);
+    });
+  });
+
+  group('manager', () {
+    test('get split names', () async {
+      final names = await _platform.splitNames();
+
+      expect(names, ['split1', 'split2']);
+      expect(mock.calls.last.methodName, 'names');
+    });
+
+    test('get splits', () async {
+      final splits = await _platform.splits();
+
+      expect(splits.map((splitView) => splitView.toString()), [
+        SplitView(
+            'split1',
+            'user',
+            false,
+            ['on', 'off'],
+            1478881219393,
+            {'on': '"color": "green"'},
+            'off',
+            ['set_a'],
+            false,
+            {
+              Prerequisite('some_flag', {'on'})
+            }).toString(),
+        SplitView(
+            'split2',
+            'user',
+            false,
+            ['on', 'off'],
+            1478881219393,
+            {'on': '"color": "green"'},
+            'off',
+            ['set_a'],
+            false,
+            {
+              Prerequisite('some_flag', {'on'})
+            }).toString(),
+      ]);
+      expect(mock.calls.last.methodName, 'splits');
+    });
+
+    test('get split', () async {
+      SplitView? split = await _platform.split(splitName: 'inexistent_split');
+
+      expect(split, null);
+
+      split = await _platform.split(splitName: 'split1');
+
+      expect(
+        split.toString(),
+        SplitView(
+            'split1',
+            'user',
+            false,
+            ['on', 'off'],
+            1478881219393,
+            {'on': '"color": "green"'},
+            'off',
+            ['set_a'],
+            false,
+            {
+              Prerequisite('some_flag', {'on'})
+            }).toString(),
+      );
+      expect(mock.calls.last.methodName, 'split');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), ['split1']);
     });
   });
 
