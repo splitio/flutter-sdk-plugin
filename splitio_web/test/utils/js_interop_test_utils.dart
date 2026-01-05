@@ -7,6 +7,7 @@ external JSPromise<Null> _promiseResolve();
 class SplitioMock {
   final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
   final JSObject splitio = JSObject();
+  JSString _userConsent = 'UNKNOWN'.toJS;
 
   SplitioMock() {
     final mockClient = JSObject();
@@ -174,6 +175,17 @@ class SplitioMock {
       calls.add((methodName: 'warn', methodArguments: [arg1]));
     }.toJS;
 
+    final mockUserConsent = JSObject();
+    mockUserConsent['setStatus'] = (JSBoolean arg1) {
+      _userConsent = arg1.toDart ? 'GRANTED'.toJS : 'DECLINED'.toJS;
+      calls.add((methodName: 'setStatus', methodArguments: [arg1]));
+      return true.toJS;
+    }.toJS;
+    mockUserConsent['getStatus'] = () {
+      calls.add((methodName: 'getStatus', methodArguments: []));
+      return _userConsent;
+    }.toJS;
+
     final mockSettings = JSObject();
     mockSettings['log'] = mockLog;
 
@@ -183,6 +195,7 @@ class SplitioMock {
       calls.add((methodName: 'client', methodArguments: [splitKey]));
       return mockClient;
     }.toJS;
+    mockFactory['UserConsent'] = mockUserConsent;
 
     splitio['SplitFactory'] = (JSAny? arg1) {
       calls.add((methodName: 'SplitFactory', methodArguments: [arg1]));

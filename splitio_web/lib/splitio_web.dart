@@ -712,4 +712,28 @@ class SplitioWeb extends SplitioPlatform {
 
     return result.toDart;
   }
+
+  @override
+  Future<UserConsent> getUserConsent() async {
+    await this._initFuture;
+
+    final userConsentStatus =
+        _factory.UserConsent.getStatus.callAsFunction(null) as JSString;
+
+    switch (userConsentStatus.toDart) {
+      case 'GRANTED':
+        return UserConsent.granted;
+      case 'DECLINED':
+        return UserConsent.declined;
+      default:
+        return UserConsent.unknown;
+    }
+  }
+
+  @override
+  Future<void> setUserConsent(bool enabled) async {
+    await this._initFuture;
+
+    _factory.UserConsent.setStatus.callAsFunction(null, enabled.toJS);
+  }
 }

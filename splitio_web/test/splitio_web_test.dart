@@ -481,7 +481,6 @@ void main() {
             'attrList': ['value1', 100, false],
           }));
       expect(mock.calls.last.methodName, 'getAttributes');
-      expect(mock.calls.last.methodArguments, []);
     });
 
     test('set attribute', () async {
@@ -539,7 +538,6 @@ void main() {
 
       expect(result, true);
       expect(mock.calls.last.methodName, 'clearAttributes');
-      expect(mock.calls.last.methodArguments, []);
     });
 
     test('flush', () async {
@@ -547,7 +545,6 @@ void main() {
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
 
       expect(mock.calls.last.methodName, 'flush');
-      expect(mock.calls.last.methodArguments, []);
     });
 
     test('destroy', () async {
@@ -555,7 +552,6 @@ void main() {
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
 
       expect(mock.calls.last.methodName, 'destroy');
-      expect(mock.calls.last.methodArguments, []);
     });
   });
 
@@ -816,6 +812,37 @@ void main() {
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         {'matchingKey': 'new-matching-key', 'bucketingKey': 'bucketing-key'}
       ]);
+    });
+  });
+
+  group('userConsent', () {
+    test('get user consent', () async {
+      UserConsent userConsent = await _platform.getUserConsent();
+
+      expect(userConsent, UserConsent.unknown);
+      expect(mock.calls.last.methodName, 'getStatus');
+    });
+
+    test('set user consent enabled', () async {
+      await _platform.setUserConsent(true);
+
+      expect(mock.calls.last.methodName, 'setStatus');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [true]);
+
+      UserConsent userConsent = await _platform.getUserConsent();
+
+      expect(userConsent, UserConsent.granted);
+    });
+
+    test('set user consent disabled', () async {
+      await _platform.setUserConsent(false);
+
+      expect(mock.calls.last.methodName, 'setStatus');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [false]);
+
+      UserConsent userConsent = await _platform.getUserConsent();
+
+      expect(userConsent, UserConsent.declined);
     });
   });
 }

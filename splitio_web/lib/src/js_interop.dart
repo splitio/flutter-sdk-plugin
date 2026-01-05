@@ -1,5 +1,5 @@
 import 'dart:js_interop';
-import 'package:splitio_platform_interface/split_result.dart';
+import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 // JS SDK types
 
@@ -11,6 +11,12 @@ extension type JS_Logger._(JSObject _) implements JSObject {
 @JS()
 extension type JS_ISettings._(JSObject _) implements JSObject {
   external JS_Logger log;
+}
+
+@JS()
+extension type JS_IUserConsentAPI._(JSObject _) implements JSObject {
+  external JSFunction setStatus;
+  external JSFunction getStatus;
 }
 
 @JS()
@@ -38,6 +44,7 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
 extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
   external JSFunction client;
   external JS_ISettings settings;
+  external JS_IUserConsentAPI UserConsent;
 }
 
 @JS()
