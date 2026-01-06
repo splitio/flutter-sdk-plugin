@@ -719,7 +719,8 @@ void main() {
               'type': 'LOCALSTORAGE',
               'expirationDays': 100,
               'clearOnInit': true
-            }
+            },
+            'impressionListener': {'logImpression': {}}
           }));
 
       expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
@@ -949,6 +950,45 @@ void main() {
 
       expect(onUpdated, completion(equals(true)));
     });
+  });
+
+  test('impressions', () async {
+    SplitioWeb _platform = SplitioWeb();
+    await _platform.init(
+        apiKey: 'api-key',
+        matchingKey: 'matching-key',
+        bucketingKey: null,
+        sdkConfiguration: SplitConfiguration(impressionListener: true));
+
+    _platform.impressionsStream().listen(
+      expectAsync1((impression) {
+        expect(impression.key, 'key');
+        expect(impression.bucketingKey, null);
+        expect(impression.split, 'split');
+        expect(impression.treatment, 'treatment');
+        expect(impression.time, 3000);
+        expect(impression.appliedRule, 'appliedRule');
+        expect(impression.changeNumber, 200);
+        expect(impression.attributes, {});
+        expect(impression.properties, {'a': 1});
+      }),
+    );
+
+    mock.mockFactory.settings.impressionListener!.logImpression.callAsFunction(null, {
+      'impression': {
+        'feature': 'split',
+        'keyName': 'key',
+        'treatment': 'treatment',
+        'time': 3000,
+        'label': 'appliedRule',
+        'changeNumber': 200,
+        'properties': '{"a": 1}',
+      },
+      'attributes': {},
+      'ip': false,
+      'hostname': false,
+      'sdkLanguageVersion': 'browserjs-1.0.0',
+    }.jsify() as JS_ImpressionData);
   });
 
   group('userConsent', () {

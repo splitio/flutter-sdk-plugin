@@ -5,6 +5,9 @@ import 'package:splitio_web/src/js_interop.dart';
 @JS('Promise.resolve')
 external JSPromise<Null> _promiseResolve();
 
+@JS('Object.assign')
+external JSObject _objectAssign(JSObject target, JSObject source);
+
 class SplitioMock {
   // JS Browser SDK API mock
   final JSObject splitio = JSObject();
@@ -274,10 +277,6 @@ class SplitioMock {
       return _userConsent;
     }.toJS;
 
-    final mockSettings = JSObject();
-    mockSettings['log'] = mockLog;
-
-    mockFactory['settings'] = mockSettings;
     mockFactory['client'] = (JSAny? splitKey) {
       calls.add((methodName: 'client', methodArguments: [splitKey]));
       return mockClient;
@@ -288,8 +287,13 @@ class SplitioMock {
     }.toJS;
     mockFactory['UserConsent'] = mockUserConsent;
 
-    splitio['SplitFactory'] = (JSAny? arg1) {
-      calls.add((methodName: 'SplitFactory', methodArguments: [arg1]));
+    splitio['SplitFactory'] = (JSObject config) {
+      calls.add((methodName: 'SplitFactory', methodArguments: [config]));
+
+      final mockSettings = _objectAssign(JSObject(), config);
+      mockSettings['log'] = mockLog;
+      mockFactory['settings'] = mockSettings;
+
       return mockFactory;
     }.toJS;
   }
