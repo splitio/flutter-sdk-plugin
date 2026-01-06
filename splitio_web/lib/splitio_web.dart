@@ -849,24 +849,25 @@ class SplitioWeb extends SplitioPlatform {
       }
     }).toJS;
     JS_IBrowserClient? client;
+    void attackListener() async {
+      client = await _getClient(
+        matchingKey: matchingKey,
+        bucketingKey: bucketingKey,
+      );
+      client!.on.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
+    }
+
+    void detachListener() {
+      if (client != null) {
+        client!.off.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
+      }
+    }
 
     controller = StreamController<void>(
-      onListen: () async {
-        client = await _getClient(
-          matchingKey: matchingKey,
-          bucketingKey: bucketingKey,
-        );
-        client!.on.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
-      },
-      onCancel: () async {
-        if (client != null) {
-          client!.off
-              .callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
-        }
-        if (!controller.isClosed) {
-          await controller.close();
-        }
-      },
+      onListen: attackListener,
+      onPause: detachListener,
+      onResume: attackListener,
+      onCancel: detachListener,
     );
 
     return controller.stream;
