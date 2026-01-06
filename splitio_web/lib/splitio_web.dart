@@ -842,25 +842,25 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
+    final client = _clients[_buildKeyString(matchingKey, bucketingKey)];
+
+    if (client == null) {
+      return null;
+    }
+
     late final StreamController<void> controller;
     final JSFunction jsCallback = (() {
       if (!controller.isClosed) {
         controller.add(null);
       }
     }).toJS;
-    JS_IBrowserClient? client;
-    void attackListener() async {
-      client = await _getClient(
-        matchingKey: matchingKey,
-        bucketingKey: bucketingKey,
-      );
-      client!.on.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
+
+    void attackListener() {
+      client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
     }
 
     void detachListener() {
-      if (client != null) {
-        client!.off.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
-      }
+      client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
     }
 
     controller = StreamController<void>(

@@ -935,19 +935,21 @@ void main() {
     });
 
     test('onUpdated', () async {
-      Future<void>? onUpdated = _platform
-          .onUpdated(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.first
-          .then((value) => true);
+      // Precondition: client is initialized before onUpdated is called
+      await _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
 
-      // Emit SDK_UPDATE event in next event loop iteration because the JS listener registration inside `onUpdated` is async
-      await Future.delayed(Duration.zero);
+      final stream = _platform.onUpdated(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
+      stream.listen(expectAsync1((_) {}, count: 2));
+
+      // Emit SDK_UPDATE event
       final mockClient = mock.mockFactory.client
               .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
           as JS_IBrowserClient;
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
 
-      expect(onUpdated, completion(equals(true)));
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
     });
   });
 
