@@ -938,18 +938,32 @@ void main() {
       // Precondition: client is initialized before onUpdated is called
       await _platform.getClient(
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
-
-      final stream = _platform.onUpdated(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
-      stream.listen(expectAsync1((_) {}, count: 2));
-
-      // Emit SDK_UPDATE event
       final mockClient = mock.mockFactory.client
               .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
           as JS_IBrowserClient;
+
+      final stream = _platform.onUpdated(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
+      final subscription = stream.listen(expectAsync1((_) {}, count: 3));
+
+      // Emit SDK_UPDATE events. Should be received
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
 
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+
+      await Future<void>.delayed(const Duration(milliseconds: 100)); // let events deliver
+
+      // Pause subscription and emit SDK_UPDATE event. Should not be received
+      subscription.pause();
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Resume subscription and emit SDK_UPDATE event. Should be received
+      subscription.resume();
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      await subscription.cancel();
     });
   });
 
