@@ -119,8 +119,8 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  JSObject _buildConfig(String apiKey, String matchingKey,
-      String? bucketingKey, SplitConfiguration? configuration) {
+  JSObject _buildConfig(String apiKey, String matchingKey, String? bucketingKey,
+      SplitConfiguration? configuration) {
     final config = JSObject();
 
     final core = JSObject();
@@ -849,28 +849,31 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
+    final client = _clients[_buildKeyString(matchingKey, bucketingKey)];
+
+    if (client == null) {
+      return null;
+    }
+
     late final StreamController<void> controller;
     final JSFunction jsCallback = (() {
       if (!controller.isClosed) {
         controller.add(null);
       }
     }).toJS;
-    JS_IBrowserClient? client;
 
     controller = StreamController<void>(
-      // @TODO: implement onPause and onResume
-      onListen: () async {
-        client = await _getClient(
-          matchingKey: matchingKey,
-          bucketingKey: bucketingKey,
-        );
-        client!.on.callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
+      onListen: () {
+        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+      },
+      onPause: () {
+        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+      },
+      onResume: () {
+        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
       },
       onCancel: () async {
-        if (client != null) {
-          client!.off
-              .callAsFunction(null, client!.Event.SDK_UPDATE, jsCallback);
-        }
+        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
         if (!controller.isClosed) {
           await controller.close();
         }

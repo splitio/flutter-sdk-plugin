@@ -5,15 +5,15 @@ import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
 @JS()
 extension type JS_ImpressionDTO._(JSObject _) implements JSObject {
-    external JSString feature;
-    external JSString keyName;
-    external JSString treatment;
-    external JSNumber time;
-    external JSString? bucketingKey;
-    external JSString label;
-    external JSNumber changeNumber;
-    external JSNumber? pt;
-    external JSString? properties;
+  external JSString feature;
+  external JSString keyName;
+  external JSString treatment;
+  external JSNumber time;
+  external JSString? bucketingKey;
+  external JSString label;
+  external JSNumber changeNumber;
+  external JSNumber? pt;
+  external JSString? properties;
 }
 
 @JS()
@@ -202,14 +202,18 @@ SplitView jsObjectToSplitView(JSObject obj) {
 Impression jsImpressionDataToImpression(JS_ImpressionData obj) {
   return Impression(
     obj.impression.keyName.toDart,
-    obj.impression.bucketingKey != null ? obj.impression.bucketingKey!.toDart : null,
+    obj.impression.bucketingKey != null
+        ? obj.impression.bucketingKey!.toDart
+        : null,
     obj.impression.feature.toDart,
     obj.impression.treatment.toDart,
     obj.impression.time.toDartInt,
     obj.impression.label.toDart,
     obj.impression.changeNumber.toDartInt,
     obj.attributes != null ? jsObjectToMap(obj.attributes!) : {},
-    obj.impression.properties != null ? jsObjectToMap(_jsonParse(obj.impression.properties!)) : null,
+    obj.impression.properties != null
+        ? jsObjectToMap(_jsonParse(obj.impression.properties!))
+        : null,
   );
 }
 

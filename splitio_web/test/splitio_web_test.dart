@@ -936,19 +936,36 @@ void main() {
     });
 
     test('onUpdated', () async {
-      Future<void>? onUpdated = _platform
-          .onUpdated(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.first
-          .then((value) => true);
-
-      // Emit SDK_UPDATE event in next event loop iteration because the JS listener registration inside `onUpdated` is async
-      await Future.delayed(Duration.zero);
+      // Precondition: client is initialized before onUpdated is called
+      await _platform.getClient(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final mockClient = mock.mockFactory.client
               .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
           as JS_IBrowserClient;
+
+      final stream = _platform.onUpdated(
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
+      final subscription = stream.listen(expectAsync1((_) {}, count: 3));
+
+      // Emit SDK_UPDATE events. Should be received
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
 
-      expect(onUpdated, completion(equals(true)));
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+
+      await Future<void>.delayed(
+          const Duration(milliseconds: 100)); // let events deliver
+
+      // Pause subscription and emit SDK_UPDATE event. Should not be received
+      subscription.pause();
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      // Resume subscription and emit SDK_UPDATE event. Should be received
+      subscription.resume();
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      await Future<void>.delayed(const Duration(milliseconds: 100));
+
+      await subscription.cancel();
     });
   });
 
@@ -974,21 +991,23 @@ void main() {
       }),
     );
 
-    mock.mockFactory.settings.impressionListener!.logImpression.callAsFunction(null, {
-      'impression': {
-        'feature': 'split',
-        'keyName': 'key',
-        'treatment': 'treatment',
-        'time': 3000,
-        'label': 'appliedRule',
-        'changeNumber': 200,
-        'properties': '{"a": 1}',
-      },
-      'attributes': {},
-      'ip': false,
-      'hostname': false,
-      'sdkLanguageVersion': 'browserjs-1.0.0',
-    }.jsify() as JS_ImpressionData);
+    mock.mockFactory.settings.impressionListener!.logImpression.callAsFunction(
+        null,
+        {
+          'impression': {
+            'feature': 'split',
+            'keyName': 'key',
+            'treatment': 'treatment',
+            'time': 3000,
+            'label': 'appliedRule',
+            'changeNumber': 200,
+            'properties': '{"a": 1}',
+          },
+          'attributes': {},
+          'ip': false,
+          'hostname': false,
+          'sdkLanguageVersion': 'browserjs-1.0.0',
+        }.jsify() as JS_ImpressionData);
   });
 
   group('userConsent', () {
