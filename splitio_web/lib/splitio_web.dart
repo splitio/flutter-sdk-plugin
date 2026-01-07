@@ -129,7 +129,7 @@ class SplitioWeb extends SplitioPlatform {
 
     final core = JSObject();
     core.setProperty('authorizationKey'.toJS, apiKey.toJS);
-    core.setProperty('key'.toJS, _buildKey(matchingKey, bucketingKey));
+    core.setProperty('key'.toJS, buildJsKey(matchingKey, bucketingKey));
     config.setProperty('core'.toJS, core);
 
     if (configuration != null) {
@@ -305,16 +305,6 @@ class SplitioWeb extends SplitioPlatform {
     return config;
   }
 
-  static JSAny _buildKey(String matchingKey, String? bucketingKey) {
-    if (bucketingKey != null) {
-      final splitKey = JSObject();
-      splitKey.setProperty('matchingKey'.toJS, matchingKey.toJS);
-      splitKey.setProperty('bucketingKey'.toJS, bucketingKey.toJS);
-      return splitKey;
-    }
-    return matchingKey.toJS;
-  }
-
   static String _buildKeyString(String matchingKey, String? bucketingKey) {
     return bucketingKey == null ? matchingKey : '${matchingKey}_$bucketingKey';
   }
@@ -333,7 +323,7 @@ class SplitioWeb extends SplitioPlatform {
     }
 
     final client = this._factory.client.callAsFunction(
-        null, _buildKey(matchingKey, bucketingKey)) as JS_IBrowserClient;
+        null, buildJsKey(matchingKey, bucketingKey)) as JS_IBrowserClient;
 
     _clients[key] = client;
   }
@@ -769,5 +759,120 @@ class SplitioWeb extends SplitioPlatform {
     await this._initFuture;
 
     _factory.UserConsent.setStatus.callAsFunction(null, enabled.toJS);
+  }
+
+  @override
+  Future<void>? onReady(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
+        .isReady
+        .toDart) {
+      return;
+    } else {
+      final completer = Completer<void>();
+
+      client.on.callAsFunction(
+          null,
+          client.Event.SDK_READY,
+          () {
+            completer.complete();
+          }.toJS);
+
+      return completer.future;
+    }
+  }
+
+  @override
+  Future<void>? onReadyFromCache(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
+        .isReadyFromCache
+        .toDart) {
+      return;
+    } else {
+      final completer = Completer<void>();
+
+      client.on.callAsFunction(
+          null,
+          client.Event.SDK_READY_FROM_CACHE,
+          () {
+            completer.complete();
+          }.toJS);
+
+      return completer.future;
+    }
+  }
+
+  @override
+  Future<void>? onTimeout(
+      {required String matchingKey, required String? bucketingKey}) async {
+    final client = await _getClient(
+      matchingKey: matchingKey,
+      bucketingKey: bucketingKey,
+    );
+
+    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
+        .hasTimedout
+        .toDart) {
+      return;
+    } else {
+      final completer = Completer<void>();
+
+      client.on.callAsFunction(
+          null,
+          client.Event.SDK_READY_TIMED_OUT,
+          () {
+            completer.complete();
+          }.toJS);
+
+      return completer.future;
+    }
+  }
+
+  @override
+  Stream<void>? onUpdated(
+      {required String matchingKey, required String? bucketingKey}) {
+    final client = _clients[_buildKeyString(matchingKey, bucketingKey)];
+
+    if (client == null) {
+      return null;
+    }
+
+    late final StreamController<void> controller;
+    final JSFunction jsCallback = (() {
+      if (!controller.isClosed) {
+        controller.add(null);
+      }
+    }).toJS;
+
+    controller = StreamController<void>(
+      onListen: () {
+        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+      },
+      onPause: () {
+        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+      },
+      onResume: () {
+        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+      },
+      onCancel: () async {
+        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        if (!controller.isClosed) {
+          await controller.close();
+        }
+      },
+    );
+
+    return controller.stream;
   }
 }

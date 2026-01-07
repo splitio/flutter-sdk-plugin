@@ -1,13 +1,25 @@
 import 'dart:js_interop';
 import 'dart:js_interop_unsafe';
+import 'package:splitio_web/src/js_interop.dart';
 
 @JS('Promise.resolve')
 external JSPromise<Null> _promiseResolve();
 
 class SplitioMock {
-  final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
+  // JS Browser SDK API mock
   final JSObject splitio = JSObject();
+
+  // Test utils
+  final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
+  final JS_IBrowserSDK mockFactory = JSObject() as JS_IBrowserSDK;
+
   JSString _userConsent = 'UNKNOWN'.toJS;
+  JS_ReadinessStatus _readinessStatus = {
+    'isReady': false,
+    'isReadyFromCache': false,
+    'hasTimedout': false,
+  }.jsify() as JS_ReadinessStatus;
+  Map<JSString, Set<JSFunction>> _eventListeners = {};
 
   JSObject _createSplitViewJSObject(JSString splitName) {
     return {
@@ -51,7 +63,42 @@ class SplitioMock {
       return ['split1'.toJS, 'split2'.toJS].jsify();
     }.toJS;
 
+    final mockEvents = {
+      'SDK_READY': 'init::ready',
+      'SDK_READY_FROM_CACHE': 'init::cache-ready',
+      'SDK_READY_TIMED_OUT': 'init::timeout',
+      'SDK_UPDATE': 'state::update'
+    }.jsify() as JS_EventConsts;
+
     final mockClient = JSObject();
+    mockClient['Event'] = mockEvents;
+    mockClient['on'] = (JSString event, JSFunction listener) {
+      calls.add((methodName: 'on', methodArguments: [event, listener]));
+      _eventListeners[event] ??= Set();
+      _eventListeners[event]!.add(listener);
+    }.toJS;
+    mockClient['off'] = (JSString event, JSFunction listener) {
+      calls.add((methodName: 'off', methodArguments: [event, listener]));
+      _eventListeners[event] ??= Set();
+      _eventListeners[event]!.remove(listener);
+    }.toJS;
+    mockClient['emit'] = (JSString event) {
+      calls.add((methodName: 'emit', methodArguments: [event]));
+      _eventListeners[event]?.forEach((listener) {
+        listener.callAsFunction(null, event);
+      });
+      if (event == mockEvents.SDK_READY) {
+        _readinessStatus.isReady = true.toJS;
+      } else if (event == mockEvents.SDK_READY_FROM_CACHE) {
+        _readinessStatus.isReadyFromCache = true.toJS;
+      } else if (event == mockEvents.SDK_READY_TIMED_OUT) {
+        _readinessStatus.hasTimedout = true.toJS;
+      }
+    }.toJS;
+    mockClient['getStatus'] = () {
+      calls.add((methodName: 'getStatus', methodArguments: []));
+      return _readinessStatus;
+    }.toJS;
     mockClient['getTreatment'] =
         (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
       calls.add((
@@ -230,7 +277,6 @@ class SplitioMock {
     final mockSettings = JSObject();
     mockSettings['log'] = mockLog;
 
-    final mockFactory = JSObject();
     mockFactory['settings'] = mockSettings;
     mockFactory['client'] = (JSAny? splitKey) {
       calls.add((methodName: 'client', methodArguments: [splitKey]));
