@@ -27,12 +27,15 @@ extension type JS_ImpressionData._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_Logger._(JSObject _) implements JSObject {
-  external JSFunction warn;
+  external JSAny? debug(JSString message);
+  external JSAny? info(JSString message);
+  external JSAny? warn(JSString message);
+  external JSAny? error(JSString message);
 }
 
 @JS()
 extension type JS_IImpressionListener._(JSObject _) implements JSObject {
-  external JSFunction logImpression;
+  external JSVoid logImpression(JS_ImpressionData impression);
 }
 
 @JS()
@@ -43,8 +46,8 @@ extension type JS_ISettings._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_IUserConsentAPI._(JSObject _) implements JSObject {
-  external JSFunction setStatus;
-  external JSFunction getStatus;
+  external JSBoolean setStatus(JSBoolean userConsent);
+  external JSString getStatus();
 }
 
 @JS()
@@ -64,23 +67,24 @@ extension type JS_ReadinessStatus._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
-  external JSFunction getTreatment;
-  external JSFunction getTreatments;
-  external JSFunction getTreatmentWithConfig;
-  external JSFunction getTreatmentsWithConfig;
-  external JSFunction getTreatmentsByFlagSet;
-  external JSFunction getTreatmentsByFlagSets;
-  external JSFunction getTreatmentsWithConfigByFlagSet;
-  external JSFunction getTreatmentsWithConfigByFlagSets;
-  external JSFunction track;
-  external JSFunction setAttribute;
-  external JSFunction getAttribute;
-  external JSFunction removeAttribute;
-  external JSFunction setAttributes;
-  external JSFunction getAttributes;
-  external JSFunction clearAttributes;
-  external JSFunction flush;
-  external JSFunction destroy;
+  external JSString getTreatment(
+      JSString flagName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatments(JSArray<JSString> flagNames, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentWithConfig(JSString flagName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsByFlagSet(JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfigByFlagSet(JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfigByFlagSets(JSArray<JSString> flagSetNames, JSObject attributes, JSObject evaluationOptions);
+  external JSBoolean track(JSString? trafficType, JSString eventType, JSNumber? value, JSObject? attributes);
+  external JSBoolean setAttribute(JSString attributeName, JSAny? attributeValue);
+  external JSAny getAttribute(JSString attributeName);
+  external JSBoolean removeAttribute(JSString attributeName);
+  external JSBoolean setAttributes(JSObject attributes);
+  external JSObject getAttributes();
+  external JSBoolean clearAttributes();
+  external JSPromise flush();
+  external JSPromise<Null> destroy();
   external JSFunction on;
   external JSFunction off;
   external JSFunction emit;
@@ -90,22 +94,22 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_IBrowserManager._(JSObject _) implements JSObject {
-  external JSFunction names;
-  external JSFunction split;
-  external JSFunction splits;
+  external JSArray<JSString> names();
+  external JSObject? split(JSString name);
+  external JSArray<JSObject> splits();
 }
 
 @JS()
 extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
-  external JSFunction client;
-  external JSFunction manager;
+  external JS_IBrowserClient client(JSAny? key);
+  external JS_IBrowserManager manager();
   external JS_ISettings settings;
   external JS_IUserConsentAPI UserConsent;
 }
 
 @JS()
 extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
-  external JSFunction SplitFactory;
+  external JS_IBrowserSDK SplitFactory(JSObject config);
   external JSFunction? InLocalStorage;
   external JSFunction? DebugLogger;
   external JSFunction? InfoLogger;

@@ -894,9 +894,8 @@ void main() {
           ?.then((value) => true);
 
       // Emit SDK_READY event
-      final mockClient = mock.mockFactory.client
-              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
-          as JS_IBrowserClient;
+      final mockClient =
+          mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_READY);
 
       expect(onReady, completion(equals(true)));
@@ -906,9 +905,8 @@ void main() {
         'onReadyFromCache (SDK_READY_FROM_CACHE event is emitted before onReadyFromCache is called)',
         () {
       // Emit SDK_READY_FROM_CACHE event
-      final mockClient = mock.mockFactory.client
-              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
-          as JS_IBrowserClient;
+      final mockClient =
+          mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit
           .callAsFunction(null, mockClient.Event.SDK_READY_FROM_CACHE);
 
@@ -926,9 +924,8 @@ void main() {
           ?.then((value) => true);
 
       // Emit SDK_READY_TIMED_OUT event
-      final mockClient = mock.mockFactory.client
-              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
-          as JS_IBrowserClient;
+      final mockClient =
+          mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit
           .callAsFunction(null, mockClient.Event.SDK_READY_TIMED_OUT);
 
@@ -939,9 +936,8 @@ void main() {
       // Precondition: client is initialized before onUpdated is called
       await _platform.getClient(
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
-      final mockClient = mock.mockFactory.client
-              .callAsFunction(null, buildJsKey('matching-key', 'bucketing-key'))
-          as JS_IBrowserClient;
+      final mockClient =
+          mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
 
       final stream = _platform.onUpdated(
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
@@ -991,23 +987,21 @@ void main() {
       }),
     );
 
-    mock.mockFactory.settings.impressionListener!.logImpression.callAsFunction(
-        null,
-        {
-          'impression': {
-            'feature': 'split',
-            'keyName': 'key',
-            'treatment': 'treatment',
-            'time': 3000,
-            'label': 'appliedRule',
-            'changeNumber': 200,
-            'properties': '{"a": 1}',
-          },
-          'attributes': {},
-          'ip': false,
-          'hostname': false,
-          'sdkLanguageVersion': 'browserjs-1.0.0',
-        }.jsify() as JS_ImpressionData);
+    mock.mockFactory.settings.impressionListener!.logImpression({
+      'impression': {
+        'feature': 'split',
+        'keyName': 'key',
+        'treatment': 'treatment',
+        'time': 3000,
+        'label': 'appliedRule',
+        'changeNumber': 200,
+        'properties': '{"a": 1}',
+      },
+      'attributes': {},
+      'ip': false,
+      'hostname': false,
+      'sdkLanguageVersion': 'browserjs-1.0.0',
+    }.jsify() as JS_ImpressionData);
   });
 
   group('userConsent', () {
