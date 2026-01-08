@@ -715,7 +715,7 @@ class SplitioWeb extends SplitioPlatform {
 
     final result = manager.split(splitName.toJS);
 
-    return result != null ? jsObjectToSplitView(result) : null;
+    return result != null ? jsSplitViewToSplitView(result) : null;
   }
 
   @override
@@ -724,7 +724,7 @@ class SplitioWeb extends SplitioPlatform {
 
     final result = manager.splits();
 
-    return result.toDart.map(jsObjectToSplitView).toList();
+    return result.toDart.map(jsSplitViewToSplitView).toList();
   }
 
   @override
@@ -767,9 +767,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .isReady
-        .toDart) {
+    if (client.getStatus().isReady.toDart) {
       return;
     } else {
       final completer = Completer<void>();
@@ -793,9 +791,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .isReadyFromCache
-        .toDart) {
+    if (client.getStatus().isReadyFromCache.toDart) {
       return;
     } else {
       final completer = Completer<void>();
@@ -819,9 +815,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .hasTimedout
-        .toDart) {
+    if (client.getStatus().hasTimedout.toDart) {
       return;
     } else {
       final completer = Completer<void>();

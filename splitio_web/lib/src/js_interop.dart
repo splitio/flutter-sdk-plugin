@@ -66,18 +66,55 @@ extension type JS_ReadinessStatus._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_TreatmentWithConfig._(JSObject _) implements JSObject {
+  external JSString treatment;
+  external JSString? config;
+}
+
+@JS()
+extension type JS_Prerequisite._(JSObject _) implements JSObject {
+  external JSString flagName;
+  external JSArray<JSString> treatments;
+}
+
+@JS()
+extension type JS_SplitView._(JSObject _) implements JSObject {
+  external JSString name;
+  external JSString trafficType;
+  external JSBoolean killed;
+  external JSArray<JSString> treatments;
+  external JSNumber changeNumber;
+  external JSObject configs;
+  external JSArray<JSString> sets;
+  external JSString defaultTreatment;
+  external JSBoolean impressionsDisabled;
+  external JSArray<JS_Prerequisite> prerequisites;
+}
+
+@JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSString getTreatment(
       JSString flagName, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatments(JSArray<JSString> flagNames, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentWithConfig(JSString flagName, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentsByFlagSet(JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentsWithConfigByFlagSet(JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
-  external JSObject getTreatmentsWithConfigByFlagSets(JSArray<JSString> flagSetNames, JSObject attributes, JSObject evaluationOptions);
-  external JSBoolean track(JSString? trafficType, JSString eventType, JSNumber? value, JSObject? attributes);
-  external JSBoolean setAttribute(JSString attributeName, JSAny? attributeValue);
+  external JSObject getTreatments(JSArray<JSString> flagNames,
+      JSObject attributes, JSObject evaluationOptions);
+  external JS_TreatmentWithConfig getTreatmentWithConfig(
+      JSString flagName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames,
+      JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsByFlagSet(
+      JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames,
+      JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfigByFlagSet(
+      JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+  external JSObject getTreatmentsWithConfigByFlagSets(
+      JSArray<JSString> flagSetNames,
+      JSObject attributes,
+      JSObject evaluationOptions);
+  external JSBoolean track(JSString? trafficType, JSString eventType,
+      JSNumber? value, JSObject? attributes);
+  external JSBoolean setAttribute(
+      JSString attributeName, JSAny? attributeValue);
   external JSAny getAttribute(JSString attributeName);
   external JSBoolean removeAttribute(JSString attributeName);
   external JSBoolean setAttributes(JSObject attributes);
@@ -89,14 +126,14 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSFunction off;
   external JSFunction emit;
   external JS_EventConsts Event;
-  external JSFunction getStatus;
+  external JS_ReadinessStatus getStatus();
 }
 
 @JS()
 extension type JS_IBrowserManager._(JSObject _) implements JSObject {
   external JSArray<JSString> names();
-  external JSObject? split(JSString name);
-  external JSArray<JSObject> splits();
+  external JS_SplitView? split(JSString name);
+  external JSArray<JS_SplitView> splits();
 }
 
 @JS()
@@ -167,40 +204,30 @@ Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
       k, SplitResult(v['treatment'] as String, v['config'] as String?)));
 }
 
-SplitResult jsTreatmentWithConfigToSplitResult(JSObject obj) {
-  final config = _reflectGet(obj, 'config'.toJS);
-  return SplitResult((_reflectGet(obj, 'treatment'.toJS) as JSString).toDart,
-      (config is JSString) ? config.toDart : null);
+SplitResult jsTreatmentWithConfigToSplitResult(JS_TreatmentWithConfig obj) {
+  return SplitResult(obj.treatment.toDart,
+      (obj.config is JSString) ? obj.config!.toDart : null);
 }
 
-Prerequisite jsObjectToPrerequisite(JSObject obj) {
+Prerequisite jsPrerequisiteToPrerequisite(JS_Prerequisite obj) {
   return Prerequisite(
-    (_reflectGet(obj, 'flagName'.toJS) as JSString).toDart,
-    jsArrayToList(_reflectGet(obj, 'treatments'.toJS) as JSArray<JSString>)
-        .toSet()
-        .cast<String>(),
+    obj.flagName.toDart,
+    jsArrayToList(obj.treatments).toSet().cast<String>(),
   );
 }
 
-// @TODO: JS_SplitView
-SplitView jsObjectToSplitView(JSObject obj) {
+SplitView jsSplitViewToSplitView(JS_SplitView obj) {
   return SplitView(
-      (_reflectGet(obj, 'name'.toJS) as JSString).toDart,
-      (_reflectGet(obj, 'trafficType'.toJS) as JSString).toDart,
-      (_reflectGet(obj, 'killed'.toJS) as JSBoolean).toDart,
-      jsArrayToList(_reflectGet(obj, 'treatments'.toJS) as JSArray<JSString>)
-          .cast<String>(),
-      (_reflectGet(obj, 'changeNumber'.toJS) as JSNumber).toDartInt,
-      jsObjectToMap(_reflectGet(obj, 'configs'.toJS) as JSObject)
-          .cast<String, String>(),
-      (_reflectGet(obj, 'defaultTreatment'.toJS) as JSString).toDart,
-      jsArrayToList(_reflectGet(obj, 'sets'.toJS) as JSArray<JSString>)
-          .cast<String>(),
-      (_reflectGet(obj, 'impressionsDisabled'.toJS) as JSBoolean).toDart,
-      (_reflectGet(obj, 'prerequisites'.toJS) as JSArray<JSObject>)
-          .toDart
-          .map(jsObjectToPrerequisite)
-          .toSet());
+      obj.name.toDart,
+      obj.trafficType.toDart,
+      obj.killed.toDart,
+      jsArrayToList(obj.treatments).cast<String>(),
+      obj.changeNumber.toDartInt,
+      jsObjectToMap(obj.configs).cast<String, String>(),
+      obj.defaultTreatment.toDart,
+      jsArrayToList(obj.sets).cast<String>(),
+      obj.impressionsDisabled.toDart,
+      obj.prerequisites.toDart.map(jsPrerequisiteToPrerequisite).toSet());
 }
 
 Impression jsImpressionDataToImpression(JS_ImpressionData obj) {
