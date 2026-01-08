@@ -245,16 +245,24 @@ class SplitioWeb extends SplitioPlatform {
 
       final logLevel = configuration.configurationMap['logLevel'];
       if (logLevel is String) {
-        final logger = logLevel == SplitLogLevel.verbose.toString() ||
-                logLevel == SplitLogLevel.debug.toString()
-            ? window.splitio!.DebugLogger?.callAsFunction(null)
-            : logLevel == SplitLogLevel.info.toString()
-                ? window.splitio!.InfoLogger?.callAsFunction(null)
-                : logLevel == SplitLogLevel.warning.toString()
-                    ? window.splitio!.WarnLogger?.callAsFunction(null)
-                    : logLevel == SplitLogLevel.error.toString()
-                        ? window.splitio!.ErrorLogger?.callAsFunction(null)
-                        : null;
+        JSAny? logger;
+        switch (SplitLogLevel.values.firstWhere((e) => e.name == logLevel)) {
+          case SplitLogLevel.verbose:
+          case SplitLogLevel.debug:
+            logger = window.splitio!.DebugLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.info:
+            logger = window.splitio!.InfoLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.warning:
+            logger = window.splitio!.WarnLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.error:
+            logger = window.splitio!.ErrorLogger?.callAsFunction();
+            break;
+          default:
+            break;
+        }
         if (logger != null) {
           config.setProperty('debug'.toJS, logger); // Browser SDK
         } else {
@@ -263,7 +271,11 @@ class SplitioWeb extends SplitioPlatform {
         }
       } else if (configuration.configurationMap['enableDebug'] == true) {
         config.setProperty(
-            'debug'.toJS, window.splitio!.DebugLogger?.callAsFunction(null));
+            'debug'.toJS,
+            window.splitio!.DebugLogger != null
+                ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
+                : 'DEBUG'.toJS // JS SDK
+            );
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
@@ -698,9 +710,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.flush.callAsFunction(null) as JSPromise<Null>;
+    final result = client.flush.callAsFunction(null) as JSPromise<JSAny?>;
 
-    return result.toDart;
+    // @TODO remove wrapping to Future<void> when JS SDK `flush` type is fixed
+    return result.toDart.then((_) {});
   }
 
   @override
@@ -784,7 +797,7 @@ class SplitioWeb extends SplitioPlatform {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY,
           () {
             completer.complete();
@@ -810,7 +823,7 @@ class SplitioWeb extends SplitioPlatform {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY_FROM_CACHE,
           () {
             completer.complete();
@@ -836,7 +849,7 @@ class SplitioWeb extends SplitioPlatform {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY_TIMED_OUT,
           () {
             completer.complete();
@@ -864,16 +877,16 @@ class SplitioWeb extends SplitioPlatform {
 
     controller = StreamController<void>(
       onListen: () {
-        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onPause: () {
-        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onResume: () {
-        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onCancel: () async {
-        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
         if (!controller.isClosed) {
           await controller.close();
         }
