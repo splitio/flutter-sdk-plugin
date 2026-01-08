@@ -695,10 +695,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.flush();
-
-    // @TODO remove wrapping to Future<void> when JS SDK `flush` type is fixed
-    return result.toDart.then((_) {});
+    return client.flush().toDart;
   }
 
   @override
@@ -709,9 +706,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.destroy();
-
-    return result.toDart;
+    return client.destroy().toDart;
   }
 
   @override

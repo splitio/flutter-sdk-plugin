@@ -83,7 +83,7 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSBoolean setAttributes(JSObject attributes);
   external JSObject getAttributes();
   external JSBoolean clearAttributes();
-  external JSPromise flush();
+  external JSPromise<Null> flush();
   external JSPromise<Null> destroy();
   external JSFunction on;
   external JSFunction off;
