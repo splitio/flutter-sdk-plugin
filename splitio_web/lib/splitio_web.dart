@@ -23,7 +23,8 @@ class SplitioWeb extends SplitioPlatform {
 
   late JS_IBrowserSDK _factory;
   String? _trafficType;
-  bool _impressionListener = false;
+  final StreamController<Impression> _impressionsStreamController =
+      StreamController<Impression>();
 
   final Map<String, JS_IBrowserClient> _clients = {};
 
@@ -62,11 +63,6 @@ class SplitioWeb extends SplitioPlatform {
     if (sdkConfiguration != null) {
       if (sdkConfiguration.configurationMap['trafficType'] is String) {
         this._trafficType = sdkConfiguration.configurationMap['trafficType'];
-      }
-
-      if (sdkConfiguration.configurationMap['impressionListener'] is bool) {
-        this._impressionListener =
-            sdkConfiguration.configurationMap['impressionListener'];
       }
 
       // Log warnings regarding unsupported configs. Not done in _buildConfig to reuse the factory logger
@@ -123,8 +119,8 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  static JSObject _buildConfig(String apiKey, String matchingKey,
-      String? bucketingKey, SplitConfiguration? configuration) {
+  JSObject _buildConfig(String apiKey, String matchingKey, String? bucketingKey,
+      SplitConfiguration? configuration) {
     final config = JSObject();
 
     final core = JSObject();
@@ -299,6 +295,17 @@ class SplitioWeb extends SplitioPlatform {
                 ?.callAsFunction(null, storageOptions)); // Browser SDK
       } else {
         config.setProperty('storage'.toJS, storageOptions); // JS SDK
+      }
+
+      if (configuration.configurationMap['impressionListener'] is bool) {
+        final JSFunction logImpression = ((JS_ImpressionData data) {
+          _impressionsStreamController.add(jsImpressionDataToImpression(data));
+        }).toJS;
+
+        final JSObject impressionListener = JSObject();
+        impressionListener.setProperty('logImpression'.toJS, logImpression);
+
+        config.setProperty('impressionListener'.toJS, impressionListener);
       }
     }
 
@@ -874,5 +881,10 @@ class SplitioWeb extends SplitioPlatform {
     );
 
     return controller.stream;
+  }
+
+  @override
+  Stream<Impression> impressionsStream() {
+    return _impressionsStreamController.stream;
   }
 }

@@ -4,13 +4,41 @@ import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 // JS SDK types
 
 @JS()
+extension type JS_ImpressionDTO._(JSObject _) implements JSObject {
+  external JSString feature;
+  external JSString keyName;
+  external JSString treatment;
+  external JSNumber time;
+  external JSString? bucketingKey;
+  external JSString label;
+  external JSNumber changeNumber;
+  external JSNumber? pt;
+  external JSString? properties;
+}
+
+@JS()
+extension type JS_ImpressionData._(JSObject _) implements JSObject {
+  external JS_ImpressionDTO impression;
+  external JSObject? attributes;
+  external JSAny ip; // string | false
+  external JSAny hostname; // string | false
+  external JSString sdkLanguageVersion;
+}
+
+@JS()
 extension type JS_Logger._(JSObject _) implements JSObject {
   external JSFunction warn;
 }
 
 @JS()
+extension type JS_IImpressionListener._(JSObject _) implements JSObject {
+  external JSFunction logImpression;
+}
+
+@JS()
 extension type JS_ISettings._(JSObject _) implements JSObject {
   external JS_Logger log;
+  external JS_IImpressionListener? impressionListener;
 }
 
 @JS()
@@ -93,6 +121,9 @@ external JSArray<JSString> _objectKeys(JSObject obj);
 @JS('Reflect.get')
 external JSAny? _reflectGet(JSObject target, JSAny propertyKey);
 
+@JS('JSON.parse')
+external JSObject _jsonParse(JSString obj);
+
 List<dynamic> jsArrayToList(JSArray obj) {
   return obj.toDart.map(jsAnyToDart).toList();
 }
@@ -147,6 +178,7 @@ Prerequisite jsObjectToPrerequisite(JSObject obj) {
   );
 }
 
+// @TODO: JS_SplitView
 SplitView jsObjectToSplitView(JSObject obj) {
   return SplitView(
       (_reflectGet(obj, 'name'.toJS) as JSString).toDart,
@@ -165,6 +197,24 @@ SplitView jsObjectToSplitView(JSObject obj) {
           .toDart
           .map(jsObjectToPrerequisite)
           .toSet());
+}
+
+Impression jsImpressionDataToImpression(JS_ImpressionData obj) {
+  return Impression(
+    obj.impression.keyName.toDart,
+    obj.impression.bucketingKey != null
+        ? obj.impression.bucketingKey!.toDart
+        : null,
+    obj.impression.feature.toDart,
+    obj.impression.treatment.toDart,
+    obj.impression.time.toDartInt,
+    obj.impression.label.toDart,
+    obj.impression.changeNumber.toDartInt,
+    obj.attributes != null ? jsObjectToMap(obj.attributes!) : {},
+    obj.impression.properties != null
+        ? jsObjectToMap(_jsonParse(obj.impression.properties!))
+        : null,
+  );
 }
 
 JSAny buildJsKey(String matchingKey, String? bucketingKey) {
