@@ -117,9 +117,9 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  JSObject _buildConfig(String apiKey, String matchingKey, String? bucketingKey,
-      SplitConfiguration? configuration) {
-    final config = JSObject();
+  JS_Configuration _buildConfig(String apiKey, String matchingKey,
+      String? bucketingKey, SplitConfiguration? configuration) {
+    final config = JSObject() as JS_Configuration;
 
     final core = JSObject();
     core.setProperty('authorizationKey'.toJS, apiKey.toJS);
@@ -393,12 +393,13 @@ class SplitioWeb extends SplitioPlatform {
     return jsMap;
   }
 
-  JSObject _convertEvaluationOptions(EvaluationOptions evaluationOptions) {
-    final jsEvalOptions = JSObject();
+  JS_EvaluationOptions _convertEvaluationOptions(
+      EvaluationOptions evaluationOptions) {
+    final jsEvalOptions = JSObject() as JS_EvaluationOptions;
 
     if (evaluationOptions.properties.isNotEmpty) {
-      jsEvalOptions.setProperty(
-          'properties'.toJS, _convertMap(evaluationOptions.properties, false));
+      jsEvalOptions.properties =
+          _convertMap(evaluationOptions.properties, false);
     }
 
     return jsEvalOptions;

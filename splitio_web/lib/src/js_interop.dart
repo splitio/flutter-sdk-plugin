@@ -39,7 +39,11 @@ extension type JS_IImpressionListener._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_ISettings._(JSObject _) implements JSObject {
+extension type JS_Configuration._(JSObject _) implements JSObject {
+}
+
+@JS()
+extension type JS_ISettings._(JSObject _) implements JS_Configuration {
   external JS_Logger log;
   external JS_IImpressionListener? impressionListener;
 }
@@ -92,25 +96,30 @@ extension type JS_SplitView._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_EvaluationOptions._(JSObject _) implements JSObject {
+  external JSObject properties;
+}
+
+@JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSString getTreatment(
-      JSString flagName, JSObject attributes, JSObject evaluationOptions);
+      JSString flagName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatments(JSArray<JSString> flagNames,
-      JSObject attributes, JSObject evaluationOptions);
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JS_TreatmentWithConfig getTreatmentWithConfig(
-      JSString flagName, JSObject attributes, JSObject evaluationOptions);
+      JSString flagName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames,
-      JSObject attributes, JSObject evaluationOptions);
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsByFlagSet(
-      JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+      JSString flagSetName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames,
-      JSObject attributes, JSObject evaluationOptions);
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfigByFlagSet(
-      JSString flagSetName, JSObject attributes, JSObject evaluationOptions);
+      JSString flagSetName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfigByFlagSets(
       JSArray<JSString> flagSetNames,
       JSObject attributes,
-      JSObject evaluationOptions);
+      JS_EvaluationOptions evaluationOptions);
   external JSBoolean track(JSString? trafficType, JSString eventType,
       JSNumber? value, JSObject? attributes);
   external JSBoolean setAttribute(
@@ -146,7 +155,7 @@ extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
-  external JS_IBrowserSDK SplitFactory(JSObject config);
+  external JS_IBrowserSDK SplitFactory(JS_Configuration config);
   external JSFunction? InLocalStorage;
   external JSFunction? DebugLogger;
   external JSFunction? InfoLogger;
