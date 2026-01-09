@@ -164,20 +164,33 @@ class SplitioWeb extends SplitioPlatform {
       if (configuration.configurationMap.containsKey('eventsEndpoint'))
         urls.events =
             (configuration.configurationMap['eventsEndpoint'] as String).toJS;
-      if (configuration.configurationMap.containsKey('authServiceEndpoint'))
-        urls.auth =
-            (configuration.configurationMap['authServiceEndpoint'] as String)
-                .toJS;
+
+      // Convert urls for consistency between JS SDK and Android/iOS SDK
+      if (configuration.configurationMap.containsKey('authServiceEndpoint')) {
+        final auth =
+            configuration.configurationMap['authServiceEndpoint'] as String;
+        final jsAuth =
+            auth.endsWith('/v2') ? auth.substring(0, auth.length - 3) : auth;
+        urls.auth = jsAuth.toJS;
+      }
       if (configuration.configurationMap
-          .containsKey('streamingServiceEndpoint'))
-        urls.streaming = (configuration
-                .configurationMap['streamingServiceEndpoint'] as String)
-            .toJS;
+          .containsKey('streamingServiceEndpoint')) {
+        final streaming = configuration
+            .configurationMap['streamingServiceEndpoint'] as String;
+        final jsStreaming = streaming.endsWith('/sse')
+            ? streaming.substring(0, streaming.length - 4)
+            : streaming;
+        urls.streaming = jsStreaming.toJS;
+      }
       if (configuration.configurationMap
-          .containsKey('telemetryServiceEndpoint'))
-        urls.telemetry = (configuration
-                .configurationMap['telemetryServiceEndpoint'] as String)
-            .toJS;
+          .containsKey('telemetryServiceEndpoint')) {
+        final telemetry = configuration
+            .configurationMap['telemetryServiceEndpoint'] as String;
+        final jsTelemetry = telemetry.endsWith('/v1')
+            ? telemetry.substring(0, telemetry.length - 3)
+            : telemetry;
+        urls.telemetry = jsTelemetry.toJS;
+      }
       config.urls = urls;
 
       final sync = JSObject() as JS_ConfigurationSync;

@@ -647,11 +647,11 @@ void main() {
               streamingEnabled: false,
               persistentAttributesEnabled: true, // unsupported in Web
               impressionListener: true,
-              sdkEndpoint: 'sdk-endpoint',
-              eventsEndpoint: 'events-endpoint',
-              authServiceEndpoint: 'auth-service-endpoint',
-              streamingServiceEndpoint: 'streaming-service-endpoint',
-              telemetryServiceEndpoint: 'telemetry-service-endpoint',
+              sdkEndpoint: 'https://sdk.split-stage.io/api',
+              eventsEndpoint: 'https://events.split-stage.io/api',
+              authServiceEndpoint: 'https://auth.split-stage.io/api/v2',
+              streamingServiceEndpoint: 'https://streaming.split.io/sse',
+              telemetryServiceEndpoint: 'https://telemetry.split-stage.io/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,
@@ -693,11 +693,11 @@ void main() {
               'eventsPushRate': 7,
             },
             'urls': {
-              'sdk': 'sdk-endpoint',
-              'events': 'events-endpoint',
-              'auth': 'auth-service-endpoint',
-              'streaming': 'streaming-service-endpoint',
-              'telemetry': 'telemetry-service-endpoint',
+              'sdk': 'https://sdk.split-stage.io/api',
+              'events': 'https://events.split-stage.io/api',
+              'auth': 'https://auth.split-stage.io/api',
+              'streaming': 'https://streaming.split.io',
+              'telemetry': 'https://telemetry.split-stage.io/api',
             },
             'sync': {
               'impressionsMode': 'NONE',
