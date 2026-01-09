@@ -39,7 +39,69 @@ extension type JS_IImpressionListener._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_ConfigurationCore._(JSObject _) implements JSObject {
+  external JSString authorizationKey;
+  external JSAny key; // string | SplitKey
+}
+
+@JS()
+extension type JS_ConfigurationStartup._(JSObject _) implements JSObject {
+  external JSNumber? readyTimeout;
+}
+
+@JS()
+extension type JS_ConfigurationScheduler._(JSObject _) implements JSObject {
+  external JSNumber? featuresRefreshRate;
+  external JSNumber? segmentsRefreshRate;
+  external JSNumber? impressionsRefreshRate;
+  external JSNumber? eventsRefreshRate;
+  external JSNumber? telemetryRefreshRate;
+  external JSNumber? eventsQueueSize;
+  external JSNumber? impressionsQueueSize;
+  external JSNumber? eventsPushRate;
+}
+
+@JS()
+extension type JS_ConfigurationUrls._(JSObject _) implements JSObject {
+  external JSString? sdk;
+  external JSString? events;
+  external JSString? auth;
+  external JSString? streaming;
+  external JSString? telemetry;
+}
+
+@JS()
+extension type JS_SplitFilter._(JSObject _) implements JSObject {
+  external JSString type;
+  external JSArray<JSString> values;
+}
+
+@JS()
+extension type JS_ConfigurationSync._(JSObject _) implements JSObject {
+  external JSString? impressionsMode;
+  external JSBoolean? enabled;
+  external JSArray<JS_SplitFilter>? splitFilters;
+}
+
+@JS()
+extension type JS_ConfigurationStorage._(JSObject _) implements JSObject {
+  external JSString? type;
+  external JSNumber? expirationDays;
+  external JSBoolean? clearOnInit;
+}
+
+@JS()
 extension type JS_Configuration._(JSObject _) implements JSObject {
+  external JS_ConfigurationCore core;
+  external JS_ConfigurationStartup? startup;
+  external JS_ConfigurationScheduler? scheduler;
+  external JS_ConfigurationUrls? urls;
+  external JS_ConfigurationSync? sync;
+  external JSBoolean? streamingEnabled;
+  external JSString? userConsent;
+  external JS_IImpressionListener? impressionListener;
+  external JSAny? debug;
+  external JSAny? storage;
 }
 
 @JS()
@@ -102,20 +164,20 @@ extension type JS_EvaluationOptions._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_IBrowserClient._(JSObject _) implements JSObject {
-  external JSString getTreatment(
-      JSString flagName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
+  external JSString getTreatment(JSString flagName, JSObject attributes,
+      JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatments(JSArray<JSString> flagNames,
       JSObject attributes, JS_EvaluationOptions evaluationOptions);
-  external JS_TreatmentWithConfig getTreatmentWithConfig(
-      JSString flagName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
+  external JS_TreatmentWithConfig getTreatmentWithConfig(JSString flagName,
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames,
       JSObject attributes, JS_EvaluationOptions evaluationOptions);
-  external JSObject getTreatmentsByFlagSet(
-      JSString flagSetName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
+  external JSObject getTreatmentsByFlagSet(JSString flagSetName,
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames,
       JSObject attributes, JS_EvaluationOptions evaluationOptions);
-  external JSObject getTreatmentsWithConfigByFlagSet(
-      JSString flagSetName, JSObject attributes, JS_EvaluationOptions evaluationOptions);
+  external JSObject getTreatmentsWithConfigByFlagSet(JSString flagSetName,
+      JSObject attributes, JS_EvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfigByFlagSets(
       JSArray<JSString> flagSetNames,
       JSObject attributes,
@@ -139,7 +201,7 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_IBrowserManager._(JSObject _) implements JSObject {
+extension type JS_IManager._(JSObject _) implements JSObject {
   external JSArray<JSString> names();
   external JS_SplitView? split(JSString name);
   external JSArray<JS_SplitView> splits();
@@ -148,7 +210,7 @@ extension type JS_IBrowserManager._(JSObject _) implements JSObject {
 @JS()
 extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
   external JS_IBrowserClient client(JSAny? key);
-  external JS_IBrowserManager manager();
+  external JS_IManager manager();
   external JS_ISettings settings;
   external JS_IUserConsentAPI UserConsent;
 }
@@ -166,13 +228,16 @@ extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
 // Conversion utils: JS to Dart types
 
 @JS('Object.keys')
-external JSArray<JSString> _objectKeys(JSObject obj);
+external JSArray<JSString> objectKeys(JSObject obj);
 
 @JS('Reflect.get')
-external JSAny? _reflectGet(JSObject target, JSAny propertyKey);
+external JSAny? reflectGet(JSObject target, JSAny propertyKey);
+
+@JS('Reflect.set')
+external JSAny? reflectSet(JSObject target, JSAny propertyKey, JSAny value);
 
 @JS('JSON.parse')
-external JSObject _jsonParse(JSString obj);
+external JSObject jsonParse(JSString obj);
 
 List<dynamic> jsArrayToList(JSArray obj) {
   return obj.toDart.map(jsAnyToDart).toList();
@@ -180,9 +245,8 @@ List<dynamic> jsArrayToList(JSArray obj) {
 
 Map<String, dynamic> jsObjectToMap(JSObject obj) {
   return {
-    for (final jsKey in _objectKeys(obj).toDart)
-      // @TODO _reflectGet (js_interop) vs obj.getProperty (js_interop_unsafe)
-      jsKey.toDart: jsAnyToDart(_reflectGet(obj, jsKey)),
+    for (final jsKey in objectKeys(obj).toDart)
+      jsKey.toDart: jsAnyToDart(reflectGet(obj, jsKey)),
   };
 }
 
@@ -252,7 +316,7 @@ Impression jsImpressionDataToImpression(JS_ImpressionData obj) {
     obj.impression.changeNumber.toDartInt,
     obj.attributes != null ? jsObjectToMap(obj.attributes!) : {},
     obj.impression.properties != null
-        ? jsObjectToMap(_jsonParse(obj.impression.properties!))
+        ? jsObjectToMap(jsonParse(obj.impression.properties!))
         : null,
   );
 }

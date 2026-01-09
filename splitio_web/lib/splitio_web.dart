@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart' show Registrar;
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 import 'package:splitio_web/src/js_interop.dart';
@@ -121,90 +120,77 @@ class SplitioWeb extends SplitioPlatform {
       String? bucketingKey, SplitConfiguration? configuration) {
     final config = JSObject() as JS_Configuration;
 
-    final core = JSObject();
-    core.setProperty('authorizationKey'.toJS, apiKey.toJS);
-    core.setProperty('key'.toJS, buildJsKey(matchingKey, bucketingKey));
-    config.setProperty('core'.toJS, core);
+    final core = JSObject() as JS_ConfigurationCore;
+    core.authorizationKey = apiKey.toJS;
+    core.key = buildJsKey(matchingKey, bucketingKey);
+    config.core = core;
 
     if (configuration != null) {
-      final scheduler = JSObject();
+      final scheduler = JSObject() as JS_ConfigurationScheduler;
       if (configuration.configurationMap.containsKey('featuresRefreshRate'))
-        scheduler.setProperty(
-            'featuresRefreshRate'.toJS,
-            (configuration.configurationMap['featuresRefreshRate'] as int)
-                .toJS);
+        scheduler.featuresRefreshRate =
+            (configuration.configurationMap['featuresRefreshRate'] as int).toJS;
       if (configuration.configurationMap.containsKey('segmentsRefreshRate'))
-        scheduler.setProperty(
-            'segmentsRefreshRate'.toJS,
-            (configuration.configurationMap['segmentsRefreshRate'] as int)
-                .toJS);
+        scheduler.segmentsRefreshRate =
+            (configuration.configurationMap['segmentsRefreshRate'] as int).toJS;
       if (configuration.configurationMap.containsKey('impressionsRefreshRate'))
-        scheduler.setProperty(
-            'impressionsRefreshRate'.toJS,
+        scheduler.impressionsRefreshRate =
             (configuration.configurationMap['impressionsRefreshRate'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('telemetryRefreshRate'))
-        scheduler.setProperty(
-            'telemetryRefreshRate'.toJS,
+        scheduler.telemetryRefreshRate =
             (configuration.configurationMap['telemetryRefreshRate'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('eventsQueueSize'))
-        scheduler.setProperty('eventsQueueSize'.toJS,
-            (configuration.configurationMap['eventsQueueSize'] as int).toJS);
+        scheduler.eventsQueueSize =
+            (configuration.configurationMap['eventsQueueSize'] as int).toJS;
       if (configuration.configurationMap.containsKey('impressionsQueueSize'))
-        scheduler.setProperty(
-            'impressionsQueueSize'.toJS,
+        scheduler.impressionsQueueSize =
             (configuration.configurationMap['impressionsQueueSize'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('eventFlushInterval'))
-        scheduler.setProperty('eventsPushRate'.toJS,
-            (configuration.configurationMap['eventFlushInterval'] as int).toJS);
-      config.setProperty('scheduler'.toJS, scheduler);
+        scheduler.eventsPushRate =
+            (configuration.configurationMap['eventFlushInterval'] as int).toJS;
+      config.scheduler = scheduler;
 
       if (configuration.configurationMap.containsKey('streamingEnabled'))
-        config.setProperty('streamingEnabled'.toJS,
-            (configuration.configurationMap['streamingEnabled'] as bool).toJS);
+        config.streamingEnabled =
+            (configuration.configurationMap['streamingEnabled'] as bool).toJS;
 
-      final urls = JSObject();
+      final urls = JSObject() as JS_ConfigurationUrls;
       if (configuration.configurationMap.containsKey('sdkEndpoint'))
-        urls.setProperty('sdk'.toJS,
-            (configuration.configurationMap['sdkEndpoint'] as String).toJS);
+        urls.sdk =
+            (configuration.configurationMap['sdkEndpoint'] as String).toJS;
       if (configuration.configurationMap.containsKey('eventsEndpoint'))
-        urls.setProperty('events'.toJS,
-            (configuration.configurationMap['eventsEndpoint'] as String).toJS);
+        urls.events =
+            (configuration.configurationMap['eventsEndpoint'] as String).toJS;
       if (configuration.configurationMap.containsKey('authServiceEndpoint'))
-        urls.setProperty(
-            'auth'.toJS,
+        urls.auth =
             (configuration.configurationMap['authServiceEndpoint'] as String)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap
           .containsKey('streamingServiceEndpoint'))
-        urls.setProperty(
-            'streaming'.toJS,
-            (configuration.configurationMap['streamingServiceEndpoint']
-                    as String)
-                .toJS);
+        urls.streaming = (configuration
+                .configurationMap['streamingServiceEndpoint'] as String)
+            .toJS;
       if (configuration.configurationMap
           .containsKey('telemetryServiceEndpoint'))
-        urls.setProperty(
-            'telemetry'.toJS,
-            (configuration.configurationMap['telemetryServiceEndpoint']
-                    as String)
-                .toJS);
-      config.setProperty('urls'.toJS, urls);
+        urls.telemetry = (configuration
+                .configurationMap['telemetryServiceEndpoint'] as String)
+            .toJS;
+      config.urls = urls;
 
-      final sync = JSObject();
+      final sync = JSObject() as JS_ConfigurationSync;
       if (configuration.configurationMap['impressionsMode'] != null) {
-        sync.setProperty(
-            'impressionsMode'.toJS,
+        sync.impressionsMode =
             (configuration.configurationMap['impressionsMode'] as String)
                 .toUpperCase()
-                .toJS);
+                .toJS;
       }
 
       if (configuration.configurationMap['syncEnabled'] != null) {
-        sync.setProperty('enabled'.toJS,
-            (configuration.configurationMap['syncEnabled'] as bool).toJS);
+        sync.enabled =
+            (configuration.configurationMap['syncEnabled'] as bool).toJS;
       }
 
       if (configuration.configurationMap['syncConfig'] != null) {
@@ -229,16 +215,15 @@ class SplitioWeb extends SplitioPlatform {
           splitFilters.add(
               {'type': 'bySet', 'values': syncConfig['syncConfigFlagSets']});
         }
-        sync.setProperty('splitFilters'.toJS, splitFilters.jsify());
+        sync.splitFilters = splitFilters.jsify() as JSArray<JS_SplitFilter>;
       }
-      config.setProperty('sync'.toJS, sync);
+      config.sync = sync;
 
       if (configuration.configurationMap['userConsent'] != null) {
-        config.setProperty(
-            'userConsent'.toJS,
+        config.userConsent =
             (configuration.configurationMap['userConsent'] as String)
                 .toUpperCase()
-                .toJS);
+                .toJS;
       }
 
       final logLevel = configuration.configurationMap['logLevel'];
@@ -262,49 +247,43 @@ class SplitioWeb extends SplitioPlatform {
             break;
         }
         if (logger != null) {
-          config.setProperty('debug'.toJS, logger); // Browser SDK
+          config.debug = logger; // Browser SDK
         } else {
-          config.setProperty(
-              'debug'.toJS, logLevel.toUpperCase().toJS); // JS SDK
+          config.debug = logLevel.toUpperCase().toJS; // JS SDK
         }
       } else if (configuration.configurationMap['enableDebug'] == true) {
-        config.setProperty(
-            'debug'.toJS,
-            window.splitio!.DebugLogger != null
-                ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
-                : 'DEBUG'.toJS // JS SDK
-            );
+        config.debug = window.splitio!.DebugLogger != null
+            ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
+            : 'DEBUG'.toJS; // JS SDK
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
-        final startup = JSObject();
-        startup.setProperty('readyTimeout'.toJS,
-            (configuration.configurationMap['readyTimeout'] as int).toJS);
-        config.setProperty('startup'.toJS, startup);
+        final startup = JSObject() as JS_ConfigurationStartup;
+        startup.readyTimeout =
+            (configuration.configurationMap['readyTimeout'] as int).toJS;
+        config.startup = startup;
       }
 
-      final storageOptions = JSObject();
-      storageOptions.setProperty('type'.toJS, 'LOCALSTORAGE'.toJS);
+      final storageOptions = JSObject() as JS_ConfigurationStorage;
+      storageOptions.type = 'LOCALSTORAGE'.toJS;
       if (configuration.configurationMap['rolloutCacheConfiguration'] != null) {
         final rolloutCacheConfiguration =
             configuration.configurationMap['rolloutCacheConfiguration']
                 as Map<String, dynamic>;
         if (rolloutCacheConfiguration['expirationDays'] != null) {
-          storageOptions.setProperty('expirationDays'.toJS,
-              (rolloutCacheConfiguration['expirationDays'] as int).toJS);
+          storageOptions.expirationDays =
+              (rolloutCacheConfiguration['expirationDays'] as int).toJS;
         }
         if (rolloutCacheConfiguration['clearOnInit'] != null) {
-          storageOptions.setProperty('clearOnInit'.toJS,
-              (rolloutCacheConfiguration['clearOnInit'] as bool).toJS);
+          storageOptions.clearOnInit =
+              (rolloutCacheConfiguration['clearOnInit'] as bool).toJS;
         }
       }
       if (window.splitio!.InLocalStorage != null) {
-        config.setProperty(
-            'storage'.toJS,
-            window.splitio!.InLocalStorage
-                ?.callAsFunction(null, storageOptions)); // Browser SDK
+        config.storage = window.splitio!.InLocalStorage
+            ?.callAsFunction(null, storageOptions); // Browser SDK
       } else {
-        config.setProperty('storage'.toJS, storageOptions); // JS SDK
+        config.storage = storageOptions; // JS SDK
       }
 
       if (configuration.configurationMap['impressionListener'] is bool) {
@@ -312,10 +291,10 @@ class SplitioWeb extends SplitioPlatform {
           _impressionsStreamController.add(jsImpressionDataToImpression(data));
         }).toJS;
 
-        final JSObject impressionListener = JSObject();
-        impressionListener.setProperty('logImpression'.toJS, logImpression);
+        final impressionListener = JSObject() as JS_IImpressionListener;
+        reflectSet(impressionListener, 'logImpression'.toJS, logImpression);
 
-        config.setProperty('impressionListener'.toJS, impressionListener);
+        config.impressionListener = impressionListener;
       }
     }
 
@@ -355,7 +334,7 @@ class SplitioWeb extends SplitioPlatform {
     return _clients[key]!;
   }
 
-  Future<JS_IBrowserManager> _getManager() async {
+  Future<JS_IManager> _getManager() async {
     await this._initFuture;
 
     return _factory.manager();
@@ -382,7 +361,7 @@ class SplitioWeb extends SplitioPlatform {
       final jsValue = _convertValue(value, isAttribute);
 
       if (jsValue != null) {
-        jsMap.setProperty(key.toJS, jsValue);
+        reflectSet(jsMap, key.toJS, jsValue);
       } else {
         this._factory.settings.log.warn(
             'Invalid ${isAttribute ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'

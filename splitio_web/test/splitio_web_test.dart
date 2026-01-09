@@ -1,5 +1,4 @@
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 import 'package:web/web.dart' as web;
 import 'package:flutter_test/flutter_test.dart';
@@ -23,7 +22,7 @@ void main() {
   final mock = SplitioMock();
 
   setUp(() {
-    (web.window as JSObject)['splitio'] = mock.splitio;
+    web.window.splitio = mock.splitio;
 
     _platform.init(
         apiKey: 'apiKey',

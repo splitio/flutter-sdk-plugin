@@ -1,5 +1,4 @@
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 import 'package:splitio_web/src/js_interop.dart';
 
 @JS('Promise.resolve')
@@ -10,7 +9,7 @@ external JSObject _objectAssign(JSObject target, JSObject source);
 
 class SplitioMock {
   // JS Browser SDK API mock
-  final JSObject splitio = JSObject();
+  final JS_BrowserSDKPackage splitio = JSObject() as JS_BrowserSDKPackage;
 
   // Test utils
   final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
@@ -45,26 +44,35 @@ class SplitioMock {
   }
 
   SplitioMock() {
-    final mockManager = JSObject();
-    mockManager['split'] = (JSString splitName) {
-      calls.add((methodName: 'split', methodArguments: [splitName]));
+    final mockManager = JSObject() as JS_IManager;
+    reflectSet(
+        mockManager,
+        'split'.toJS,
+        (JSString splitName) {
+          calls.add((methodName: 'split', methodArguments: [splitName]));
 
-      if (splitName.toDart == 'inexistent_split') {
-        return null;
-      }
-      return _createSplitViewJSObject(splitName);
-    }.toJS;
-    mockManager['splits'] = () {
-      calls.add((methodName: 'splits', methodArguments: []));
-      return [
-        _createSplitViewJSObject('split1'.toJS),
-        _createSplitViewJSObject('split2'.toJS),
-      ].jsify();
-    }.toJS;
-    mockManager['names'] = () {
-      calls.add((methodName: 'names', methodArguments: []));
-      return ['split1'.toJS, 'split2'.toJS].jsify();
-    }.toJS;
+          if (splitName.toDart == 'inexistent_split') {
+            return null;
+          }
+          return _createSplitViewJSObject(splitName);
+        }.toJS);
+    reflectSet(
+        mockManager,
+        'splits'.toJS,
+        () {
+          calls.add((methodName: 'splits', methodArguments: []));
+          return [
+            _createSplitViewJSObject('split1'.toJS),
+            _createSplitViewJSObject('split2'.toJS),
+          ].jsify();
+        }.toJS);
+    reflectSet(
+        mockManager,
+        'names'.toJS,
+        () {
+          calls.add((methodName: 'names', methodArguments: []));
+          return ['split1'.toJS, 'split2'.toJS].jsify();
+        }.toJS);
 
     final mockEvents = {
       'SDK_READY': 'init::ready',
@@ -73,19 +81,19 @@ class SplitioMock {
       'SDK_UPDATE': 'state::update'
     }.jsify() as JS_EventConsts;
 
-    final mockClient = JSObject();
-    mockClient['Event'] = mockEvents;
-    mockClient['on'] = (JSString event, JSFunction listener) {
+    final mockClient = JSObject() as JS_IBrowserClient;
+    mockClient.Event = mockEvents;
+    mockClient.on = (JSString event, JSFunction listener) {
       calls.add((methodName: 'on', methodArguments: [event, listener]));
       _eventListeners[event] ??= Set();
       _eventListeners[event]!.add(listener);
     }.toJS;
-    mockClient['off'] = (JSString event, JSFunction listener) {
+    mockClient.off = (JSString event, JSFunction listener) {
       calls.add((methodName: 'off', methodArguments: [event, listener]));
       _eventListeners[event] ??= Set();
       _eventListeners[event]!.remove(listener);
     }.toJS;
-    mockClient['emit'] = (JSString event) {
+    mockClient.emit = (JSString event) {
       calls.add((methodName: 'emit', methodArguments: [event]));
       _eventListeners[event]?.forEach((listener) {
         listener.callAsFunction(null, event);
@@ -98,203 +106,272 @@ class SplitioMock {
         _readinessStatus.hasTimedout = true.toJS;
       }
     }.toJS;
-    mockClient['getStatus'] = () {
-      calls.add((methodName: 'getStatus', methodArguments: []));
-      return _readinessStatus;
-    }.toJS;
-    mockClient['getTreatment'] =
+    reflectSet(
+        mockClient,
+        'getStatus'.toJS,
+        () {
+          calls.add((methodName: 'getStatus', methodArguments: []));
+          return _readinessStatus;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatment'.toJS,
         (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatment',
-        methodArguments: [flagName, attributes, evaluationOptions]
-      ));
-      return 'on'.toJS;
-    }.toJS;
-    mockClient['getTreatments'] =
+          calls.add((
+            methodName: 'getTreatment',
+            methodArguments: [flagName, attributes, evaluationOptions]
+          ));
+          return 'on'.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatments'.toJS,
         (JSAny? flagNames, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatments',
-        methodArguments: [flagNames, attributes, evaluationOptions]
-      ));
-      if (flagNames is JSArray) {
-        return flagNames.toDart.fold(JSObject(), (previousValue, element) {
-          if (element is JSString) {
-            previousValue.setProperty(element, 'on'.toJS);
+          calls.add((
+            methodName: 'getTreatments',
+            methodArguments: [flagNames, attributes, evaluationOptions]
+          ));
+          if (flagNames is JSArray) {
+            return flagNames.toDart.fold(JSObject(), (previousValue, flagName) {
+              if (flagName is JSString) {
+                reflectSet(previousValue, flagName, 'on'.toJS);
+              }
+              return previousValue;
+            });
           }
-          return previousValue;
-        });
-      }
-      return JSObject();
-    }.toJS;
-    mockClient['getTreatmentWithConfig'] =
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentWithConfig'.toJS,
         (JSAny? flagName, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentWithConfig',
-        methodArguments: [flagName, attributes, evaluationOptions]
-      ));
-      final result = JSObject();
-      result.setProperty('treatment'.toJS, 'on'.toJS);
-      result.setProperty('config'.toJS, 'some-config'.toJS);
-      return result;
-    }.toJS;
-    mockClient['getTreatmentsWithConfig'] =
+          calls.add((
+            methodName: 'getTreatmentWithConfig',
+            methodArguments: [flagName, attributes, evaluationOptions]
+          ));
+          final result = JSObject() as JS_TreatmentWithConfig;
+          result.treatment = 'on'.toJS;
+          result.config = 'some-config'.toJS;
+          return result;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentsWithConfig'.toJS,
         (JSAny? flagNames, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentsWithConfig',
-        methodArguments: [flagNames, attributes, evaluationOptions]
-      ));
-      if (flagNames is JSArray) {
-        return flagNames.toDart.fold(JSObject(), (previousValue, element) {
-          if (element is JSString) {
-            final result = JSObject();
-            result.setProperty('treatment'.toJS, 'on'.toJS);
-            result.setProperty('config'.toJS, 'some-config'.toJS);
-            previousValue.setProperty(element, result);
+          calls.add((
+            methodName: 'getTreatmentsWithConfig',
+            methodArguments: [flagNames, attributes, evaluationOptions]
+          ));
+          if (flagNames is JSArray) {
+            return flagNames.toDart.fold(JSObject(), (previousValue, flagName) {
+              if (flagName is JSString) {
+                final result = JSObject() as JS_TreatmentWithConfig;
+                result.treatment = 'on'.toJS;
+                result.config = 'some-config'.toJS;
+                reflectSet(previousValue, flagName, result);
+              }
+              return previousValue;
+            });
           }
-          return previousValue;
-        });
-      }
-      return JSObject();
-    }.toJS;
-    mockClient['getTreatmentsByFlagSet'] =
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentsByFlagSet'.toJS,
         (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentsByFlagSet',
-        methodArguments: [flagSetName, attributes, evaluationOptions]
-      ));
-      final result = JSObject();
-      result.setProperty('split1'.toJS, 'on'.toJS);
-      result.setProperty('split2'.toJS, 'on'.toJS);
-      return result;
-    }.toJS;
-    mockClient['getTreatmentsByFlagSets'] =
+          calls.add((
+            methodName: 'getTreatmentsByFlagSet',
+            methodArguments: [flagSetName, attributes, evaluationOptions]
+          ));
+          final result = JSObject();
+          reflectSet(result, 'split1'.toJS, 'on'.toJS);
+          reflectSet(result, 'split2'.toJS, 'on'.toJS);
+          return result;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentsByFlagSets'.toJS,
         (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentsByFlagSets',
-        methodArguments: [flagSetNames, attributes, evaluationOptions]
-      ));
-      final result = JSObject();
-      result.setProperty('split1'.toJS, 'on'.toJS);
-      result.setProperty('split2'.toJS, 'on'.toJS);
-      return result;
-    }.toJS;
-    mockClient['getTreatmentsWithConfigByFlagSet'] =
+          calls.add((
+            methodName: 'getTreatmentsByFlagSets',
+            methodArguments: [flagSetNames, attributes, evaluationOptions]
+          ));
+          final result = JSObject();
+          reflectSet(result, 'split1'.toJS, 'on'.toJS);
+          reflectSet(result, 'split2'.toJS, 'on'.toJS);
+          return result;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentsWithConfigByFlagSet'.toJS,
         (JSAny? flagSetName, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentsWithConfigByFlagSet',
-        methodArguments: [flagSetName, attributes, evaluationOptions]
-      ));
+          calls.add((
+            methodName: 'getTreatmentsWithConfigByFlagSet',
+            methodArguments: [flagSetName, attributes, evaluationOptions]
+          ));
 
-      final treatmentWithConfig = JSObject();
-      treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
-      treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
+          final treatmentWithConfig = JSObject() as JS_TreatmentWithConfig;
+          treatmentWithConfig.treatment = 'on'.toJS;
+          treatmentWithConfig.config = 'some-config'.toJS;
 
-      final result = JSObject();
-      result.setProperty('split1'.toJS, treatmentWithConfig);
-      result.setProperty('split2'.toJS, treatmentWithConfig);
-      return result;
-    }.toJS;
-    mockClient['getTreatmentsWithConfigByFlagSets'] =
+          final result = JSObject();
+          reflectSet(result, 'split1'.toJS, treatmentWithConfig);
+          reflectSet(result, 'split2'.toJS, treatmentWithConfig);
+          return result;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getTreatmentsWithConfigByFlagSets'.toJS,
         (JSAny? flagSetNames, JSAny? attributes, JSAny? evaluationOptions) {
-      calls.add((
-        methodName: 'getTreatmentsWithConfigByFlagSets',
-        methodArguments: [flagSetNames, attributes, evaluationOptions]
-      ));
+          calls.add((
+            methodName: 'getTreatmentsWithConfigByFlagSets',
+            methodArguments: [flagSetNames, attributes, evaluationOptions]
+          ));
 
-      final treatmentWithConfig = JSObject();
-      treatmentWithConfig.setProperty('treatment'.toJS, 'on'.toJS);
-      treatmentWithConfig.setProperty('config'.toJS, 'some-config'.toJS);
+          final treatmentWithConfig = JSObject() as JS_TreatmentWithConfig;
+          treatmentWithConfig.treatment = 'on'.toJS;
+          treatmentWithConfig.config = 'some-config'.toJS;
 
-      final result = JSObject();
-      result.setProperty('split1'.toJS, treatmentWithConfig);
-      result.setProperty('split2'.toJS, treatmentWithConfig);
-      return result;
-    }.toJS;
-    mockClient['track'] = (JSAny? trafficType, JSAny? eventType, JSAny? value,
-        JSAny? properties) {
-      calls.add((
-        methodName: 'track',
-        methodArguments: [trafficType, eventType, value, properties]
-      ));
-      return trafficType != null ? true.toJS : false.toJS;
-    }.toJS;
-    mockClient['setAttribute'] = (JSAny? attributeName, JSAny? attributeValue) {
-      calls.add((
-        methodName: 'setAttribute',
-        methodArguments: [attributeName, attributeValue]
-      ));
-      return true.toJS;
-    }.toJS;
-    mockClient['getAttribute'] = (JSAny? attributeName) {
-      calls.add((methodName: 'getAttribute', methodArguments: [attributeName]));
-      return 'attr-value'.toJS;
-    }.toJS;
-    mockClient['removeAttribute'] = (JSAny? attributeName) {
-      calls.add(
-          (methodName: 'removeAttribute', methodArguments: [attributeName]));
-      return true.toJS;
-    }.toJS;
-    mockClient['setAttributes'] = (JSAny? attributes) {
-      calls.add((methodName: 'setAttributes', methodArguments: [attributes]));
-      return true.toJS;
-    }.toJS;
-    mockClient['getAttributes'] = () {
-      calls.add((methodName: 'getAttributes', methodArguments: []));
-      return {
-        'attrBool': true,
-        'attrString': 'value',
-        'attrInt': 1,
-        'attrDouble': 1.1,
-        'attrList': ['value1', 100, false],
-      }.jsify();
-    }.toJS;
-    mockClient['clearAttributes'] = () {
-      calls.add((methodName: 'clearAttributes', methodArguments: []));
-      return true.toJS;
-    }.toJS;
-    mockClient['flush'] = () {
-      calls.add((methodName: 'flush', methodArguments: []));
-      return _promiseResolve();
-    }.toJS;
-    mockClient['destroy'] = () {
-      calls.add((methodName: 'destroy', methodArguments: []));
-      return _promiseResolve();
-    }.toJS;
+          final result = JSObject();
+          reflectSet(result, 'split1'.toJS, treatmentWithConfig);
+          reflectSet(result, 'split2'.toJS, treatmentWithConfig);
+          return result;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'track'.toJS,
+        (JSAny? trafficType, JSAny? eventType, JSAny? value,
+            JSAny? properties) {
+          calls.add((
+            methodName: 'track',
+            methodArguments: [trafficType, eventType, value, properties]
+          ));
+          return trafficType != null ? true.toJS : false.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'setAttribute'.toJS,
+        (JSAny? attributeName, JSAny? attributeValue) {
+          calls.add((
+            methodName: 'setAttribute',
+            methodArguments: [attributeName, attributeValue]
+          ));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getAttribute'.toJS,
+        (JSAny? attributeName) {
+          calls.add(
+              (methodName: 'getAttribute', methodArguments: [attributeName]));
+          return 'attr-value'.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'removeAttribute'.toJS,
+        (JSAny? attributeName) {
+          calls.add((
+            methodName: 'removeAttribute',
+            methodArguments: [attributeName]
+          ));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'setAttributes'.toJS,
+        (JSAny? attributes) {
+          calls.add(
+              (methodName: 'setAttributes', methodArguments: [attributes]));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'getAttributes'.toJS,
+        () {
+          calls.add((methodName: 'getAttributes', methodArguments: []));
+          return {
+            'attrBool': true,
+            'attrString': 'value',
+            'attrInt': 1,
+            'attrDouble': 1.1,
+            'attrList': ['value1', 100, false],
+          }.jsify();
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'clearAttributes'.toJS,
+        () {
+          calls.add((methodName: 'clearAttributes', methodArguments: []));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'flush'.toJS,
+        () {
+          calls.add((methodName: 'flush', methodArguments: []));
+          return _promiseResolve();
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'destroy'.toJS,
+        () {
+          calls.add((methodName: 'destroy', methodArguments: []));
+          return _promiseResolve();
+        }.toJS);
 
-    final mockLog = JSObject();
-    mockLog['warn'] = (JSAny? arg1) {
-      calls.add((methodName: 'warn', methodArguments: [arg1]));
-    }.toJS;
+    final mockLog = JSObject() as JS_Logger;
+    reflectSet(
+        mockLog,
+        'warn'.toJS,
+        (JSAny? arg1) {
+          calls.add((methodName: 'warn', methodArguments: [arg1]));
+        }.toJS);
 
-    final mockUserConsent = JSObject();
-    mockUserConsent['setStatus'] = (JSBoolean arg1) {
-      _userConsent = arg1.toDart ? 'GRANTED'.toJS : 'DECLINED'.toJS;
-      calls.add((methodName: 'setStatus', methodArguments: [arg1]));
-      return true.toJS;
-    }.toJS;
-    mockUserConsent['getStatus'] = () {
-      calls.add((methodName: 'getStatus', methodArguments: []));
-      return _userConsent;
-    }.toJS;
+    final mockUserConsent = JSObject() as JS_IUserConsentAPI;
+    reflectSet(
+        mockUserConsent,
+        'setStatus'.toJS,
+        (JSBoolean arg1) {
+          _userConsent = arg1.toDart ? 'GRANTED'.toJS : 'DECLINED'.toJS;
+          calls.add((methodName: 'setStatus', methodArguments: [arg1]));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockUserConsent,
+        'getStatus'.toJS,
+        () {
+          calls.add((methodName: 'getStatus', methodArguments: []));
+          return _userConsent;
+        }.toJS);
 
-    mockFactory['client'] = (JSAny? splitKey) {
-      calls.add((methodName: 'client', methodArguments: [splitKey]));
-      return mockClient;
-    }.toJS;
-    mockFactory['manager'] = () {
-      calls.add((methodName: 'manager', methodArguments: []));
-      return mockManager;
-    }.toJS;
-    mockFactory['UserConsent'] = mockUserConsent;
+    reflectSet(
+        mockFactory,
+        'client'.toJS,
+        (JSAny? splitKey) {
+          calls.add((methodName: 'client', methodArguments: [splitKey]));
+          return mockClient;
+        }.toJS);
+    reflectSet(
+        mockFactory,
+        'manager'.toJS,
+        () {
+          calls.add((methodName: 'manager', methodArguments: []));
+          return mockManager;
+        }.toJS);
+    mockFactory.UserConsent = mockUserConsent;
 
-    splitio['SplitFactory'] = (JSObject config) {
-      calls.add((methodName: 'SplitFactory', methodArguments: [config]));
+    reflectSet(
+        splitio,
+        'SplitFactory'.toJS,
+        (JSObject config) {
+          calls.add((methodName: 'SplitFactory', methodArguments: [config]));
 
-      final mockSettings = _objectAssign(JSObject(), config);
-      mockSettings['log'] = mockLog;
-      mockFactory['settings'] = mockSettings;
+          final mockSettings =
+              _objectAssign(JSObject(), config) as JS_ISettings;
+          mockSettings.log = mockLog;
+          mockFactory.settings = mockSettings;
 
-      return mockFactory;
-    }.toJS;
+          return mockFactory;
+        }.toJS);
   }
 }
