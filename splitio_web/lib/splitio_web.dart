@@ -748,6 +748,9 @@ class SplitioWeb extends SplitioPlatform {
     _factory.UserConsent.setStatus(enabled.toJS);
   }
 
+  // To ensure the public `onXXX` callbacks and `whenXXX` methods work correctly,
+  // the `onXXX` method implementations always return a Future or Stream that waits for the client to be initialized.
+
   @override
   Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) async {
@@ -823,11 +826,9 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    final client = _clients[buildKeyString(matchingKey, bucketingKey)];
-
-    if (client == null) {
-      return null;
-    }
+    // To ensure the public `onUpdated` callback and `whenUpdated` method work correctly,
+    // this method always return a stream, and the StreamController callbacks
+    // are async to wait for the client to be initialized.
 
     late final StreamController<void> controller;
     final JSFunction jsCallback = (() {
@@ -835,19 +836,27 @@ class SplitioWeb extends SplitioPlatform {
         controller.add(null);
       }
     }).toJS;
+    final registerJsCallback = () async {
+      final client = await _getClient(
+        matchingKey: matchingKey,
+        bucketingKey: bucketingKey,
+      );
+      client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+    };
+    final deregisterJsCallback = () async {
+      final client = await _getClient(
+        matchingKey: matchingKey,
+        bucketingKey: bucketingKey,
+      );
+      client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+    };
 
     controller = StreamController<void>(
-      onListen: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
-      onPause: () {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
-      onResume: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
+      onListen: registerJsCallback,
+      onPause: deregisterJsCallback,
+      onResume: registerJsCallback,
       onCancel: () async {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        await deregisterJsCallback();
         if (!controller.isClosed) {
           await controller.close();
         }

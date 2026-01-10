@@ -933,34 +933,31 @@ void main() {
     });
 
     test('onUpdated', () async {
-      // Precondition: client is initialized before onUpdated is called
-      await _platform.getClient(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
 
       final stream = _platform.onUpdated(
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
       final subscription = stream.listen(expectAsync1((_) {}, count: 3));
+      await Future<void>.delayed(Duration.zero); // onListen is async
 
       // Emit SDK_UPDATE events. Should be received
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-
-      await Future<void>.delayed(
-          const Duration(milliseconds: 100)); // let events deliver
 
       // Pause subscription and emit SDK_UPDATE event. Should not be received
       subscription.pause();
+      await Future<void>.delayed(Duration.zero); // onPause is async
+
       mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Resume subscription and emit SDK_UPDATE event. Should be received
       subscription.resume();
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(Duration.zero); // onResume is async
 
+      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+
+      await Future<void>.delayed(Duration.zero); // let last event deliver
       await subscription.cancel();
     });
   });
