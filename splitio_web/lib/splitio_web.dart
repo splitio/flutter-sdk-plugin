@@ -752,8 +752,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY,
           () {
             completer.complete();
@@ -776,8 +775,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY_FROM_CACHE,
           () {
             completer.complete();
@@ -800,8 +798,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY_TIMED_OUT,
           () {
             completer.complete();
@@ -829,16 +826,16 @@ class SplitioWeb extends SplitioPlatform {
 
     controller = StreamController<void>(
       onListen: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        client.on(client.Event.SDK_UPDATE, jsCallback);
       },
       onPause: () {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        client.off(client.Event.SDK_UPDATE, jsCallback);
       },
       onResume: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        client.on(client.Event.SDK_UPDATE, jsCallback);
       },
       onCancel: () async {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        client.off(client.Event.SDK_UPDATE, jsCallback);
         if (!controller.isClosed) {
           await controller.close();
         }

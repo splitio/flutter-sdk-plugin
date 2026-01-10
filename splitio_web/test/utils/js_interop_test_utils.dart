@@ -150,29 +150,38 @@ class SplitioMock {
     final mockClient = JSObject() as JS_IBrowserClient;
 
     mockClient.Event = _mockEvents;
-    mockClient.on = (JSString event, JSFunction listener) {
-      calls.add((methodName: 'on', methodArguments: [event, listener]));
-      _eventListeners[event] ??= Set();
-      _eventListeners[event]!.add(listener);
-    }.toJS;
-    mockClient.off = (JSString event, JSFunction listener) {
-      calls.add((methodName: 'off', methodArguments: [event, listener]));
-      _eventListeners[event] ??= Set();
-      _eventListeners[event]!.remove(listener);
-    }.toJS;
-    mockClient.emit = (JSString event) {
-      calls.add((methodName: 'emit', methodArguments: [event]));
-      _eventListeners[event]?.forEach((listener) {
-        listener.callAsFunction(null, event);
-      });
-      if (event == _mockEvents.SDK_READY) {
-        _readinessStatus.isReady = true.toJS;
-      } else if (event == _mockEvents.SDK_READY_FROM_CACHE) {
-        _readinessStatus.isReadyFromCache = true.toJS;
-      } else if (event == _mockEvents.SDK_READY_TIMED_OUT) {
-        _readinessStatus.hasTimedout = true.toJS;
-      }
-    }.toJS;
+    reflectSet(
+        mockClient,
+        'on'.toJS,
+        (JSString event, JSFunction listener) {
+          calls.add((methodName: 'on', methodArguments: [event, listener]));
+          _eventListeners[event] ??= Set();
+          _eventListeners[event]!.add(listener);
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'off'.toJS,
+        (JSString event, JSFunction listener) {
+          calls.add((methodName: 'off', methodArguments: [event, listener]));
+          _eventListeners[event] ??= Set();
+          _eventListeners[event]!.remove(listener);
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'emit'.toJS,
+        (JSString event) {
+          calls.add((methodName: 'emit', methodArguments: [event]));
+          _eventListeners[event]?.forEach((listener) {
+            listener.callAsFunction(null, event);
+          });
+          if (event == _mockEvents.SDK_READY) {
+            _readinessStatus.isReady = true.toJS;
+          } else if (event == _mockEvents.SDK_READY_FROM_CACHE) {
+            _readinessStatus.isReadyFromCache = true.toJS;
+          } else if (event == _mockEvents.SDK_READY_TIMED_OUT) {
+            _readinessStatus.hasTimedout = true.toJS;
+          }
+        }.toJS);
     reflectSet(
         mockClient,
         'getStatus'.toJS,

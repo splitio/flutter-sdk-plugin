@@ -193,9 +193,9 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSBoolean clearAttributes();
   external JSPromise<Null> flush();
   external JSPromise<Null> destroy();
-  external JSFunction on;
-  external JSFunction off;
-  external JSFunction emit;
+  external JSVoid on(JSString event, JSFunction listener);
+  external JSVoid off(JSString event, JSFunction listener);
+  external JSVoid emit(JSString event);
   external JS_EventConsts Event;
   external JS_ReadinessStatus getStatus();
 }

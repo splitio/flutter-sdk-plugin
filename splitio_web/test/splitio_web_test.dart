@@ -949,7 +949,7 @@ void main() {
       // Emit SDK_READY event
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_READY);
+      mockClient.emit(mockClient.Event.SDK_READY);
 
       expect(onReady, completion(equals(true)));
     });
@@ -960,8 +960,7 @@ void main() {
       // Emit SDK_READY_FROM_CACHE event
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit
-          .callAsFunction(null, mockClient.Event.SDK_READY_FROM_CACHE);
+      mockClient.emit(mockClient.Event.SDK_READY_FROM_CACHE);
 
       Future<void>? onReadyFromCache = _platform
           .onReadyFromCache(
@@ -983,8 +982,7 @@ void main() {
       // Emit SDK_READY_TIMED_OUT event on the first client
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit
-          .callAsFunction(null, mockClient.Event.SDK_READY_TIMED_OUT);
+      mockClient.emit(mockClient.Event.SDK_READY_TIMED_OUT);
 
       // Assert that onTimeout is completed for the first client only
       await expectLater(onTimeout, completion(isTrue));
@@ -1003,21 +1001,21 @@ void main() {
       final subscription = stream.listen(expectAsync1((_) {}, count: 3));
 
       // Emit SDK_UPDATE events. Should be received
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
 
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
 
       await Future<void>.delayed(
           const Duration(milliseconds: 100)); // let events deliver
 
       // Pause subscription and emit SDK_UPDATE event. Should not be received
       subscription.pause();
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Resume subscription and emit SDK_UPDATE event. Should be received
       subscription.resume();
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
       await Future<void>.delayed(const Duration(milliseconds: 100));
 
       await subscription.cancel();
