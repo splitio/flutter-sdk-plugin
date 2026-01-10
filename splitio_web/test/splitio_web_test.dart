@@ -651,7 +651,8 @@ void main() {
               eventsEndpoint: 'https://events.split-stage.io/api',
               authServiceEndpoint: 'https://auth.split-stage.io/api/v2',
               streamingServiceEndpoint: 'https://streaming.split.io/sse',
-              telemetryServiceEndpoint: 'https://telemetry.split-stage.io/api/v1',
+              telemetryServiceEndpoint:
+                  'https://telemetry.split-stage.io/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,

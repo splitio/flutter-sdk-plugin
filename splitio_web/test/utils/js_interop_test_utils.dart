@@ -15,6 +15,15 @@ class SplitioMock {
   final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
   final JS_IBrowserSDK mockFactory = JSObject() as JS_IBrowserSDK;
 
+  final _mockEvents = {
+    'SDK_READY': 'init::ready',
+    'SDK_READY_FROM_CACHE': 'init::cache-ready',
+    'SDK_READY_TIMED_OUT': 'init::timeout',
+    'SDK_UPDATE': 'state::update'
+  }.jsify() as JS_EventConsts;
+  final _mockClients = <String, JS_IBrowserClient>{};
+
+  JS_Configuration? _config;
   JSString _userConsent = 'UNKNOWN'.toJS;
   JS_ReadinessStatus _readinessStatus = {
     'isReady': false,
@@ -74,15 +83,71 @@ class SplitioMock {
           return ['split1'.toJS, 'split2'.toJS].jsify();
         }.toJS);
 
-    final mockEvents = {
-      'SDK_READY': 'init::ready',
-      'SDK_READY_FROM_CACHE': 'init::cache-ready',
-      'SDK_READY_TIMED_OUT': 'init::timeout',
-      'SDK_UPDATE': 'state::update'
-    }.jsify() as JS_EventConsts;
+    final mockLog = JSObject() as JS_Logger;
+    reflectSet(
+        mockLog,
+        'warn'.toJS,
+        (JSAny? arg1) {
+          calls.add((methodName: 'warn', methodArguments: [arg1]));
+        }.toJS);
 
+    final mockUserConsent = JSObject() as JS_IUserConsentAPI;
+    reflectSet(
+        mockUserConsent,
+        'setStatus'.toJS,
+        (JSBoolean arg1) {
+          _userConsent = arg1.toDart ? 'GRANTED'.toJS : 'DECLINED'.toJS;
+          calls.add((methodName: 'setStatus', methodArguments: [arg1]));
+          return true.toJS;
+        }.toJS);
+    reflectSet(
+        mockUserConsent,
+        'getStatus'.toJS,
+        () {
+          calls.add((methodName: 'getStatus', methodArguments: []));
+          return _userConsent;
+        }.toJS);
+
+    reflectSet(
+        mockFactory,
+        'client'.toJS,
+        (JSAny? splitKey) {
+          calls.add((methodName: 'client', methodArguments: [splitKey]));
+
+          final dartKey = buildDartKey(splitKey ?? _config!.core.key);
+          final stringKey = buildKeyString(dartKey.matchingKey, dartKey.bucketingKey);
+          _mockClients[stringKey] ??= _buildMockClient();
+          return _mockClients[stringKey];
+        }.toJS);
+    reflectSet(
+        mockFactory,
+        'manager'.toJS,
+        () {
+          calls.add((methodName: 'manager', methodArguments: []));
+          return mockManager;
+        }.toJS);
+    mockFactory.UserConsent = mockUserConsent;
+
+    reflectSet(
+        splitio,
+        'SplitFactory'.toJS,
+        (JS_Configuration config) {
+          calls.add((methodName: 'SplitFactory', methodArguments: [config]));
+
+          final mockSettings =
+              _objectAssign(JSObject(), config) as JS_ISettings;
+          mockSettings.log = mockLog;
+          mockFactory.settings = mockSettings;
+
+          _config = config;
+
+          return mockFactory;
+        }.toJS);
+  }
+
+  JS_IBrowserClient _buildMockClient() {
     final mockClient = JSObject() as JS_IBrowserClient;
-    mockClient.Event = mockEvents;
+    mockClient.Event = _mockEvents;
     mockClient.on = (JSString event, JSFunction listener) {
       calls.add((methodName: 'on', methodArguments: [event, listener]));
       _eventListeners[event] ??= Set();
@@ -98,11 +163,11 @@ class SplitioMock {
       _eventListeners[event]?.forEach((listener) {
         listener.callAsFunction(null, event);
       });
-      if (event == mockEvents.SDK_READY) {
+      if (event == _mockEvents.SDK_READY) {
         _readinessStatus.isReady = true.toJS;
-      } else if (event == mockEvents.SDK_READY_FROM_CACHE) {
+      } else if (event == _mockEvents.SDK_READY_FROM_CACHE) {
         _readinessStatus.isReadyFromCache = true.toJS;
-      } else if (event == mockEvents.SDK_READY_TIMED_OUT) {
+      } else if (event == _mockEvents.SDK_READY_TIMED_OUT) {
         _readinessStatus.hasTimedout = true.toJS;
       }
     }.toJS;
@@ -319,59 +384,6 @@ class SplitioMock {
           return _promiseResolve();
         }.toJS);
 
-    final mockLog = JSObject() as JS_Logger;
-    reflectSet(
-        mockLog,
-        'warn'.toJS,
-        (JSAny? arg1) {
-          calls.add((methodName: 'warn', methodArguments: [arg1]));
-        }.toJS);
-
-    final mockUserConsent = JSObject() as JS_IUserConsentAPI;
-    reflectSet(
-        mockUserConsent,
-        'setStatus'.toJS,
-        (JSBoolean arg1) {
-          _userConsent = arg1.toDart ? 'GRANTED'.toJS : 'DECLINED'.toJS;
-          calls.add((methodName: 'setStatus', methodArguments: [arg1]));
-          return true.toJS;
-        }.toJS);
-    reflectSet(
-        mockUserConsent,
-        'getStatus'.toJS,
-        () {
-          calls.add((methodName: 'getStatus', methodArguments: []));
-          return _userConsent;
-        }.toJS);
-
-    reflectSet(
-        mockFactory,
-        'client'.toJS,
-        (JSAny? splitKey) {
-          calls.add((methodName: 'client', methodArguments: [splitKey]));
-          return mockClient;
-        }.toJS);
-    reflectSet(
-        mockFactory,
-        'manager'.toJS,
-        () {
-          calls.add((methodName: 'manager', methodArguments: []));
-          return mockManager;
-        }.toJS);
-    mockFactory.UserConsent = mockUserConsent;
-
-    reflectSet(
-        splitio,
-        'SplitFactory'.toJS,
-        (JSObject config) {
-          calls.add((methodName: 'SplitFactory', methodArguments: [config]));
-
-          final mockSettings =
-              _objectAssign(JSObject(), config) as JS_ISettings;
-          mockSettings.log = mockLog;
-          mockFactory.settings = mockSettings;
-
-          return mockFactory;
-        }.toJS);
+    return mockClient;
   }
 }

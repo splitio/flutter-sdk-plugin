@@ -314,10 +314,6 @@ class SplitioWeb extends SplitioPlatform {
     return config;
   }
 
-  static String _buildKeyString(String matchingKey, String? bucketingKey) {
-    return bucketingKey == null ? matchingKey : '${matchingKey}_$bucketingKey';
-  }
-
   @override
   Future<void> getClient({
     required String matchingKey,
@@ -325,7 +321,7 @@ class SplitioWeb extends SplitioPlatform {
   }) async {
     await this._initFuture;
 
-    final key = _buildKeyString(matchingKey, bucketingKey);
+    final key = buildKeyString(matchingKey, bucketingKey);
 
     if (_clients.containsKey(key)) {
       return;
@@ -342,7 +338,7 @@ class SplitioWeb extends SplitioPlatform {
   }) async {
     await getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
 
-    final key = _buildKeyString(matchingKey, bucketingKey);
+    final key = buildKeyString(matchingKey, bucketingKey);
 
     return _clients[key]!;
   }
@@ -827,7 +823,7 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    final client = _clients[_buildKeyString(matchingKey, bucketingKey)];
+    final client = _clients[buildKeyString(matchingKey, bucketingKey)];
 
     if (client == null) {
       return null;
