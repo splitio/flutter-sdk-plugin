@@ -319,28 +319,19 @@ class SplitioWeb extends SplitioPlatform {
     required String matchingKey,
     required String? bucketingKey,
   }) async {
-    await this._initFuture;
-
-    final key = buildKeyString(matchingKey, bucketingKey);
-
-    if (_clients.containsKey(key)) {
-      return;
-    }
-
-    final client = this._factory.client(buildJsKey(matchingKey, bucketingKey));
-
-    _clients[key] = client;
+    await _getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   Future<JS_IBrowserClient> _getClient({
     required String matchingKey,
     required String? bucketingKey,
   }) async {
-    await getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
+    await this._initFuture;
 
     final key = buildKeyString(matchingKey, bucketingKey);
 
-    return _clients[key]!;
+    return (_clients[key] ??=
+        _factory.client(buildJsKey(matchingKey, bucketingKey)));
   }
 
   Future<JS_IManager> _getManager() async {

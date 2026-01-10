@@ -43,6 +43,30 @@ void main() {
           mock.calls.last.methodArguments.map(jsAnyToDart), ['split', {}, {}]);
     });
 
+    test('getTreatment in multiple clients', () async {
+      final result = await _platform.getTreatment(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split');
+
+      final result2 = await _platform.getTreatment(
+          matchingKey: 'matching-key-getTreatment',
+          bucketingKey: null,
+          splitName: 'split-getTreatment');
+
+      expect(result, 'on');
+      expect(result2, 'on');
+      expect(mock.calls[mock.calls.length - 3].methodName, 'getTreatment');
+      expect(mock.calls[mock.calls.length - 3].methodArguments.map(jsAnyToDart),
+          ['split', {}, {}]);
+      expect(mock.calls[mock.calls.length - 2].methodName, 'client');
+      expect(mock.calls[mock.calls.length - 2].methodArguments.map(jsAnyToDart),
+          ['matching-key-getTreatment']);
+      expect(mock.calls.last.methodName, 'getTreatment');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart),
+          ['split-getTreatment', {}, {}]);
+    });
+
     test('getTreatment with attributes', () async {
       final result = await _platform.getTreatment(
           matchingKey: 'matching-key',
@@ -87,7 +111,7 @@ void main() {
               'Invalid attribute value: null, for key: attrNull, will be ignored'));
     });
 
-    test('getTreatment with evaluation properties', () async {
+    test('getTreatment with evaluation options', () async {
       final result = await _platform.getTreatment(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -141,7 +165,7 @@ void main() {
               'Invalid property value: [value1, 100, false], for key: propList, will be ignored'));
     });
 
-    test('getTreatments without attributes', () async {
+    test('getTreatments', () async {
       final result = await _platform.getTreatments(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -156,39 +180,26 @@ void main() {
       ]);
     });
 
-    test('getTreatments with attributes and evaluation properties', () async {
+    test('getTreatments with attributes and evaluation options', () async {
       final result = await _platform.getTreatments(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           splitNames: ['split1', 'split2'],
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, {'split1': 'on', 'split2': 'on'});
       expect(mock.calls.last.methodName, 'getTreatments');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
 
-    test('getTreatmentWithConfig with attributes', () async {
-      final result = await _platform.getTreatmentWithConfig(
-          matchingKey: 'matching-key',
-          bucketingKey: 'bucketing-key',
-          splitName: 'split1',
-          attributes: {'attr1': true});
-
-      expect(result.toString(), SplitResult('on', 'some-config').toString());
-      expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
-      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
-        'split1',
-        {'attr1': true},
-        {}
-      ]);
-    });
-
-    test('getTreatmentWithConfig without attributes', () async {
+    test('getTreatmentWithConfig', () async {
       final result = await _platform.getTreatmentWithConfig(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -200,7 +211,27 @@ void main() {
           mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
     });
 
-    test('getTreatmentsWithConfig without attributes', () async {
+    test('getTreatmentWithConfig with attributes and evaluation options',
+        () async {
+      final result = await _platform.getTreatmentWithConfig(
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          splitName: 'split1',
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
+
+      expect(result.toString(), SplitResult('on', 'some-config').toString());
+      expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
+      expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
+        'split1',
+        {'attr1': true},
+        {
+          'properties': {'prop1': true}
+        }
+      ]);
+    });
+
+    test('getTreatmentsWithConfig', () async {
       final result = await _platform.getTreatmentsWithConfig(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -221,12 +252,14 @@ void main() {
       ]);
     });
 
-    test('getTreatmentsWithConfig with attributes', () async {
+    test('getTreatmentsWithConfig with attributes and evaluation options',
+        () async {
       final result = await _platform.getTreatmentsWithConfig(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           splitNames: ['split1', 'split2'],
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
@@ -239,11 +272,13 @@ void main() {
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['split1', 'split2'],
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
 
-    test('getTreatmentsByFlagSet without attributes', () async {
+    test('getTreatmentsByFlagSet', () async {
       final result = await _platform.getTreatmentsByFlagSet(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -255,23 +290,27 @@ void main() {
           mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
-    test('getTreatmentsByFlagSet with attributes', () async {
+    test('getTreatmentsByFlagSet with attributes and evaluation options',
+        () async {
       final result = await _platform.getTreatmentsByFlagSet(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           flagSet: 'set_1',
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, {'split1': 'on', 'split2': 'on'});
       expect(mock.calls.last.methodName, 'getTreatmentsByFlagSet');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'set_1',
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
 
-    test('getTreatmentsByFlagSets without attributes', () async {
+    test('getTreatmentsByFlagSets', () async {
       final result = await _platform.getTreatmentsByFlagSets(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -286,23 +325,27 @@ void main() {
       ]);
     });
 
-    test('getTreatmentsByFlagSets with attributes', () async {
+    test('getTreatmentsByFlagSets with attributes and evaluation options',
+        () async {
       final result = await _platform.getTreatmentsByFlagSets(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           flagSets: ['set_1', 'set_2'],
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, {'split1': 'on', 'split2': 'on'});
       expect(mock.calls.last.methodName, 'getTreatmentsByFlagSets');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
 
-    test('getTreatmentsWithConfigByFlagSet without attributes', () async {
+    test('getTreatmentsWithConfigByFlagSet', () async {
       final result = await _platform.getTreatmentsWithConfigByFlagSet(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -320,12 +363,15 @@ void main() {
           mock.calls.last.methodArguments.map(jsAnyToDart), ['set_1', {}, {}]);
     });
 
-    test('getTreatmentsWithConfigByFlagSet with attributes', () async {
+    test(
+        'getTreatmentsWithConfigByFlagSet with attributes and evaluation options',
+        () async {
       final result = await _platform.getTreatmentsWithConfigByFlagSet(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           flagSet: 'set_1',
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
@@ -338,11 +384,13 @@ void main() {
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'set_1',
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
 
-    test('getTreatmentsWithConfigByFlagSets without attributes', () async {
+    test('getTreatmentsWithConfigByFlagSets', () async {
       final result = await _platform.getTreatmentsWithConfigByFlagSets(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
@@ -363,12 +411,15 @@ void main() {
       ]);
     });
 
-    test('getTreatmentsWithConfigByFlagSets with attributes', () async {
+    test(
+        'getTreatmentsWithConfigByFlagSets with attributes and evaluation options',
+        () async {
       final result = await _platform.getTreatmentsWithConfigByFlagSets(
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           flagSets: ['set_1', 'set_2'],
-          attributes: {'attr1': true});
+          attributes: {'attr1': true},
+          evaluationOptions: EvaluationOptions({'prop1': true}));
 
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
@@ -381,7 +432,9 @@ void main() {
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         ['set_1', 'set_2'],
         {'attr1': true},
-        {}
+        {
+          'properties': {'prop1': true}
+        }
       ]);
     });
   });
@@ -918,18 +971,24 @@ void main() {
       expect(onReadyFromCache, completion(equals(true)));
     });
 
-    test('onTimeout', () {
+    test('onTimeout (in multiple clients)', () async {
       Future<void>? onTimeout = _platform
           .onTimeout(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
           ?.then((value) => true);
 
-      // Emit SDK_READY_TIMED_OUT event
+      Future<void>? onTimeoutClient2 = _platform
+          .onTimeout(matchingKey: 'matching-key-2', bucketingKey: null)
+          ?.then((value) => false);
+
+      // Emit SDK_READY_TIMED_OUT event on the first client
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit
           .callAsFunction(null, mockClient.Event.SDK_READY_TIMED_OUT);
 
-      expect(onTimeout, completion(equals(true)));
+      // Assert that onTimeout is completed for the first client only
+      await expectLater(onTimeout, completion(isTrue));
+      await expectLater(onTimeoutClient2, doesNotComplete);
     });
 
     test('onUpdated', () async {

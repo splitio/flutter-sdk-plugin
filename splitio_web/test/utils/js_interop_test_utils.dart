@@ -25,12 +25,6 @@ class SplitioMock {
 
   JS_Configuration? _config;
   JSString _userConsent = 'UNKNOWN'.toJS;
-  JS_ReadinessStatus _readinessStatus = {
-    'isReady': false,
-    'isReadyFromCache': false,
-    'hasTimedout': false,
-  }.jsify() as JS_ReadinessStatus;
-  Map<JSString, Set<JSFunction>> _eventListeners = {};
 
   JSObject _createSplitViewJSObject(JSString splitName) {
     return {
@@ -115,7 +109,8 @@ class SplitioMock {
           calls.add((methodName: 'client', methodArguments: [splitKey]));
 
           final dartKey = buildDartKey(splitKey ?? _config!.core.key);
-          final stringKey = buildKeyString(dartKey.matchingKey, dartKey.bucketingKey);
+          final stringKey =
+              buildKeyString(dartKey.matchingKey, dartKey.bucketingKey);
           _mockClients[stringKey] ??= _buildMockClient();
           return _mockClients[stringKey];
         }.toJS);
@@ -146,7 +141,14 @@ class SplitioMock {
   }
 
   JS_IBrowserClient _buildMockClient() {
+    final JS_ReadinessStatus _readinessStatus = {
+      'isReady': false,
+      'isReadyFromCache': false,
+      'hasTimedout': false,
+    }.jsify() as JS_ReadinessStatus;
+    final Map<JSString, Set<JSFunction>> _eventListeners = {};
     final mockClient = JSObject() as JS_IBrowserClient;
+
     mockClient.Event = _mockEvents;
     mockClient.on = (JSString event, JSFunction listener) {
       calls.add((methodName: 'on', methodArguments: [event, listener]));
