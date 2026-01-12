@@ -427,6 +427,14 @@ class SplitioMock {
           calls.add((methodName: 'ErrorLogger', methodArguments: []));
           return JSObject();
         }.toJS);
+    reflectSet(
+        splitio,
+        'InLocalStorage'.toJS,
+        (JS_ConfigurationStorage storageConfig) {
+          calls.add(
+              (methodName: 'InLocalStorage', methodArguments: [storageConfig]));
+          return JSObject();
+        }.toJS);
   }
 
   void removeFactoryModules() {
@@ -434,5 +442,6 @@ class SplitioMock {
     reflectSet(splitio, 'InfoLogger'.toJS, null);
     reflectSet(splitio, 'WarnLogger'.toJS, null);
     reflectSet(splitio, 'ErrorLogger'.toJS, null);
+    reflectSet(splitio, 'InLocalStorage'.toJS, null);
   }
 }

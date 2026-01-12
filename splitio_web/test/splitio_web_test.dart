@@ -856,7 +856,12 @@ void main() {
                 clearOnInit: true,
               )));
 
-      expect(mock.calls[mock.calls.length - 2].methodName, 'InfoLogger');
+      expect(mock.calls[mock.calls.length - 3].methodName, 'InfoLogger');
+      expect(mock.calls[mock.calls.length - 2].methodName, 'InLocalStorage');
+      expect(
+          mock.calls[mock.calls.length - 2].methodArguments.map(jsAnyToDart), [
+        {'type': 'LOCALSTORAGE', 'expirationDays': 100, 'clearOnInit': true}
+      ]);
 
       expect(mock.calls.last.methodName, 'SplitFactory');
       expect(
@@ -876,7 +881,7 @@ void main() {
             'urls': {},
             'sync': {},
             'debug': {},
-            'storage': {'type': 'LOCALSTORAGE', 'expirationDays': 100, 'clearOnInit': true }
+            'storage': {}
           }));
 
       mock.removeFactoryModules();
