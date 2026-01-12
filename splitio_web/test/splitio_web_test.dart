@@ -838,6 +838,49 @@ void main() {
             'storage': {'type': 'LOCALSTORAGE'}
           }));
     });
+
+    test(
+        'init with InLocalStorage and Logger factory modules (Browser SDK full CDN)',
+        () async {
+      mock.addFactoryModules();
+      SplitioWeb _platform = SplitioWeb();
+
+      await _platform.init(
+          apiKey: 'api-key',
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          sdkConfiguration: SplitConfiguration(
+              logLevel: SplitLogLevel.info,
+              rolloutCacheConfiguration: RolloutCacheConfiguration(
+                expirationDays: 100,
+                clearOnInit: true,
+              )));
+
+      expect(mock.calls[mock.calls.length - 2].methodName, 'InfoLogger');
+
+      expect(mock.calls.last.methodName, 'SplitFactory');
+      expect(
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
+          equals({
+            'core': {
+              'authorizationKey': 'api-key',
+              'key': {
+                'matchingKey': 'matching-key',
+                'bucketingKey': 'bucketing-key',
+              },
+            },
+            'startup': {
+              'readyTimeout': 10,
+            },
+            'scheduler': {},
+            'urls': {},
+            'sync': {},
+            'debug': {},
+            'storage': {'type': 'LOCALSTORAGE', 'expirationDays': 100, 'clearOnInit': true }
+          }));
+
+      mock.removeFactoryModules();
+    });
   });
 
   group('client', () {

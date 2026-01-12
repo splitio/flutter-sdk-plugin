@@ -77,7 +77,7 @@ class SplitioMock {
           return ['split1'.toJS, 'split2'.toJS].jsify();
         }.toJS);
 
-    final mockLog = JSObject() as JS_Logger;
+    final mockLog = JSObject() as JS_ILogger;
     reflectSet(
         mockLog,
         'warn'.toJS,
@@ -396,5 +396,43 @@ class SplitioMock {
         }.toJS);
 
     return mockClient;
+  }
+
+  void addFactoryModules() {
+    reflectSet(
+        splitio,
+        'DebugLogger'.toJS,
+        () {
+          calls.add((methodName: 'DebugLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'InfoLogger'.toJS,
+        () {
+          calls.add((methodName: 'InfoLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'WarnLogger'.toJS,
+        () {
+          calls.add((methodName: 'WarnLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'ErrorLogger'.toJS,
+        () {
+          calls.add((methodName: 'ErrorLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+  }
+
+  void removeFactoryModules() {
+    reflectSet(splitio, 'DebugLogger'.toJS, null);
+    reflectSet(splitio, 'InfoLogger'.toJS, null);
+    reflectSet(splitio, 'WarnLogger'.toJS, null);
+    reflectSet(splitio, 'ErrorLogger'.toJS, null);
   }
 }

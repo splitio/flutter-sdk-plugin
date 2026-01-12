@@ -26,7 +26,7 @@ extension type JS_ImpressionData._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_Logger._(JSObject _) implements JSObject {
+extension type JS_ILogger._(JSObject _) implements JSObject {
   external JSAny? debug(JSString message);
   external JSAny? info(JSString message);
   external JSAny? warn(JSString message);
@@ -106,7 +106,7 @@ extension type JS_Configuration._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_ISettings._(JSObject _) implements JS_Configuration {
-  external JS_Logger log;
+  external JS_ILogger log;
   external JS_IImpressionListener? impressionListener;
 }
 
@@ -216,13 +216,18 @@ extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_LoggerFactory._(JSFunction _) implements JSFunction {
+  external JSObject call();
+}
+
+@JS()
 extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
   external JS_IBrowserSDK SplitFactory(JS_Configuration config);
   external JSFunction? InLocalStorage;
-  external JSFunction? DebugLogger;
-  external JSFunction? InfoLogger;
-  external JSFunction? WarnLogger;
-  external JSFunction? ErrorLogger;
+  external JS_LoggerFactory? DebugLogger;
+  external JS_LoggerFactory? InfoLogger;
+  external JS_LoggerFactory? WarnLogger;
+  external JS_LoggerFactory? ErrorLogger;
 }
 
 // Conversion utils: JS to Dart types
@@ -234,7 +239,7 @@ external JSArray<JSString> objectKeys(JSObject obj);
 external JSAny? reflectGet(JSObject target, JSAny propertyKey);
 
 @JS('Reflect.set')
-external JSAny? reflectSet(JSObject target, JSAny propertyKey, JSAny value);
+external JSAny? reflectSet(JSObject target, JSAny propertyKey, JSAny? value);
 
 @JS('JSON.parse')
 external JSObject jsonParse(JSString obj);

@@ -241,33 +241,35 @@ class SplitioWeb extends SplitioPlatform {
 
       final logLevel = configuration.configurationMap['logLevel'];
       if (logLevel is String) {
-        JSAny? logger;
         switch (SplitLogLevel.values.firstWhere((e) => e.name == logLevel)) {
           case SplitLogLevel.verbose:
           case SplitLogLevel.debug:
-            logger = window.splitio!.DebugLogger?.callAsFunction();
+            config.debug = window.splitio!.DebugLogger != null
+                ? window.splitio!.DebugLogger!()
+                : 'DEBUG'.toJS;
             break;
           case SplitLogLevel.info:
-            logger = window.splitio!.InfoLogger?.callAsFunction();
+            config.debug = window.splitio!.InfoLogger != null
+                ? window.splitio!.InfoLogger!()
+                : 'INFO'.toJS;
             break;
           case SplitLogLevel.warning:
-            logger = window.splitio!.WarnLogger?.callAsFunction();
+            config.debug = window.splitio!.WarnLogger != null
+                ? window.splitio!.WarnLogger!()
+                : 'WARNING'.toJS;
             break;
           case SplitLogLevel.error:
-            logger = window.splitio!.ErrorLogger?.callAsFunction();
+            config.debug = window.splitio!.ErrorLogger != null
+                ? window.splitio!.ErrorLogger!()
+                : 'ERROR'.toJS;
             break;
           default:
             break;
         }
-        if (logger != null) {
-          config.debug = logger; // Browser SDK
-        } else {
-          config.debug = logLevel.toUpperCase().toJS; // JS SDK
-        }
       } else if (configuration.configurationMap['enableDebug'] == true) {
         config.debug = window.splitio!.DebugLogger != null
-            ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
-            : 'DEBUG'.toJS; // JS SDK
+            ? window.splitio!.DebugLogger!()
+            : 'DEBUG'.toJS;
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
