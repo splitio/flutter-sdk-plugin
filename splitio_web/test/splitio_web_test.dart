@@ -700,12 +700,12 @@ void main() {
               streamingEnabled: false,
               persistentAttributesEnabled: true, // unsupported in Web
               impressionListener: true,
-              sdkEndpoint: 'https://sdk.split-stage.io/api',
-              eventsEndpoint: 'https://events.split-stage.io/api',
-              authServiceEndpoint: 'https://auth.split-stage.io/api/v2',
-              streamingServiceEndpoint: 'https://streaming.split.io/sse',
+              sdkEndpoint: 'https://sdk.domain/api',
+              eventsEndpoint: 'https://events.domain/api',
+              authServiceEndpoint: 'https://auth.domain/api/v2',
+              streamingServiceEndpoint: 'https://streaming.domain/sse',
               telemetryServiceEndpoint:
-                  'https://telemetry.split-stage.io/api/v1',
+                  'https://telemetry.domain/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,
@@ -747,11 +747,11 @@ void main() {
               'eventsPushRate': 7,
             },
             'urls': {
-              'sdk': 'https://sdk.split-stage.io/api',
-              'events': 'https://events.split-stage.io/api',
-              'auth': 'https://auth.split-stage.io/api',
-              'streaming': 'https://streaming.split.io',
-              'telemetry': 'https://telemetry.split-stage.io/api',
+              'sdk': 'https://sdk.domain/api',
+              'events': 'https://events.domain/api',
+              'auth': 'https://auth.domain/api',
+              'streaming': 'https://streaming.domain',
+              'telemetry': 'https://telemetry.domain/api',
             },
             'sync': {
               'impressionsMode': 'NONE',
