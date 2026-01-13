@@ -92,7 +92,7 @@ class SplitioWeb extends SplitioPlatform {
     // Create and inject script tag
     final script = document.createElement('script') as HTMLScriptElement;
     script.type = 'text/javascript';
-    script.src = 'packages/splitio_web/web/split-browser-1.6.0.full.min.js';
+    script.src = 'assets/packages/splitio_web/web/split-browser-1.6.0.full.min.js';
 
     // Wait for script to load
     final completer = Completer<void>();

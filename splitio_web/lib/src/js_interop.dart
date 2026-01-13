@@ -236,40 +236,21 @@ extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
 external JSArray<JSString> objectKeys(JSObject obj);
 
 @JS('Reflect.get')
-external JSAny? reflectGet(JSObject target, JSAny propertyKey);
+external JSAny? reflectGet(JSObject target, JSString propertyKey);
 
 @JS('Reflect.set')
-external JSAny? reflectSet(JSObject target, JSAny propertyKey, JSAny? value);
+external JSAny? reflectSet(JSObject target, JSString propertyKey, JSAny? value);
 
 @JS('JSON.parse')
 external JSObject jsonParse(JSString obj);
 
-List<dynamic> jsArrayToList(JSArray obj) {
-  return obj.toDart.map(jsAnyToDart).toList();
-}
+List<dynamic> jsArrayToList(JSArray<JSAny?> obj) =>
+    (obj.dartify() as List).cast<dynamic>();
 
-Map<String, dynamic> jsObjectToMap(JSObject obj) {
-  return {
-    for (final jsKey in objectKeys(obj).toDart)
-      jsKey.toDart: jsAnyToDart(reflectGet(obj, jsKey)),
-  };
-}
+Map<String, dynamic> jsObjectToMap(JSObject obj) =>
+    (obj.dartify() as Map).cast<String, dynamic>();
 
-dynamic jsAnyToDart(JSAny? value) {
-  if (value is JSArray) {
-    return jsArrayToList(value);
-  } else if (value is JSObject) {
-    return jsObjectToMap(value);
-  } else if (value is JSString) {
-    return value.toDart;
-  } else if (value is JSNumber) {
-    return value.toDartDouble;
-  } else if (value is JSBoolean) {
-    return value.toDart;
-  } else {
-    return value; // JS null and undefined are null in Dart
-  }
-}
+Object? jsAnyToDart(JSAny? value) => value.dartify();
 
 // Conversion utils: JS SDK to Flutter SDK types
 
@@ -283,8 +264,7 @@ Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
 }
 
 SplitResult jsTreatmentWithConfigToSplitResult(JS_TreatmentWithConfig obj) {
-  return SplitResult(obj.treatment.toDart,
-      (obj.config is JSString) ? obj.config!.toDart : null);
+  return SplitResult(obj.treatment.toDart, obj.config?.toDart);
 }
 
 Prerequisite jsPrerequisiteToPrerequisite(JS_Prerequisite obj) {
