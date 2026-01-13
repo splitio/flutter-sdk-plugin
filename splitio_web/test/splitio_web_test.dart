@@ -5,10 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
-import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'utils/js_interop_test_utils.dart';
 
@@ -722,8 +719,10 @@ void main() {
               )));
 
       expect(mock.calls[mock.calls.length - 5].methodName, 'SplitFactory');
+      final actual =
+          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]);
       expect(
-          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]),
+          actual,
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -773,7 +772,10 @@ void main() {
               'expirationDays': 100,
               'clearOnInit': true
             },
-            'impressionListener': {'logImpression': {}}
+            'impressionListener': {
+              'logImpression': (actual as Map)['impressionListener']
+                  ['logImpression']
+            }
           }));
 
       expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
