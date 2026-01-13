@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:js_interop';
-import 'dart:js_interop_unsafe';
 import 'package:flutter_web_plugins/flutter_web_plugins.dart' show Registrar;
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 import 'package:splitio_web/src/js_interop.dart';
@@ -57,8 +56,7 @@ class SplitioWeb extends SplitioPlatform {
         _buildConfig(apiKey, matchingKey, bucketingKey, sdkConfiguration);
 
     // Create factory instance
-    this._factory = window.splitio!.SplitFactory.callAsFunction(null, config)
-        as JS_IBrowserSDK;
+    this._factory = window.splitio!.SplitFactory(config);
 
     if (sdkConfiguration != null) {
       if (sdkConfiguration.configurationMap['trafficType'] is String) {
@@ -74,8 +72,7 @@ class SplitioWeb extends SplitioPlatform {
       ];
       for (final configName in unsupportedConfigs) {
         if (sdkConfiguration.configurationMap[configName] != null) {
-          this._factory.settings.log.warn.callAsFunction(
-              this._factory.settings.log,
+          this._factory.settings.log.warn(
               'Config $configName is not supported by the Web package. This config will be ignored.'
                   .toJS);
         }
@@ -119,94 +116,81 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  JSObject _buildConfig(String apiKey, String matchingKey, String? bucketingKey,
-      SplitConfiguration? configuration) {
-    final config = JSObject();
+  JS_Configuration _buildConfig(String apiKey, String matchingKey,
+      String? bucketingKey, SplitConfiguration? configuration) {
+    final config = JSObject() as JS_Configuration;
 
-    final core = JSObject();
-    core.setProperty('authorizationKey'.toJS, apiKey.toJS);
-    core.setProperty('key'.toJS, buildJsKey(matchingKey, bucketingKey));
-    config.setProperty('core'.toJS, core);
+    final core = JSObject() as JS_ConfigurationCore;
+    core.authorizationKey = apiKey.toJS;
+    core.key = buildJsKey(matchingKey, bucketingKey);
+    config.core = core;
 
     if (configuration != null) {
-      final scheduler = JSObject();
+      final scheduler = JSObject() as JS_ConfigurationScheduler;
       if (configuration.configurationMap.containsKey('featuresRefreshRate'))
-        scheduler.setProperty(
-            'featuresRefreshRate'.toJS,
-            (configuration.configurationMap['featuresRefreshRate'] as int)
-                .toJS);
+        scheduler.featuresRefreshRate =
+            (configuration.configurationMap['featuresRefreshRate'] as int).toJS;
       if (configuration.configurationMap.containsKey('segmentsRefreshRate'))
-        scheduler.setProperty(
-            'segmentsRefreshRate'.toJS,
-            (configuration.configurationMap['segmentsRefreshRate'] as int)
-                .toJS);
+        scheduler.segmentsRefreshRate =
+            (configuration.configurationMap['segmentsRefreshRate'] as int).toJS;
       if (configuration.configurationMap.containsKey('impressionsRefreshRate'))
-        scheduler.setProperty(
-            'impressionsRefreshRate'.toJS,
+        scheduler.impressionsRefreshRate =
             (configuration.configurationMap['impressionsRefreshRate'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('telemetryRefreshRate'))
-        scheduler.setProperty(
-            'telemetryRefreshRate'.toJS,
+        scheduler.telemetryRefreshRate =
             (configuration.configurationMap['telemetryRefreshRate'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('eventsQueueSize'))
-        scheduler.setProperty('eventsQueueSize'.toJS,
-            (configuration.configurationMap['eventsQueueSize'] as int).toJS);
+        scheduler.eventsQueueSize =
+            (configuration.configurationMap['eventsQueueSize'] as int).toJS;
       if (configuration.configurationMap.containsKey('impressionsQueueSize'))
-        scheduler.setProperty(
-            'impressionsQueueSize'.toJS,
+        scheduler.impressionsQueueSize =
             (configuration.configurationMap['impressionsQueueSize'] as int)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap.containsKey('eventFlushInterval'))
-        scheduler.setProperty('eventsPushRate'.toJS,
-            (configuration.configurationMap['eventFlushInterval'] as int).toJS);
-      config.setProperty('scheduler'.toJS, scheduler);
+        scheduler.eventsPushRate =
+            (configuration.configurationMap['eventFlushInterval'] as int).toJS;
+      config.scheduler = scheduler;
 
       if (configuration.configurationMap.containsKey('streamingEnabled'))
-        config.setProperty('streamingEnabled'.toJS,
-            (configuration.configurationMap['streamingEnabled'] as bool).toJS);
+        config.streamingEnabled =
+            (configuration.configurationMap['streamingEnabled'] as bool).toJS;
 
-      final urls = JSObject();
+      final urls = JSObject() as JS_ConfigurationUrls;
       if (configuration.configurationMap.containsKey('sdkEndpoint'))
-        urls.setProperty('sdk'.toJS,
-            (configuration.configurationMap['sdkEndpoint'] as String).toJS);
+        urls.sdk =
+            (configuration.configurationMap['sdkEndpoint'] as String).toJS;
       if (configuration.configurationMap.containsKey('eventsEndpoint'))
-        urls.setProperty('events'.toJS,
-            (configuration.configurationMap['eventsEndpoint'] as String).toJS);
+        urls.events =
+            (configuration.configurationMap['eventsEndpoint'] as String).toJS;
       if (configuration.configurationMap.containsKey('authServiceEndpoint'))
-        urls.setProperty(
-            'auth'.toJS,
+        urls.auth =
             (configuration.configurationMap['authServiceEndpoint'] as String)
-                .toJS);
+                .toJS;
       if (configuration.configurationMap
           .containsKey('streamingServiceEndpoint'))
-        urls.setProperty(
-            'streaming'.toJS,
-            (configuration.configurationMap['streamingServiceEndpoint']
-                    as String)
-                .toJS);
+        urls.streaming = (configuration
+                .configurationMap['streamingServiceEndpoint'] as String)
+            .toJS;
       if (configuration.configurationMap
           .containsKey('telemetryServiceEndpoint'))
-        urls.setProperty(
-            'telemetry'.toJS,
-            (configuration.configurationMap['telemetryServiceEndpoint']
-                    as String)
-                .toJS);
-      config.setProperty('urls'.toJS, urls);
+        urls.telemetry = (configuration
+                .configurationMap['telemetryServiceEndpoint'] as String)
+            .toJS;
+      config.urls = urls;
 
-      final sync = JSObject();
+      final sync = JSObject() as JS_ConfigurationSync;
       if (configuration.configurationMap['impressionsMode'] != null) {
-        sync.setProperty(
-            'impressionsMode'.toJS,
+        sync.impressionsMode =
             (configuration.configurationMap['impressionsMode'] as String)
                 .toUpperCase()
-                .toJS);
+                .toJS;
       }
 
       if (configuration.configurationMap['syncEnabled'] != null) {
-        sync.setProperty('enabled'.toJS,
-            (configuration.configurationMap['syncEnabled'] as bool).toJS);
+        sync.enabled =
+            (configuration.configurationMap['syncEnabled'] as bool).toJS;
       }
 
       if (configuration.configurationMap['syncConfig'] != null) {
@@ -231,70 +215,75 @@ class SplitioWeb extends SplitioPlatform {
           splitFilters.add(
               {'type': 'bySet', 'values': syncConfig['syncConfigFlagSets']});
         }
-        sync.setProperty('splitFilters'.toJS, splitFilters.jsify());
+        sync.splitFilters = splitFilters.jsify() as JSArray<JS_SplitFilter>;
       }
-      config.setProperty('sync'.toJS, sync);
+      config.sync = sync;
 
       if (configuration.configurationMap['userConsent'] != null) {
-        config.setProperty(
-            'userConsent'.toJS,
+        config.userConsent =
             (configuration.configurationMap['userConsent'] as String)
                 .toUpperCase()
-                .toJS);
+                .toJS;
       }
 
       final logLevel = configuration.configurationMap['logLevel'];
       if (logLevel is String) {
-        final logger = logLevel == SplitLogLevel.verbose.toString() ||
-                logLevel == SplitLogLevel.debug.toString()
-            ? window.splitio!.DebugLogger?.callAsFunction(null)
-            : logLevel == SplitLogLevel.info.toString()
-                ? window.splitio!.InfoLogger?.callAsFunction(null)
-                : logLevel == SplitLogLevel.warning.toString()
-                    ? window.splitio!.WarnLogger?.callAsFunction(null)
-                    : logLevel == SplitLogLevel.error.toString()
-                        ? window.splitio!.ErrorLogger?.callAsFunction(null)
-                        : null;
+        JSAny? logger;
+        switch (SplitLogLevel.values.firstWhere((e) => e.name == logLevel)) {
+          case SplitLogLevel.verbose:
+          case SplitLogLevel.debug:
+            logger = window.splitio!.DebugLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.info:
+            logger = window.splitio!.InfoLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.warning:
+            logger = window.splitio!.WarnLogger?.callAsFunction();
+            break;
+          case SplitLogLevel.error:
+            logger = window.splitio!.ErrorLogger?.callAsFunction();
+            break;
+          default:
+            break;
+        }
         if (logger != null) {
-          config.setProperty('debug'.toJS, logger); // Browser SDK
+          config.debug = logger; // Browser SDK
         } else {
-          config.setProperty(
-              'debug'.toJS, logLevel.toUpperCase().toJS); // JS SDK
+          config.debug = logLevel.toUpperCase().toJS; // JS SDK
         }
       } else if (configuration.configurationMap['enableDebug'] == true) {
-        config.setProperty(
-            'debug'.toJS, window.splitio!.DebugLogger?.callAsFunction(null));
+        config.debug = window.splitio!.DebugLogger != null
+            ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
+            : 'DEBUG'.toJS; // JS SDK
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
-        final startup = JSObject();
-        startup.setProperty('readyTimeout'.toJS,
-            (configuration.configurationMap['readyTimeout'] as int).toJS);
-        config.setProperty('startup'.toJS, startup);
+        final startup = JSObject() as JS_ConfigurationStartup;
+        startup.readyTimeout =
+            (configuration.configurationMap['readyTimeout'] as int).toJS;
+        config.startup = startup;
       }
 
-      final storageOptions = JSObject();
-      storageOptions.setProperty('type'.toJS, 'LOCALSTORAGE'.toJS);
+      final storageOptions = JSObject() as JS_ConfigurationStorage;
+      storageOptions.type = 'LOCALSTORAGE'.toJS;
       if (configuration.configurationMap['rolloutCacheConfiguration'] != null) {
         final rolloutCacheConfiguration =
             configuration.configurationMap['rolloutCacheConfiguration']
                 as Map<String, dynamic>;
         if (rolloutCacheConfiguration['expirationDays'] != null) {
-          storageOptions.setProperty('expirationDays'.toJS,
-              (rolloutCacheConfiguration['expirationDays'] as int).toJS);
+          storageOptions.expirationDays =
+              (rolloutCacheConfiguration['expirationDays'] as int).toJS;
         }
         if (rolloutCacheConfiguration['clearOnInit'] != null) {
-          storageOptions.setProperty('clearOnInit'.toJS,
-              (rolloutCacheConfiguration['clearOnInit'] as bool).toJS);
+          storageOptions.clearOnInit =
+              (rolloutCacheConfiguration['clearOnInit'] as bool).toJS;
         }
       }
       if (window.splitio!.InLocalStorage != null) {
-        config.setProperty(
-            'storage'.toJS,
-            window.splitio!.InLocalStorage
-                ?.callAsFunction(null, storageOptions)); // Browser SDK
+        config.storage = window.splitio!.InLocalStorage
+            ?.callAsFunction(null, storageOptions); // Browser SDK
       } else {
-        config.setProperty('storage'.toJS, storageOptions); // JS SDK
+        config.storage = storageOptions; // JS SDK
       }
 
       if (configuration.configurationMap['impressionListener'] is bool) {
@@ -302,10 +291,10 @@ class SplitioWeb extends SplitioPlatform {
           _impressionsStreamController.add(jsImpressionDataToImpression(data));
         }).toJS;
 
-        final JSObject impressionListener = JSObject();
-        impressionListener.setProperty('logImpression'.toJS, logImpression);
+        final impressionListener = JSObject() as JS_IImpressionListener;
+        reflectSet(impressionListener, 'logImpression'.toJS, logImpression);
 
-        config.setProperty('impressionListener'.toJS, impressionListener);
+        config.impressionListener = impressionListener;
       }
     }
 
@@ -329,8 +318,7 @@ class SplitioWeb extends SplitioPlatform {
       return;
     }
 
-    final client = this._factory.client.callAsFunction(
-        null, buildJsKey(matchingKey, bucketingKey)) as JS_IBrowserClient;
+    final client = this._factory.client(buildJsKey(matchingKey, bucketingKey));
 
     _clients[key] = client;
   }
@@ -346,10 +334,10 @@ class SplitioWeb extends SplitioPlatform {
     return _clients[key]!;
   }
 
-  Future<JS_IBrowserManager> _getManager() async {
+  Future<JS_IManager> _getManager() async {
     await this._initFuture;
 
-    return _factory.manager.callAsFunction(null) as JS_IBrowserManager;
+    return _factory.manager();
   }
 
   JSAny? _convertValue(dynamic value, bool isAttribute) {
@@ -373,10 +361,9 @@ class SplitioWeb extends SplitioPlatform {
       final jsValue = _convertValue(value, isAttribute);
 
       if (jsValue != null) {
-        jsMap.setProperty(key.toJS, jsValue);
+        reflectSet(jsMap, key.toJS, jsValue);
       } else {
-        this._factory.settings.log.warn.callAsFunction(
-            null,
+        this._factory.settings.log.warn(
             'Invalid ${isAttribute ? 'attribute' : 'property'} value: $value, for key: $key, will be ignored'
                 .toJS);
       }
@@ -385,12 +372,13 @@ class SplitioWeb extends SplitioPlatform {
     return jsMap;
   }
 
-  JSObject _convertEvaluationOptions(EvaluationOptions evaluationOptions) {
-    final jsEvalOptions = JSObject();
+  JS_EvaluationOptions _convertEvaluationOptions(
+      EvaluationOptions evaluationOptions) {
+    final jsEvalOptions = JSObject() as JS_EvaluationOptions;
 
     if (evaluationOptions.properties.isNotEmpty) {
-      jsEvalOptions.setProperty(
-          'properties'.toJS, _convertMap(evaluationOptions.properties, false));
+      jsEvalOptions.properties =
+          _convertMap(evaluationOptions.properties, false);
     }
 
     return jsEvalOptions;
@@ -409,11 +397,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatment.callAsFunction(
-        null,
+    final result = client.getTreatment(
         splitName.toJS,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSString;
+        _convertEvaluationOptions(evaluationOptions));
 
     return result.toDart;
   }
@@ -431,11 +418,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatments.callAsFunction(
-        null,
-        splitNames.jsify(),
+    final result = client.getTreatments(
+        splitNames.jsify() as JSArray<JSString>,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsToMap(result);
   }
@@ -454,11 +440,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentWithConfig.callAsFunction(
-        null,
+    final result = client.getTreatmentWithConfig(
         splitName.toJS,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentWithConfigToSplitResult(result);
   }
@@ -476,11 +461,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentsWithConfig.callAsFunction(
-        null,
-        splitNames.jsify(),
+    final result = client.getTreatmentsWithConfig(
+        splitNames.jsify() as JSArray<JSString>,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsWithConfigToMap(result);
   }
@@ -498,11 +482,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentsByFlagSet.callAsFunction(
-        null,
+    final result = client.getTreatmentsByFlagSet(
         flagSet.toJS,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsToMap(result);
   }
@@ -520,11 +503,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentsByFlagSets.callAsFunction(
-        null,
-        flagSets.jsify(),
+    final result = client.getTreatmentsByFlagSets(
+        flagSets.jsify() as JSArray<JSString>,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsToMap(result);
   }
@@ -542,11 +524,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentsWithConfigByFlagSet.callAsFunction(
-        null,
+    final result = client.getTreatmentsWithConfigByFlagSet(
         flagSet.toJS,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsWithConfigToMap(result);
   }
@@ -564,11 +545,10 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getTreatmentsWithConfigByFlagSets.callAsFunction(
-        null,
-        flagSets.jsify(),
+    final result = client.getTreatmentsWithConfigByFlagSets(
+        flagSets.jsify() as JSArray<JSString>,
         _convertMap(attributes, true),
-        _convertEvaluationOptions(evaluationOptions)) as JSObject;
+        _convertEvaluationOptions(evaluationOptions));
 
     return jsTreatmentsWithConfigToMap(result);
   }
@@ -586,8 +566,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.track.callAsFunction(
-        null,
+    final result = client.track(
         trafficType != null
             ? trafficType.toJS
             : this._trafficType != null
@@ -595,7 +574,7 @@ class SplitioWeb extends SplitioPlatform {
                 : null,
         eventType.toJS,
         value != null ? value.toJS : null,
-        _convertMap(properties, false)) as JSBoolean;
+        _convertMap(properties, false));
 
     return result.toDart;
   }
@@ -608,7 +587,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getAttributes.callAsFunction(null) as JSObject;
+    final result = client.getAttributes();
 
     return jsObjectToMap(result);
   }
@@ -624,8 +603,8 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.setAttribute.callAsFunction(
-        null, attributeName.toJS, _convertValue(value, true)) as JSBoolean;
+    final result =
+        client.setAttribute(attributeName.toJS, _convertValue(value, true));
 
     return result.toDart;
   }
@@ -640,8 +619,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.setAttributes
-        .callAsFunction(null, _convertMap(attributes, true)) as JSBoolean;
+    final result = client.setAttributes(_convertMap(attributes, true));
 
     return result.toDart;
   }
@@ -656,7 +634,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.getAttribute.callAsFunction(null, attributeName.toJS);
+    final result = client.getAttribute(attributeName.toJS);
 
     return jsAnyToDart(result);
   }
@@ -671,8 +649,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.removeAttribute
-        .callAsFunction(null, attributeName.toJS) as JSBoolean;
+    final result = client.removeAttribute(attributeName.toJS);
 
     return result.toDart;
   }
@@ -685,7 +662,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.clearAttributes.callAsFunction(null) as JSBoolean;
+    final result = client.clearAttributes();
 
     return result.toDart;
   }
@@ -698,9 +675,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.flush.callAsFunction(null) as JSPromise<Null>;
-
-    return result.toDart;
+    return client.flush().toDart;
   }
 
   @override
@@ -711,35 +686,32 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    final result = client.destroy.callAsFunction(null) as JSPromise<Null>;
-
-    return result.toDart;
+    return client.destroy().toDart;
   }
 
   @override
   Future<SplitView?> split({required String splitName}) async {
     final manager = await _getManager();
 
-    final result =
-        manager.split.callAsFunction(null, splitName.toJS) as JSObject?;
+    final result = manager.split(splitName.toJS);
 
-    return result != null ? jsObjectToSplitView(result) : null;
+    return result != null ? jsSplitViewToSplitView(result) : null;
   }
 
   @override
   Future<List<SplitView>> splits() async {
     final manager = await _getManager();
 
-    final result = manager.splits.callAsFunction(null) as JSArray<JSObject>;
+    final result = manager.splits();
 
-    return result.toDart.map(jsObjectToSplitView).toList();
+    return result.toDart.map(jsSplitViewToSplitView).toList();
   }
 
   @override
   Future<List<String>> splitNames() async {
     final manager = await _getManager();
 
-    final result = manager.names.callAsFunction(null) as JSArray<JSString>;
+    final result = manager.names();
 
     return jsArrayToList(result).cast<String>();
   }
@@ -748,8 +720,7 @@ class SplitioWeb extends SplitioPlatform {
   Future<UserConsent> getUserConsent() async {
     await this._initFuture;
 
-    final userConsentStatus =
-        _factory.UserConsent.getStatus.callAsFunction(null) as JSString;
+    final userConsentStatus = _factory.UserConsent.getStatus();
 
     switch (userConsentStatus.toDart) {
       case 'GRANTED':
@@ -765,7 +736,7 @@ class SplitioWeb extends SplitioPlatform {
   Future<void> setUserConsent(bool enabled) async {
     await this._initFuture;
 
-    _factory.UserConsent.setStatus.callAsFunction(null, enabled.toJS);
+    _factory.UserConsent.setStatus(enabled.toJS);
   }
 
   @override
@@ -776,15 +747,13 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .isReady
-        .toDart) {
+    if (client.getStatus().isReady.toDart) {
       return;
     } else {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY,
           () {
             completer.complete();
@@ -802,15 +771,13 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .isReadyFromCache
-        .toDart) {
+    if (client.getStatus().isReadyFromCache.toDart) {
       return;
     } else {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY_FROM_CACHE,
           () {
             completer.complete();
@@ -828,15 +795,13 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    if ((client.getStatus.callAsFunction(null) as JS_ReadinessStatus)
-        .hasTimedout
-        .toDart) {
+    if (client.getStatus().hasTimedout.toDart) {
       return;
     } else {
       final completer = Completer<void>();
 
       client.on.callAsFunction(
-          null,
+          client,
           client.Event.SDK_READY_TIMED_OUT,
           () {
             completer.complete();
@@ -864,16 +829,16 @@ class SplitioWeb extends SplitioPlatform {
 
     controller = StreamController<void>(
       onListen: () {
-        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onPause: () {
-        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onResume: () {
-        client.on.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
       },
       onCancel: () async {
-        client.off.callAsFunction(null, client.Event.SDK_UPDATE, jsCallback);
+        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
         if (!controller.isClosed) {
           await controller.close();
         }
