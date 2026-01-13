@@ -164,20 +164,33 @@ class SplitioWeb extends SplitioPlatform {
       if (configuration.configurationMap.containsKey('eventsEndpoint'))
         urls.events =
             (configuration.configurationMap['eventsEndpoint'] as String).toJS;
-      if (configuration.configurationMap.containsKey('authServiceEndpoint'))
-        urls.auth =
-            (configuration.configurationMap['authServiceEndpoint'] as String)
-                .toJS;
+
+      // Convert urls for consistency between JS SDK and Android/iOS SDK
+      if (configuration.configurationMap.containsKey('authServiceEndpoint')) {
+        final auth =
+            configuration.configurationMap['authServiceEndpoint'] as String;
+        final jsAuth =
+            auth.endsWith('/v2') ? auth.substring(0, auth.length - 3) : auth;
+        urls.auth = jsAuth.toJS;
+      }
       if (configuration.configurationMap
-          .containsKey('streamingServiceEndpoint'))
-        urls.streaming = (configuration
-                .configurationMap['streamingServiceEndpoint'] as String)
-            .toJS;
+          .containsKey('streamingServiceEndpoint')) {
+        final streaming = configuration
+            .configurationMap['streamingServiceEndpoint'] as String;
+        final jsStreaming = streaming.endsWith('/sse')
+            ? streaming.substring(0, streaming.length - 4)
+            : streaming;
+        urls.streaming = jsStreaming.toJS;
+      }
       if (configuration.configurationMap
-          .containsKey('telemetryServiceEndpoint'))
-        urls.telemetry = (configuration
-                .configurationMap['telemetryServiceEndpoint'] as String)
-            .toJS;
+          .containsKey('telemetryServiceEndpoint')) {
+        final telemetry = configuration
+            .configurationMap['telemetryServiceEndpoint'] as String;
+        final jsTelemetry = telemetry.endsWith('/v1')
+            ? telemetry.substring(0, telemetry.length - 3)
+            : telemetry;
+        urls.telemetry = jsTelemetry.toJS;
+      }
       config.urls = urls;
 
       final sync = JSObject() as JS_ConfigurationSync;
@@ -301,37 +314,24 @@ class SplitioWeb extends SplitioPlatform {
     return config;
   }
 
-  static String _buildKeyString(String matchingKey, String? bucketingKey) {
-    return bucketingKey == null ? matchingKey : '${matchingKey}_$bucketingKey';
-  }
-
   @override
   Future<void> getClient({
     required String matchingKey,
     required String? bucketingKey,
   }) async {
-    await this._initFuture;
-
-    final key = _buildKeyString(matchingKey, bucketingKey);
-
-    if (_clients.containsKey(key)) {
-      return;
-    }
-
-    final client = this._factory.client(buildJsKey(matchingKey, bucketingKey));
-
-    _clients[key] = client;
+    await _getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
   Future<JS_IBrowserClient> _getClient({
     required String matchingKey,
     required String? bucketingKey,
   }) async {
-    await getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
+    await this._initFuture;
 
-    final key = _buildKeyString(matchingKey, bucketingKey);
+    final key = buildKeyString(matchingKey, bucketingKey);
 
-    return _clients[key]!;
+    return (_clients[key] ??=
+        _factory.client(buildJsKey(matchingKey, bucketingKey)));
   }
 
   Future<JS_IManager> _getManager() async {
@@ -814,7 +814,7 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    final client = _clients[_buildKeyString(matchingKey, bucketingKey)];
+    final client = _clients[buildKeyString(matchingKey, bucketingKey)];
 
     if (client == null) {
       return null;
