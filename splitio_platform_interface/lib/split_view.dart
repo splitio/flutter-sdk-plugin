@@ -32,7 +32,7 @@ class SplitView {
       this.impressionsDisabled = false,
       this.prerequisites = const <Prerequisite>{}]);
 
-  static SplitView? fromEntry(Map<dynamic, dynamic?>? entry) {
+  static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
       return null;
     }
