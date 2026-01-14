@@ -4,8 +4,8 @@ repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio_web
 version: 1.0.0
 
 environment:
-  sdk: ">=3.3.0 <4.0.0"
-  flutter: ">=3.16.0"
+  sdk: ">=3.3.0 <4.0.0" # using Dart 3.3+ extension types for JS interop
+  flutter: ">=3.19.0" # lowest Flutter version that includes Dart 3.3+
 
 flutter:
   plugin:

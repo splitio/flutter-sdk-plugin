@@ -26,7 +26,7 @@ extension type JS_ImpressionData._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_Logger._(JSObject _) implements JSObject {
+extension type JS_ILogger._(JSObject _) implements JSObject {
   external JSAny? debug(JSString message);
   external JSAny? info(JSString message);
   external JSAny? warn(JSString message);
@@ -106,7 +106,7 @@ extension type JS_Configuration._(JSObject _) implements JSObject {
 
 @JS()
 extension type JS_ISettings._(JSObject _) implements JS_Configuration {
-  external JS_Logger log;
+  external JS_ILogger log;
   external JS_IImpressionListener? impressionListener;
 }
 
@@ -193,9 +193,9 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSBoolean clearAttributes();
   external JSPromise<Null> flush();
   external JSPromise<Null> destroy();
-  external JSFunction on;
-  external JSFunction off;
-  external JSFunction emit;
+  external JSVoid on(JSString event, JSFunction listener);
+  external JSVoid off(JSString event, JSFunction listener);
+  external JSVoid emit(JSString event);
   external JS_EventConsts Event;
   external JS_ReadinessStatus getStatus();
 }
@@ -216,13 +216,18 @@ extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JS_LoggerFactory._(JSFunction _) implements JSFunction {
+  external JSObject call();
+}
+
+@JS()
 extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
   external JS_IBrowserSDK SplitFactory(JS_Configuration config);
   external JSFunction? InLocalStorage;
-  external JSFunction? DebugLogger;
-  external JSFunction? InfoLogger;
-  external JSFunction? WarnLogger;
-  external JSFunction? ErrorLogger;
+  external JS_LoggerFactory? DebugLogger;
+  external JS_LoggerFactory? InfoLogger;
+  external JS_LoggerFactory? WarnLogger;
+  external JS_LoggerFactory? ErrorLogger;
 }
 
 // Conversion utils: JS to Dart types
@@ -231,40 +236,21 @@ extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
 external JSArray<JSString> objectKeys(JSObject obj);
 
 @JS('Reflect.get')
-external JSAny? reflectGet(JSObject target, JSAny propertyKey);
+external JSAny? reflectGet(JSObject target, JSString propertyKey);
 
 @JS('Reflect.set')
-external JSAny? reflectSet(JSObject target, JSAny propertyKey, JSAny value);
+external JSAny? reflectSet(JSObject target, JSString propertyKey, JSAny? value);
 
 @JS('JSON.parse')
 external JSObject jsonParse(JSString obj);
 
-List<dynamic> jsArrayToList(JSArray obj) {
-  return obj.toDart.map(jsAnyToDart).toList();
-}
+List<dynamic> jsArrayToList(JSArray<JSAny?> obj) =>
+    (obj.dartify() as List).cast<dynamic>();
 
-Map<String, dynamic> jsObjectToMap(JSObject obj) {
-  return {
-    for (final jsKey in objectKeys(obj).toDart)
-      jsKey.toDart: jsAnyToDart(reflectGet(obj, jsKey)),
-  };
-}
+Map<String, dynamic> jsObjectToMap(JSObject obj) =>
+    (obj.dartify() as Map).cast<String, dynamic>();
 
-dynamic jsAnyToDart(JSAny? value) {
-  if (value is JSArray) {
-    return jsArrayToList(value);
-  } else if (value is JSObject) {
-    return jsObjectToMap(value);
-  } else if (value is JSString) {
-    return value.toDart;
-  } else if (value is JSNumber) {
-    return value.toDartDouble;
-  } else if (value is JSBoolean) {
-    return value.toDart;
-  } else {
-    return value; // JS null and undefined are null in Dart
-  }
-}
+Object? jsAnyToDart(JSAny? value) => value.dartify();
 
 // Conversion utils: JS SDK to Flutter SDK types
 
@@ -278,8 +264,7 @@ Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
 }
 
 SplitResult jsTreatmentWithConfigToSplitResult(JS_TreatmentWithConfig obj) {
-  return SplitResult(obj.treatment.toDart,
-      (obj.config is JSString) ? obj.config!.toDart : null);
+  return SplitResult(obj.treatment.toDart, obj.config?.toDart);
 }
 
 Prerequisite jsPrerequisiteToPrerequisite(JS_Prerequisite obj) {
@@ -329,18 +314,6 @@ JSAny buildJsKey(String matchingKey, String? bucketingKey) {
     }.jsify()!;
   }
   return matchingKey.toJS;
-}
-
-({String matchingKey, String? bucketingKey}) buildDartKey(JSAny splitKey) {
-  return splitKey is JSString
-      ? (matchingKey: splitKey.toDart, bucketingKey: null)
-      : (
-          matchingKey:
-              (reflectGet(splitKey as JSObject, 'matchingKey'.toJS) as JSString)
-                  .toDart,
-          bucketingKey:
-              (reflectGet(splitKey, 'bucketingKey'.toJS) as JSString).toDart,
-        );
 }
 
 String buildKeyString(String matchingKey, String? bucketingKey) {

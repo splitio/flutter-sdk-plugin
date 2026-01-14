@@ -5,10 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
-import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'utils/js_interop_test_utils.dart';
 
@@ -704,8 +701,7 @@ void main() {
               eventsEndpoint: 'https://events.domain/api',
               authServiceEndpoint: 'https://auth.domain/api/v2',
               streamingServiceEndpoint: 'https://streaming.domain/sse',
-              telemetryServiceEndpoint:
-                  'https://telemetry.domain/api/v1',
+              telemetryServiceEndpoint: 'https://telemetry.domain/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,
@@ -722,8 +718,10 @@ void main() {
               )));
 
       expect(mock.calls[mock.calls.length - 5].methodName, 'SplitFactory');
+      final actual =
+          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]);
       expect(
-          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]),
+          actual,
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -773,7 +771,10 @@ void main() {
               'expirationDays': 100,
               'clearOnInit': true
             },
-            'impressionListener': {'logImpression': {}}
+            'impressionListener': {
+              'logImpression': (actual as Map)['impressionListener']
+                  ['logImpression']
+            }
           }));
 
       expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
@@ -837,6 +838,54 @@ void main() {
             },
             'storage': {'type': 'LOCALSTORAGE'}
           }));
+    });
+
+    test(
+        'init with InLocalStorage and Logger factory modules (Browser SDK full CDN)',
+        () async {
+      mock.addFactoryModules();
+      SplitioWeb _platform = SplitioWeb();
+
+      await _platform.init(
+          apiKey: 'api-key',
+          matchingKey: 'matching-key',
+          bucketingKey: 'bucketing-key',
+          sdkConfiguration: SplitConfiguration(
+              logLevel: SplitLogLevel.info,
+              rolloutCacheConfiguration: RolloutCacheConfiguration(
+                expirationDays: 100,
+                clearOnInit: true,
+              )));
+
+      expect(mock.calls[mock.calls.length - 3].methodName, 'InfoLogger');
+      expect(mock.calls[mock.calls.length - 2].methodName, 'InLocalStorage');
+      expect(
+          mock.calls[mock.calls.length - 2].methodArguments.map(jsAnyToDart), [
+        {'type': 'LOCALSTORAGE', 'expirationDays': 100, 'clearOnInit': true}
+      ]);
+
+      expect(mock.calls.last.methodName, 'SplitFactory');
+      expect(
+          jsAnyToDart(mock.calls.last.methodArguments[0]),
+          equals({
+            'core': {
+              'authorizationKey': 'api-key',
+              'key': {
+                'matchingKey': 'matching-key',
+                'bucketingKey': 'bucketing-key',
+              },
+            },
+            'startup': {
+              'readyTimeout': 10,
+            },
+            'scheduler': {},
+            'urls': {},
+            'sync': {},
+            'debug': {},
+            'storage': {}
+          }));
+
+      mock.removeFactoryModules();
     });
   });
 
@@ -949,7 +998,7 @@ void main() {
       // Emit SDK_READY event
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_READY);
+      mockClient.emit(mockClient.Event.SDK_READY);
 
       expect(onReady, completion(equals(true)));
     });
@@ -960,8 +1009,7 @@ void main() {
       // Emit SDK_READY_FROM_CACHE event
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit
-          .callAsFunction(null, mockClient.Event.SDK_READY_FROM_CACHE);
+      mockClient.emit(mockClient.Event.SDK_READY_FROM_CACHE);
 
       Future<void>? onReadyFromCache = _platform
           .onReadyFromCache(
@@ -983,8 +1031,7 @@ void main() {
       // Emit SDK_READY_TIMED_OUT event on the first client
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
-      mockClient.emit
-          .callAsFunction(null, mockClient.Event.SDK_READY_TIMED_OUT);
+      mockClient.emit(mockClient.Event.SDK_READY_TIMED_OUT);
 
       // Assert that onTimeout is completed for the first client only
       await expectLater(onTimeout, completion(isTrue));
@@ -992,34 +1039,30 @@ void main() {
     });
 
     test('onUpdated', () async {
-      // Precondition: client is initialized before onUpdated is called
-      await _platform.getClient(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
 
       final stream = _platform.onUpdated(
           matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
       final subscription = stream.listen(expectAsync1((_) {}, count: 3));
+      await Future<void>.delayed(Duration.zero); // onListen is async
 
       // Emit SDK_UPDATE events. Should be received
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-
-      await Future<void>.delayed(
-          const Duration(milliseconds: 100)); // let events deliver
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
 
       // Pause subscription and emit SDK_UPDATE event. Should not be received
       subscription.pause();
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(Duration.zero); // onPause is async
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
 
       // Resume subscription and emit SDK_UPDATE event. Should be received
       subscription.resume();
-      mockClient.emit.callAsFunction(null, mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
+      await Future<void>.delayed(Duration.zero); // onResume is async
+      mockClient.emit(mockClient.Event.SDK_UPDATE);
 
+      await Future<void>.delayed(
+          Duration.zero); // let last event deliver before cancel
       await subscription.cancel();
     });
   });

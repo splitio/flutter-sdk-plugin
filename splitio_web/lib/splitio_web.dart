@@ -33,7 +33,7 @@ class SplitioWeb extends SplitioPlatform {
     required String matchingKey,
     required String? bucketingKey,
     SplitConfiguration? sdkConfiguration,
-  }) async {
+  }) {
     if (_initFuture == null) {
       _initFuture = this._init(
           apiKey: apiKey,
@@ -41,7 +41,7 @@ class SplitioWeb extends SplitioPlatform {
           bucketingKey: bucketingKey,
           sdkConfiguration: sdkConfiguration);
     }
-    return _initFuture;
+    return _initFuture!;
   }
 
   Future<void> _init({
@@ -92,7 +92,8 @@ class SplitioWeb extends SplitioPlatform {
     // Create and inject script tag
     final script = document.createElement('script') as HTMLScriptElement;
     script.type = 'text/javascript';
-    script.src = 'packages/splitio_web/web/split-browser-1.6.0.full.min.js';
+    script.src =
+        'assets/packages/splitio_web/web/split-browser-1.6.0.full.min.js';
 
     // Wait for script to load
     final completer = Completer<void>();
@@ -241,33 +242,35 @@ class SplitioWeb extends SplitioPlatform {
 
       final logLevel = configuration.configurationMap['logLevel'];
       if (logLevel is String) {
-        JSAny? logger;
         switch (SplitLogLevel.values.firstWhere((e) => e.name == logLevel)) {
           case SplitLogLevel.verbose:
           case SplitLogLevel.debug:
-            logger = window.splitio!.DebugLogger?.callAsFunction();
+            config.debug = window.splitio!.DebugLogger != null
+                ? window.splitio!.DebugLogger!()
+                : 'DEBUG'.toJS;
             break;
           case SplitLogLevel.info:
-            logger = window.splitio!.InfoLogger?.callAsFunction();
+            config.debug = window.splitio!.InfoLogger != null
+                ? window.splitio!.InfoLogger!()
+                : 'INFO'.toJS;
             break;
           case SplitLogLevel.warning:
-            logger = window.splitio!.WarnLogger?.callAsFunction();
+            config.debug = window.splitio!.WarnLogger != null
+                ? window.splitio!.WarnLogger!()
+                : 'WARNING'.toJS;
             break;
           case SplitLogLevel.error:
-            logger = window.splitio!.ErrorLogger?.callAsFunction();
+            config.debug = window.splitio!.ErrorLogger != null
+                ? window.splitio!.ErrorLogger!()
+                : 'ERROR'.toJS;
             break;
           default:
             break;
         }
-        if (logger != null) {
-          config.debug = logger; // Browser SDK
-        } else {
-          config.debug = logLevel.toUpperCase().toJS; // JS SDK
-        }
       } else if (configuration.configurationMap['enableDebug'] == true) {
         config.debug = window.splitio!.DebugLogger != null
-            ? window.splitio!.DebugLogger!.callAsFunction() // Browser SDK
-            : 'DEBUG'.toJS; // JS SDK
+            ? window.splitio!.DebugLogger!()
+            : 'DEBUG'.toJS;
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
@@ -739,6 +742,9 @@ class SplitioWeb extends SplitioPlatform {
     _factory.UserConsent.setStatus(enabled.toJS);
   }
 
+  // To ensure the public `onXXX` callbacks and `whenXXX` methods work correctly,
+  // the `onXXX` method implementations always return a Future or Stream that waits for the client to be initialized.
+
   @override
   Future<void>? onReady(
       {required String matchingKey, required String? bucketingKey}) async {
@@ -752,8 +758,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY,
           () {
             completer.complete();
@@ -776,8 +781,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY_FROM_CACHE,
           () {
             completer.complete();
@@ -800,8 +804,7 @@ class SplitioWeb extends SplitioPlatform {
     } else {
       final completer = Completer<void>();
 
-      client.on.callAsFunction(
-          client,
+      client.on(
           client.Event.SDK_READY_TIMED_OUT,
           () {
             completer.complete();
@@ -814,11 +817,9 @@ class SplitioWeb extends SplitioPlatform {
   @override
   Stream<void>? onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
-    final client = _clients[buildKeyString(matchingKey, bucketingKey)];
-
-    if (client == null) {
-      return null;
-    }
+    // To ensure the public `onUpdated` callback and `whenUpdated` method work correctly,
+    // this method always return a stream, and the StreamController callbacks
+    // are async to wait for the client to be initialized.
 
     late final StreamController<void> controller;
     final JSFunction jsCallback = (() {
@@ -826,19 +827,27 @@ class SplitioWeb extends SplitioPlatform {
         controller.add(null);
       }
     }).toJS;
+    final registerJsCallback = () async {
+      final client = await _getClient(
+        matchingKey: matchingKey,
+        bucketingKey: bucketingKey,
+      );
+      client.on(client.Event.SDK_UPDATE, jsCallback);
+    };
+    final deregisterJsCallback = () async {
+      final client = await _getClient(
+        matchingKey: matchingKey,
+        bucketingKey: bucketingKey,
+      );
+      client.off(client.Event.SDK_UPDATE, jsCallback);
+    };
 
     controller = StreamController<void>(
-      onListen: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
-      onPause: () {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
-      onResume: () {
-        client.on.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
-      },
+      onListen: registerJsCallback,
+      onPause: deregisterJsCallback,
+      onResume: registerJsCallback,
       onCancel: () async {
-        client.off.callAsFunction(client, client.Event.SDK_UPDATE, jsCallback);
+        await deregisterJsCallback();
         if (!controller.isClosed) {
           await controller.close();
         }

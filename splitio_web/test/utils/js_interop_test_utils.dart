@@ -7,6 +7,19 @@ external JSPromise<Null> _promiseResolve();
 @JS('Object.assign')
 external JSObject _objectAssign(JSObject target, JSObject source);
 
+// Not WASM-compatible. Currently used only in tests
+({String matchingKey, String? bucketingKey}) buildDartKey(JSAny splitKey) {
+  return splitKey is JSString
+      ? (matchingKey: splitKey.toDart, bucketingKey: null)
+      : (
+          matchingKey:
+              (reflectGet(splitKey as JSObject, 'matchingKey'.toJS) as JSString)
+                  .toDart,
+          bucketingKey:
+              (reflectGet(splitKey, 'bucketingKey'.toJS) as JSString).toDart,
+        );
+}
+
 class SplitioMock {
   // JS Browser SDK API mock
   final JS_BrowserSDKPackage splitio = JSObject() as JS_BrowserSDKPackage;
@@ -77,7 +90,7 @@ class SplitioMock {
           return ['split1'.toJS, 'split2'.toJS].jsify();
         }.toJS);
 
-    final mockLog = JSObject() as JS_Logger;
+    final mockLog = JSObject() as JS_ILogger;
     reflectSet(
         mockLog,
         'warn'.toJS,
@@ -150,29 +163,38 @@ class SplitioMock {
     final mockClient = JSObject() as JS_IBrowserClient;
 
     mockClient.Event = _mockEvents;
-    mockClient.on = (JSString event, JSFunction listener) {
-      calls.add((methodName: 'on', methodArguments: [event, listener]));
-      _eventListeners[event] ??= Set();
-      _eventListeners[event]!.add(listener);
-    }.toJS;
-    mockClient.off = (JSString event, JSFunction listener) {
-      calls.add((methodName: 'off', methodArguments: [event, listener]));
-      _eventListeners[event] ??= Set();
-      _eventListeners[event]!.remove(listener);
-    }.toJS;
-    mockClient.emit = (JSString event) {
-      calls.add((methodName: 'emit', methodArguments: [event]));
-      _eventListeners[event]?.forEach((listener) {
-        listener.callAsFunction(null, event);
-      });
-      if (event == _mockEvents.SDK_READY) {
-        _readinessStatus.isReady = true.toJS;
-      } else if (event == _mockEvents.SDK_READY_FROM_CACHE) {
-        _readinessStatus.isReadyFromCache = true.toJS;
-      } else if (event == _mockEvents.SDK_READY_TIMED_OUT) {
-        _readinessStatus.hasTimedout = true.toJS;
-      }
-    }.toJS;
+    reflectSet(
+        mockClient,
+        'on'.toJS,
+        (JSString event, JSFunction listener) {
+          calls.add((methodName: 'on', methodArguments: [event, listener]));
+          _eventListeners[event] ??= Set();
+          _eventListeners[event]!.add(listener);
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'off'.toJS,
+        (JSString event, JSFunction listener) {
+          calls.add((methodName: 'off', methodArguments: [event, listener]));
+          _eventListeners[event] ??= Set();
+          _eventListeners[event]!.remove(listener);
+        }.toJS);
+    reflectSet(
+        mockClient,
+        'emit'.toJS,
+        (JSString event) {
+          calls.add((methodName: 'emit', methodArguments: [event]));
+          _eventListeners[event]?.forEach((listener) {
+            listener.callAsFunction(null, event);
+          });
+          if (event == _mockEvents.SDK_READY) {
+            _readinessStatus.isReady = true.toJS;
+          } else if (event == _mockEvents.SDK_READY_FROM_CACHE) {
+            _readinessStatus.isReadyFromCache = true.toJS;
+          } else if (event == _mockEvents.SDK_READY_TIMED_OUT) {
+            _readinessStatus.hasTimedout = true.toJS;
+          }
+        }.toJS);
     reflectSet(
         mockClient,
         'getStatus'.toJS,
@@ -387,5 +409,52 @@ class SplitioMock {
         }.toJS);
 
     return mockClient;
+  }
+
+  void addFactoryModules() {
+    reflectSet(
+        splitio,
+        'DebugLogger'.toJS,
+        () {
+          calls.add((methodName: 'DebugLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'InfoLogger'.toJS,
+        () {
+          calls.add((methodName: 'InfoLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'WarnLogger'.toJS,
+        () {
+          calls.add((methodName: 'WarnLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'ErrorLogger'.toJS,
+        () {
+          calls.add((methodName: 'ErrorLogger', methodArguments: []));
+          return JSObject();
+        }.toJS);
+    reflectSet(
+        splitio,
+        'InLocalStorage'.toJS,
+        (JS_ConfigurationStorage storageConfig) {
+          calls.add(
+              (methodName: 'InLocalStorage', methodArguments: [storageConfig]));
+          return JSObject();
+        }.toJS);
+  }
+
+  void removeFactoryModules() {
+    reflectSet(splitio, 'DebugLogger'.toJS, null);
+    reflectSet(splitio, 'InfoLogger'.toJS, null);
+    reflectSet(splitio, 'WarnLogger'.toJS, null);
+    reflectSet(splitio, 'ErrorLogger'.toJS, null);
+    reflectSet(splitio, 'InLocalStorage'.toJS, null);
   }
 }
