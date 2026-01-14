@@ -701,8 +701,7 @@ void main() {
               eventsEndpoint: 'https://events.domain/api',
               authServiceEndpoint: 'https://auth.domain/api/v2',
               streamingServiceEndpoint: 'https://streaming.domain/sse',
-              telemetryServiceEndpoint:
-                  'https://telemetry.domain/api/v1',
+              telemetryServiceEndpoint: 'https://telemetry.domain/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,
@@ -1062,7 +1061,8 @@ void main() {
       await Future<void>.delayed(Duration.zero); // onResume is async
       mockClient.emit(mockClient.Event.SDK_UPDATE);
 
-      await Future<void>.delayed(Duration.zero); // let last event deliver before cancel
+      await Future<void>.delayed(
+          Duration.zero); // let last event deliver before cancel
       await subscription.cancel();
     });
   });

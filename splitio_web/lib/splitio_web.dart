@@ -33,7 +33,7 @@ class SplitioWeb extends SplitioPlatform {
     required String matchingKey,
     required String? bucketingKey,
     SplitConfiguration? sdkConfiguration,
-  }) async {
+  }) {
     if (_initFuture == null) {
       _initFuture = this._init(
           apiKey: apiKey,
@@ -41,7 +41,7 @@ class SplitioWeb extends SplitioPlatform {
           bucketingKey: bucketingKey,
           sdkConfiguration: sdkConfiguration);
     }
-    return _initFuture;
+    return _initFuture!;
   }
 
   Future<void> _init({
@@ -92,7 +92,8 @@ class SplitioWeb extends SplitioPlatform {
     // Create and inject script tag
     final script = document.createElement('script') as HTMLScriptElement;
     script.type = 'text/javascript';
-    script.src = 'assets/packages/splitio_web/web/split-browser-1.6.0.full.min.js';
+    script.src =
+        'assets/packages/splitio_web/web/split-browser-1.6.0.full.min.js';
 
     // Wait for script to load
     final completer = Completer<void>();

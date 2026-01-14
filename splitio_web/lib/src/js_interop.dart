@@ -316,18 +316,6 @@ JSAny buildJsKey(String matchingKey, String? bucketingKey) {
   return matchingKey.toJS;
 }
 
-({String matchingKey, String? bucketingKey}) buildDartKey(JSAny splitKey) {
-  return splitKey is JSString
-      ? (matchingKey: splitKey.toDart, bucketingKey: null)
-      : (
-          matchingKey:
-              (reflectGet(splitKey as JSObject, 'matchingKey'.toJS) as JSString)
-                  .toDart,
-          bucketingKey:
-              (reflectGet(splitKey, 'bucketingKey'.toJS) as JSString).toDart,
-        );
-}
-
 String buildKeyString(String matchingKey, String? bucketingKey) {
   return bucketingKey == null ? matchingKey : '${matchingKey}_$bucketingKey';
 }

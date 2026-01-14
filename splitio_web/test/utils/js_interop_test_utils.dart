@@ -7,6 +7,19 @@ external JSPromise<Null> _promiseResolve();
 @JS('Object.assign')
 external JSObject _objectAssign(JSObject target, JSObject source);
 
+// Not WASM-compatible. Currently used only in tests
+({String matchingKey, String? bucketingKey}) buildDartKey(JSAny splitKey) {
+  return splitKey is JSString
+      ? (matchingKey: splitKey.toDart, bucketingKey: null)
+      : (
+          matchingKey:
+              (reflectGet(splitKey as JSObject, 'matchingKey'.toJS) as JSString)
+                  .toDart,
+          bucketingKey:
+              (reflectGet(splitKey, 'bucketingKey'.toJS) as JSString).toDart,
+        );
+}
+
 class SplitioMock {
   // JS Browser SDK API mock
   final JS_BrowserSDKPackage splitio = JSObject() as JS_BrowserSDKPackage;
