@@ -72,3 +72,27 @@ jobs:
 
       - name: ios
         run: cd splitio_ios/example/ios; xcodebuild test -workspace "Runner.xcworkspace" -scheme "Runner" -destination "platform=iOS Simulator,name=iPhone 15,OS=17.4" CODE_SIGN_IDENTITY="" CODE_SIGNING_REQUIRED=NO CODE_SIGNING_ALLOWED=NO ONLY_ACTIVE_ARCH=NO;
+
+  build-web:
+    name: Build Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Build Web
+        run: cd splitio/example; flutter build web
+
+  test-web:
+    name: Test Web
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      - name: Build Web
+        run: cd splitio/example; flutter build web
+      - name: Run Web test
+        run: cd splitio/example; flutter test --platform=chrome

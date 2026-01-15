@@ -22,7 +22,9 @@ Instructions on how to run automated tests
 
 Run `flutter test` in root directory.
 
-Run unit tests in android & ios packages.
+Run unit tests in Android & iOS packages with `flutter test`.
+
+Run unit tests in Web package with `flutter test --platform chrome`.
 
 # Contact
 
