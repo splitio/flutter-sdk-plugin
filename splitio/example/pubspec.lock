@@ -202,7 +202,7 @@ packages:
       path: "../../splitio_web"
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.0.0-rc.1"
   stack_trace:
     dependency: transitive
     description:
@@ -269,4 +269,4 @@ packages:
     version: "0.5.1"
 sdks:
   dart: ">=3.8.0-0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.19.0"
