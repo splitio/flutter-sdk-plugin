@@ -6,9 +6,9 @@ This is the official Flutter plugin designed to work with Split, the platform fo
 [![Twitter Follow](https://img.shields.io/twitter/follow/splitsoftware.svg?style=social&label=Follow&maxAge=1529000)](https://twitter.com/intent/follow?screen_name=splitsoftware)
 
 ## Compatibility
-|                | Android | iOS      | Web      |
-|----------------|---------|----------|----------|
-| **Support**    | SDK 21+ | iOS 12+   | Any      |
+|                | Android | iOS     | Web     |
+|----------------|---------|---------|---------|
+| **Support**    | SDK 21+ | iOS 12+ | Any     |
 
 ## Getting started
 

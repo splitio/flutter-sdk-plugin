@@ -675,7 +675,6 @@ void main() {
           }));
     });
 
-    // @TODO validate full config with pluggable Browser SDK modules
     test('init with config: full config', () async {
       SplitioWeb _platform = SplitioWeb();
 
