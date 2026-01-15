@@ -990,9 +990,9 @@ void main() {
 
   group('events', () {
     test('onReady (SDK_READY event is emitted after onReady is called)', () {
-      Future<void>? onReady = _platform
+      Future<void> onReady = _platform
           .onReady(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
       // Emit SDK_READY event
       final mockClient =
@@ -1010,22 +1010,22 @@ void main() {
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit(mockClient.Event.SDK_READY_FROM_CACHE);
 
-      Future<void>? onReadyFromCache = _platform
+      Future<void> onReadyFromCache = _platform
           .onReadyFromCache(
               matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
       expect(onReadyFromCache, completion(equals(true)));
     });
 
     test('onTimeout (in multiple clients)', () async {
-      Future<void>? onTimeout = _platform
+      Future<void> onTimeout = _platform
           .onTimeout(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
-      Future<void>? onTimeoutClient2 = _platform
+      Future<void> onTimeoutClient2 = _platform
           .onTimeout(matchingKey: 'matching-key-2', bucketingKey: null)
-          ?.then((value) => false);
+          .then((value) => false);
 
       // Emit SDK_READY_TIMED_OUT event on the first client
       final mockClient =
@@ -1042,7 +1042,7 @@ void main() {
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
 
       final stream = _platform.onUpdated(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final subscription = stream.listen(expectAsync1((_) {}, count: 3));
       await Future<void>.delayed(Duration.zero); // onListen is async
 

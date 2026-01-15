@@ -22,8 +22,9 @@ class SplitioWeb extends SplitioPlatform {
 
   late JS_IBrowserSDK _factory;
   String? _trafficType;
+  // Broadcast to allow users to subscribe multiple listeners
   final StreamController<Impression> _impressionsStreamController =
-      StreamController<Impression>();
+      StreamController<Impression>.broadcast();
 
   final Map<String, JS_IBrowserClient> _clients = {};
 
@@ -86,7 +87,7 @@ class SplitioWeb extends SplitioPlatform {
   // If not, loads it by injecting a script tag.
   static Future<void> _loadSplitSdk() async {
     if (window.splitio != null) {
-      return; // Already loaded
+      return; // Already loaded. JS SDK should not be manually loaded because `splitio.SplitFactory` is not available.
     }
 
     // Create and inject script tag
@@ -104,7 +105,7 @@ class SplitioWeb extends SplitioPlatform {
 
     script.onerror = (Event event) {
       completer.completeError(
-          Exception('Failed to load Split SDK, with error: $event'));
+          Exception('Failed to load Split Browser SDK, with error: $event'));
     }.toJS;
 
     document.head!.appendChild(script);
@@ -166,7 +167,7 @@ class SplitioWeb extends SplitioPlatform {
         urls.events =
             (configuration.configurationMap['eventsEndpoint'] as String).toJS;
 
-      // Convert urls for consistency between JS SDK and Android/iOS SDK
+      // Convert urls for consistency between Browser SDK and Android/iOS SDK
       if (configuration.configurationMap.containsKey('authServiceEndpoint')) {
         final auth =
             configuration.configurationMap['authServiceEndpoint'] as String;
@@ -299,7 +300,7 @@ class SplitioWeb extends SplitioPlatform {
         config.storage = window.splitio!.InLocalStorage
             ?.callAsFunction(null, storageOptions); // Browser SDK
       } else {
-        config.storage = storageOptions; // JS SDK
+        config.storage = storageOptions; // JS or slim Browser SDK
       }
 
       if (configuration.configurationMap['impressionListener'] is bool) {
@@ -437,7 +438,6 @@ class SplitioWeb extends SplitioPlatform {
     Map<String, dynamic> attributes = const {},
     EvaluationOptions evaluationOptions = const EvaluationOptions.empty(),
   }) async {
-    await this._initFuture;
     final client = await _getClient(
       matchingKey: matchingKey,
       bucketingKey: bucketingKey,
@@ -747,7 +747,7 @@ class SplitioWeb extends SplitioPlatform {
   // the `onXXX` method implementations always return a Future or Stream that waits for the client to be initialized.
 
   @override
-  Future<void>? onReady(
+  Future<void> onReady(
       {required String matchingKey, required String? bucketingKey}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
@@ -770,7 +770,7 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   @override
-  Future<void>? onReadyFromCache(
+  Future<void> onReadyFromCache(
       {required String matchingKey, required String? bucketingKey}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
@@ -793,7 +793,7 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   @override
-  Future<void>? onTimeout(
+  Future<void> onTimeout(
       {required String matchingKey, required String? bucketingKey}) async {
     final client = await _getClient(
       matchingKey: matchingKey,
@@ -816,7 +816,7 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   @override
-  Stream<void>? onUpdated(
+  Stream<void> onUpdated(
       {required String matchingKey, required String? bucketingKey}) {
     // To ensure the public `onUpdated` callback and `whenUpdated` method work correctly,
     // this method always return a stream, and the StreamController callbacks
@@ -843,6 +843,7 @@ class SplitioWeb extends SplitioPlatform {
       client.off(client.Event.SDK_UPDATE, jsCallback);
     };
 
+    // No broadcast to support pause and resume of individual subscriptions
     controller = StreamController<void>(
       onListen: registerJsCallback,
       onPause: deregisterJsCallback,
