@@ -678,7 +678,8 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    return client.flush().toDart;
+    // `then` chain to ensure the return type is `Future<void>`
+    return client.flush().toDart.then<void>((_) {});
   }
 
   @override
@@ -689,7 +690,7 @@ class SplitioWeb extends SplitioPlatform {
       bucketingKey: bucketingKey,
     );
 
-    return client.destroy().toDart;
+    return client.destroy().toDart.then<void>((_) {});
   }
 
   @override
