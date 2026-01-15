@@ -1,3 +1,5 @@
+# 1.1.0-rc.1 (Jan 15, 2026)
+
 # 1.0.0 (Aug 14, 2025)
 - Updated Android SDK to `5.3.1` & iOS SDK to `3.3.2`
 - Added support for rule-based segments. These segments determine membership at runtime by evaluating their configured rules against the user attributes provided to the SDK.
