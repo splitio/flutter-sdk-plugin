@@ -77,7 +77,11 @@ class Splitio {
       ClientReadinessCallback? onReadyFromCache,
       ClientReadinessCallback? onUpdated,
       ClientReadinessCallback? onTimeout}) {
-    String? key = matchingKey ?? _defaultMatchingKey;
+    String key = matchingKey ?? _defaultMatchingKey;
+    if (matchingKey == null && bucketingKey == null) {
+      bucketingKey = _defaultBucketingKey;
+    }
+
     _platform.getClient(matchingKey: key, bucketingKey: bucketingKey);
 
     var client = DefaultSplitClient(_platform, key, bucketingKey);

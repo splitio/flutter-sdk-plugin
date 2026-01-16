@@ -1,6 +1,5 @@
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
-import 'package:splitio_platform_interface/split_evaluation_options.dart';
 
 class SplitioPlatformStub
     with MockPlatformInterfaceMixin

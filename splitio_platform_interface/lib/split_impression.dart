@@ -13,11 +13,9 @@ class Impression {
       this.appliedRule, this.changeNumber, this.attributes, this.properties);
 
   static Impression fromMap(Map<dynamic, dynamic> map) {
-    var properties = null;
+    Map<String, dynamic>? properties;
     if (map['properties'] != null) {
       properties = Map<String, dynamic>.from(map['properties'] as Map);
-    } else {
-      properties = null;
     }
     return Impression(
         map['key'] as String?,
