@@ -22,21 +22,21 @@ external JSObject _objectAssign(JSObject target, JSObject source);
 
 class SplitioMock {
   // JS Browser SDK API mock
-  final JS_BrowserSDKPackage splitio = JSObject() as JS_BrowserSDKPackage;
+  final JSBrowserSDKPackage splitio = JSObject() as JSBrowserSDKPackage;
 
   // Test utils
   final List<({String methodName, List<JSAny?> methodArguments})> calls = [];
-  final JS_IBrowserSDK mockFactory = JSObject() as JS_IBrowserSDK;
+  final JSIBrowserSDK mockFactory = JSObject() as JSIBrowserSDK;
 
   final _mockEvents = {
     'SDK_READY': 'init::ready',
     'SDK_READY_FROM_CACHE': 'init::cache-ready',
     'SDK_READY_TIMED_OUT': 'init::timeout',
     'SDK_UPDATE': 'state::update'
-  }.jsify() as JS_EventConsts;
-  final _mockClients = <String, JS_IBrowserClient>{};
+  }.jsify() as JSEventConsts;
+  final _mockClients = <String, JSIBrowserClient>{};
 
-  JS_Configuration? _config;
+  JSConfiguration? _config;
   JSString _userConsent = 'UNKNOWN'.toJS;
 
   JSObject _createSplitViewJSObject(JSString splitName) {
@@ -60,7 +60,7 @@ class SplitioMock {
   }
 
   SplitioMock() {
-    final mockManager = JSObject() as JS_IManager;
+    final mockManager = JSObject() as JSIManager;
     reflectSet(
         mockManager,
         'split'.toJS,
@@ -90,7 +90,7 @@ class SplitioMock {
           return ['split1'.toJS, 'split2'.toJS].jsify();
         }.toJS);
 
-    final mockLog = JSObject() as JS_ILogger;
+    final mockLog = JSObject() as JSILogger;
     reflectSet(
         mockLog,
         'warn'.toJS,
@@ -98,7 +98,7 @@ class SplitioMock {
           calls.add((methodName: 'warn', methodArguments: [arg1]));
         }.toJS);
 
-    final mockUserConsent = JSObject() as JS_IUserConsentAPI;
+    final mockUserConsent = JSObject() as JSIUserConsentAPI;
     reflectSet(
         mockUserConsent,
         'setStatus'.toJS,
@@ -139,11 +139,10 @@ class SplitioMock {
     reflectSet(
         splitio,
         'SplitFactory'.toJS,
-        (JS_Configuration config) {
+        (JSConfiguration config) {
           calls.add((methodName: 'SplitFactory', methodArguments: [config]));
 
-          final mockSettings =
-              _objectAssign(JSObject(), config) as JS_ISettings;
+          final mockSettings = _objectAssign(JSObject(), config) as JSISettings;
           mockSettings.log = mockLog;
           mockFactory.settings = mockSettings;
 
@@ -153,14 +152,14 @@ class SplitioMock {
         }.toJS);
   }
 
-  JS_IBrowserClient _buildMockClient() {
-    final JS_ReadinessStatus _readinessStatus = {
+  JSIBrowserClient _buildMockClient() {
+    final JSReadinessStatus _readinessStatus = {
       'isReady': false,
       'isReadyFromCache': false,
       'hasTimedout': false,
-    }.jsify() as JS_ReadinessStatus;
+    }.jsify() as JSReadinessStatus;
     final Map<JSString, Set<JSFunction>> _eventListeners = {};
-    final mockClient = JSObject() as JS_IBrowserClient;
+    final mockClient = JSObject() as JSIBrowserClient;
 
     mockClient.Event = _mockEvents;
     reflectSet(
@@ -238,7 +237,7 @@ class SplitioMock {
             methodName: 'getTreatmentWithConfig',
             methodArguments: [flagName, attributes, evaluationOptions]
           ));
-          final result = JSObject() as JS_TreatmentWithConfig;
+          final result = JSObject() as JSTreatmentWithConfig;
           result.treatment = 'on'.toJS;
           result.config = 'some-config'.toJS;
           return result;
@@ -254,7 +253,7 @@ class SplitioMock {
           if (flagNames is JSArray) {
             return flagNames.toDart.fold(JSObject(), (previousValue, flagName) {
               if (flagName is JSString) {
-                final result = JSObject() as JS_TreatmentWithConfig;
+                final result = JSObject() as JSTreatmentWithConfig;
                 result.treatment = 'on'.toJS;
                 result.config = 'some-config'.toJS;
                 reflectSet(previousValue, flagName, result);
@@ -299,7 +298,7 @@ class SplitioMock {
             methodArguments: [flagSetName, attributes, evaluationOptions]
           ));
 
-          final treatmentWithConfig = JSObject() as JS_TreatmentWithConfig;
+          final treatmentWithConfig = JSObject() as JSTreatmentWithConfig;
           treatmentWithConfig.treatment = 'on'.toJS;
           treatmentWithConfig.config = 'some-config'.toJS;
 
@@ -317,7 +316,7 @@ class SplitioMock {
             methodArguments: [flagSetNames, attributes, evaluationOptions]
           ));
 
-          final treatmentWithConfig = JSObject() as JS_TreatmentWithConfig;
+          final treatmentWithConfig = JSObject() as JSTreatmentWithConfig;
           treatmentWithConfig.treatment = 'on'.toJS;
           treatmentWithConfig.config = 'some-config'.toJS;
 
@@ -443,7 +442,7 @@ class SplitioMock {
     reflectSet(
         splitio,
         'InLocalStorage'.toJS,
-        (JS_ConfigurationStorage storageConfig) {
+        (JSConfigurationStorage storageConfig) {
           calls.add(
               (methodName: 'InLocalStorage', methodArguments: [storageConfig]));
           return JSObject();

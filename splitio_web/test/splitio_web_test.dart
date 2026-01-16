@@ -11,7 +11,7 @@ import 'utils/js_interop_test_utils.dart';
 
 extension on web.Window {
   @JS()
-  external JS_BrowserSDKPackage? splitio;
+  external JSBrowserSDKPackage? splitio;
 }
 
 void main() {
@@ -202,7 +202,8 @@ void main() {
           bucketingKey: 'bucketing-key',
           splitName: 'split1');
 
-      expect(result.toString(), const SplitResult('on', 'some-config').toString());
+      expect(
+          result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(
           mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
@@ -217,7 +218,8 @@ void main() {
           attributes: {'attr1': true},
           evaluationOptions: EvaluationOptions({'prop1': true}));
 
-      expect(result.toString(), const SplitResult('on', 'some-config').toString());
+      expect(
+          result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split1',
@@ -1103,7 +1105,7 @@ void main() {
       'ip': false,
       'hostname': false,
       'sdkLanguageVersion': 'browserjs-1.0.0',
-    }.jsify() as JS_ImpressionData);
+    }.jsify() as JSImpressionData);
   });
 
   group('userConsent', () {

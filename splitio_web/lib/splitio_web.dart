@@ -7,7 +7,7 @@ import 'package:web/web.dart';
 
 extension on Window {
   @JS()
-  external JS_BrowserSDKPackage? splitio;
+  external JSBrowserSDKPackage? splitio;
 }
 
 /// Web implementation of [SplitioPlatform].
@@ -20,13 +20,13 @@ class SplitioWeb extends SplitioPlatform {
   // Future to queue method calls until SDK is initialized
   Future<void>? _initFuture;
 
-  late JS_IBrowserSDK _factory;
+  late JSIBrowserSDK _factory;
   String? _trafficType;
   // Broadcast to allow users to subscribe multiple listeners
   final StreamController<Impression> _impressionsStreamController =
       StreamController<Impression>.broadcast();
 
-  final Map<String, JS_IBrowserClient> _clients = {};
+  final Map<String, JSIBrowserClient> _clients = {};
 
   @override
   Future<void> init({
@@ -115,17 +115,17 @@ class SplitioWeb extends SplitioPlatform {
   }
 
   // Map SplitConfiguration to JS equivalent object
-  JS_Configuration _buildConfig(String apiKey, String matchingKey,
+  JSConfiguration _buildConfig(String apiKey, String matchingKey,
       String? bucketingKey, SplitConfiguration? configuration) {
-    final config = JSObject() as JS_Configuration;
+    final config = JSObject() as JSConfiguration;
 
-    final core = JSObject() as JS_ConfigurationCore;
+    final core = JSObject() as JSConfigurationCore;
     core.authorizationKey = apiKey.toJS;
     core.key = buildJsKey(matchingKey, bucketingKey);
     config.core = core;
 
     if (configuration != null) {
-      final scheduler = JSObject() as JS_ConfigurationScheduler;
+      final scheduler = JSObject() as JSConfigurationScheduler;
       if (configuration.configurationMap.containsKey('featuresRefreshRate')) {
         scheduler.featuresRefreshRate =
             (configuration.configurationMap['featuresRefreshRate'] as int).toJS;
@@ -165,7 +165,7 @@ class SplitioWeb extends SplitioPlatform {
             (configuration.configurationMap['streamingEnabled'] as bool).toJS;
       }
 
-      final urls = JSObject() as JS_ConfigurationUrls;
+      final urls = JSObject() as JSConfigurationUrls;
       if (configuration.configurationMap.containsKey('sdkEndpoint')) {
         urls.sdk =
             (configuration.configurationMap['sdkEndpoint'] as String).toJS;
@@ -203,7 +203,7 @@ class SplitioWeb extends SplitioPlatform {
       }
       config.urls = urls;
 
-      final sync = JSObject() as JS_ConfigurationSync;
+      final sync = JSObject() as JSConfigurationSync;
       if (configuration.configurationMap['impressionsMode'] != null) {
         sync.impressionsMode =
             (configuration.configurationMap['impressionsMode'] as String)
@@ -238,7 +238,7 @@ class SplitioWeb extends SplitioPlatform {
           splitFilters.add(
               {'type': 'bySet', 'values': syncConfig['syncConfigFlagSets']});
         }
-        sync.splitFilters = splitFilters.jsify() as JSArray<JS_SplitFilter>;
+        sync.splitFilters = splitFilters.jsify() as JSArray<JSSplitFilter>;
       }
       config.sync = sync;
 
@@ -283,13 +283,13 @@ class SplitioWeb extends SplitioPlatform {
       }
 
       if (configuration.configurationMap['readyTimeout'] != null) {
-        final startup = JSObject() as JS_ConfigurationStartup;
+        final startup = JSObject() as JSConfigurationStartup;
         startup.readyTimeout =
             (configuration.configurationMap['readyTimeout'] as int).toJS;
         config.startup = startup;
       }
 
-      final storageOptions = JSObject() as JS_ConfigurationStorage;
+      final storageOptions = JSObject() as JSConfigurationStorage;
       storageOptions.type = 'LOCALSTORAGE'.toJS;
       if (configuration.configurationMap['rolloutCacheConfiguration'] != null) {
         final rolloutCacheConfiguration =
@@ -312,11 +312,11 @@ class SplitioWeb extends SplitioPlatform {
       }
 
       if (configuration.configurationMap['impressionListener'] is bool) {
-        final JSFunction logImpression = ((JS_ImpressionData data) {
+        final JSFunction logImpression = ((JSImpressionData data) {
           _impressionsStreamController.add(jsImpressionDataToImpression(data));
         }).toJS;
 
-        final impressionListener = JSObject() as JS_IImpressionListener;
+        final impressionListener = JSObject() as JSIImpressionListener;
         reflectSet(impressionListener, 'logImpression'.toJS, logImpression);
 
         config.impressionListener = impressionListener;
@@ -334,7 +334,7 @@ class SplitioWeb extends SplitioPlatform {
     await _getClient(matchingKey: matchingKey, bucketingKey: bucketingKey);
   }
 
-  Future<JS_IBrowserClient> _getClient({
+  Future<JSIBrowserClient> _getClient({
     required String matchingKey,
     required String? bucketingKey,
   }) async {
@@ -346,7 +346,7 @@ class SplitioWeb extends SplitioPlatform {
         _factory.client(buildJsKey(matchingKey, bucketingKey)));
   }
 
-  Future<JS_IManager> _getManager() async {
+  Future<JSIManager> _getManager() async {
     await _initFuture;
 
     return _factory.manager();
@@ -384,9 +384,9 @@ class SplitioWeb extends SplitioPlatform {
     return jsMap;
   }
 
-  JS_EvaluationOptions _convertEvaluationOptions(
+  JSEvaluationOptions _convertEvaluationOptions(
       EvaluationOptions evaluationOptions) {
-    final jsEvalOptions = JSObject() as JS_EvaluationOptions;
+    final jsEvalOptions = JSObject() as JSEvaluationOptions;
 
     if (evaluationOptions.properties.isNotEmpty) {
       jsEvalOptions.properties =
@@ -839,6 +839,7 @@ class SplitioWeb extends SplitioPlatform {
       );
       client.on(client.Event.SDK_UPDATE, jsCallback);
     }
+
     Future<void> deregisterJsCallback() async {
       final client = await _getClient(
         matchingKey: matchingKey,
