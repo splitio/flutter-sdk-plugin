@@ -316,7 +316,7 @@ class SplitioWeb extends SplitioPlatform {
           _impressionsStreamController.add(jsImpressionDataToImpression(data));
         }).toJS;
 
-        final impressionListener = JSObject() as JSIImpressionListener;
+        final impressionListener = JSObject() as JSImpressionListener;
         reflectSet(impressionListener, 'logImpression'.toJS, logImpression);
 
         config.impressionListener = impressionListener;

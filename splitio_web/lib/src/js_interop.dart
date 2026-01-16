@@ -34,7 +34,7 @@ extension type JSILogger._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JSIImpressionListener._(JSObject _) implements JSObject {
+extension type JSImpressionListener._(JSObject _) implements JSObject {
   external JSVoid logImpression(JSImpressionData impression);
 }
 
@@ -99,7 +99,7 @@ extension type JSConfiguration._(JSObject _) implements JSObject {
   external JSConfigurationSync? sync;
   external JSBoolean? streamingEnabled;
   external JSString? userConsent;
-  external JSIImpressionListener? impressionListener;
+  external JSImpressionListener? impressionListener;
   external JSAny? debug;
   external JSAny? storage;
 }
@@ -107,7 +107,7 @@ extension type JSConfiguration._(JSObject _) implements JSObject {
 @JS()
 extension type JSISettings._(JSObject _) implements JSConfiguration {
   external JSILogger log;
-  external JSIImpressionListener? impressionListener;
+  external JSImpressionListener? impressionListener;
 }
 
 @JS()
