@@ -21,7 +21,7 @@ class SplitConfiguration {
   ///
   /// [eventFlushInterval] When using .track, how often the events queue is flushed to Split servers.
   ///
-  /// [eventsPerPush] Maximum size of the batch to push events.
+  /// [eventsPerPush] Maximum size of the batch to push events. Not supported in Web.
   ///
   /// [trafficType] The default traffic type for events tracked using the track method. If not specified, every track call should specify a traffic type.
   ///
@@ -29,7 +29,7 @@ class SplitConfiguration {
   ///
   /// [streamingEnabled] Boolean flag to enable the streaming service as default synchronization mechanism when in foreground. In the event of an issue with streaming, the SDK will fallback to the polling mechanism. If false, the SDK will poll for changes as usual without attempting to use streaming.
   ///
-  /// [persistentAttributesEnabled] Enables saving attributes on persistent cache which is loaded as part of the SDK_READY_FROM_CACHE flow. All functions that mutate the stored attributes map affect the persistent cache.
+  /// [persistentAttributesEnabled] Enables saving attributes on persistent cache which is loaded as part of the SDK_READY_FROM_CACHE flow. All functions that mutate the stored attributes map affect the persistent cache. Not supported in Web.
   ///
   /// [impressionListener] Enables impression listener. If true, generated impressions will be streamed in the impressionsStream() method of Splitio.
   ///
@@ -41,13 +41,13 @@ class SplitConfiguration {
   ///
   /// [userConsent] User consent status used to control the tracking of events and impressions. Possible values are [UserConsent.granted], [UserConsent.declined], and [UserConsent.unknown].
   ///
-  /// [encryptionEnabled] If set to true, the local database contents is encrypted. Defaults to false.
+  /// [encryptionEnabled] If set to true, the local database contents is encrypted. Defaults to false. Not supported in Web.
   ///
   /// [logLevel] Enables logging according to the level specified. Options are [SplitLogLevel.verbose], [SplitLogLevel.none], [SplitLogLevel.debug], [SplitLogLevel.info], [SplitLogLevel.warning], and [SplitLogLevel.error].
   ///
   /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
   ///
-  /// [certificatePinningConfiguration] Certificate pinning configuration. Pins need to have the format of a base64 SHA-256 or base64 SHA-1 hashes of the SPKI (ex.: "sha256/7HIpactkIAq2Y49orFOOQKurWxmmSFZhBCoQYcRhJ3Y=").
+  /// [certificatePinningConfiguration] Certificate pinning configuration. Pins need to have the format of a base64 SHA-256 or base64 SHA-1 hashes of the SPKI (ex.: "sha256/7HIpactkIAq2Y49orFOOQKurWxmmSFZhBCoQYcRhJ3Y="). Not supported in Web.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
