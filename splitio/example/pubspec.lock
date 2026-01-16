@@ -171,7 +171,7 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.0.0"
+    version: "1.1.0"
   splitio_android:
     dependency: transitive
     description:
@@ -199,9 +199,10 @@ packages:
   splitio_web:
     dependency: transitive
     description:
-      path: "../../splitio_web"
-      relative: true
-    source: path
+      name: splitio_web
+      sha256: "29dc1a55d80c026afb0f0bad378c81e44ee1e9da5faaf9e931f35b5dfd3ff5f3"
+      url: "https://pub.dev"
+    source: hosted
     version: "1.0.0"
   stack_trace:
     dependency: transitive
@@ -269,4 +270,4 @@ packages:
     version: "0.5.1"
 sdks:
   dart: ">=3.8.0-0 <4.0.0"
-  flutter: ">=3.18.0-18.0.pre.54"
+  flutter: ">=3.19.0"

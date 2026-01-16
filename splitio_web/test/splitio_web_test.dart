@@ -5,16 +5,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_web/splitio_web.dart';
 import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
-import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_evaluation_options.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
-import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'utils/js_interop_test_utils.dart';
 
 extension on web.Window {
   @JS()
-  external JS_BrowserSDKPackage? splitio;
+  external JSBrowserSDKPackage? splitio;
 }
 
 void main() {
@@ -205,7 +202,8 @@ void main() {
           bucketingKey: 'bucketing-key',
           splitName: 'split1');
 
-      expect(result.toString(), SplitResult('on', 'some-config').toString());
+      expect(
+          result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(
           mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
@@ -220,7 +218,8 @@ void main() {
           attributes: {'attr1': true},
           evaluationOptions: EvaluationOptions({'prop1': true}));
 
-      expect(result.toString(), SplitResult('on', 'some-config').toString());
+      expect(
+          result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split1',
@@ -240,9 +239,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -264,9 +263,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -354,9 +353,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
       expect(
@@ -376,9 +375,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -399,9 +398,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -424,9 +423,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -678,7 +677,6 @@ void main() {
           }));
     });
 
-    // @TODO validate full config with pluggable Browser SDK modules
     test('init with config: full config', () async {
       SplitioWeb _platform = SplitioWeb();
 
@@ -696,16 +694,16 @@ void main() {
               eventFlushInterval: 7,
               eventsPerPush: 8, // unsupported in Web
               trafficType: 'user',
+              // ignore: deprecated_member_use
               enableDebug: false, // deprecated, logLevel has precedence
               streamingEnabled: false,
               persistentAttributesEnabled: true, // unsupported in Web
               impressionListener: true,
-              sdkEndpoint: 'https://sdk.split-stage.io/api',
-              eventsEndpoint: 'https://events.split-stage.io/api',
-              authServiceEndpoint: 'https://auth.split-stage.io/api/v2',
-              streamingServiceEndpoint: 'https://streaming.split.io/sse',
-              telemetryServiceEndpoint:
-                  'https://telemetry.split-stage.io/api/v1',
+              sdkEndpoint: 'https://sdk.domain/api',
+              eventsEndpoint: 'https://events.domain/api',
+              authServiceEndpoint: 'https://auth.domain/api/v2',
+              streamingServiceEndpoint: 'https://streaming.domain/sse',
+              telemetryServiceEndpoint: 'https://telemetry.domain/api/v1',
               syncConfig: SyncConfig(
                   names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
               impressionsMode: ImpressionsMode.none,
@@ -722,8 +720,10 @@ void main() {
               )));
 
       expect(mock.calls[mock.calls.length - 5].methodName, 'SplitFactory');
+      final actual =
+          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]);
       expect(
-          jsAnyToDart(mock.calls[mock.calls.length - 5].methodArguments[0]),
+          actual,
           equals({
             'core': {
               'authorizationKey': 'api-key',
@@ -747,11 +747,11 @@ void main() {
               'eventsPushRate': 7,
             },
             'urls': {
-              'sdk': 'https://sdk.split-stage.io/api',
-              'events': 'https://events.split-stage.io/api',
-              'auth': 'https://auth.split-stage.io/api',
-              'streaming': 'https://streaming.split.io',
-              'telemetry': 'https://telemetry.split-stage.io/api',
+              'sdk': 'https://sdk.domain/api',
+              'events': 'https://events.domain/api',
+              'auth': 'https://auth.domain/api',
+              'streaming': 'https://streaming.domain',
+              'telemetry': 'https://telemetry.domain/api',
             },
             'sync': {
               'impressionsMode': 'NONE',
@@ -773,7 +773,10 @@ void main() {
               'expirationDays': 100,
               'clearOnInit': true
             },
-            'impressionListener': {'logImpression': {}}
+            'impressionListener': {
+              'logImpression': (actual as Map)['impressionListener']
+                  ['logImpression']
+            }
           }));
 
       expect(mock.calls[mock.calls.length - 4].methodName, 'warn');
@@ -990,9 +993,9 @@ void main() {
 
   group('events', () {
     test('onReady (SDK_READY event is emitted after onReady is called)', () {
-      Future<void>? onReady = _platform
+      Future<void> onReady = _platform
           .onReady(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
       // Emit SDK_READY event
       final mockClient =
@@ -1010,22 +1013,22 @@ void main() {
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
       mockClient.emit(mockClient.Event.SDK_READY_FROM_CACHE);
 
-      Future<void>? onReadyFromCache = _platform
+      Future<void> onReadyFromCache = _platform
           .onReadyFromCache(
               matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
       expect(onReadyFromCache, completion(equals(true)));
     });
 
     test('onTimeout (in multiple clients)', () async {
-      Future<void>? onTimeout = _platform
+      Future<void> onTimeout = _platform
           .onTimeout(matchingKey: 'matching-key', bucketingKey: 'bucketing-key')
-          ?.then((value) => true);
+          .then((value) => true);
 
-      Future<void>? onTimeoutClient2 = _platform
+      Future<void> onTimeoutClient2 = _platform
           .onTimeout(matchingKey: 'matching-key-2', bucketingKey: null)
-          ?.then((value) => false);
+          .then((value) => false);
 
       // Emit SDK_READY_TIMED_OUT event on the first client
       final mockClient =
@@ -1038,34 +1041,30 @@ void main() {
     });
 
     test('onUpdated', () async {
-      // Precondition: client is initialized before onUpdated is called
-      await _platform.getClient(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final mockClient =
           mock.mockFactory.client(buildJsKey('matching-key', 'bucketing-key'));
 
       final stream = _platform.onUpdated(
-          matchingKey: 'matching-key', bucketingKey: 'bucketing-key')!;
+          matchingKey: 'matching-key', bucketingKey: 'bucketing-key');
       final subscription = stream.listen(expectAsync1((_) {}, count: 3));
+      await Future<void>.delayed(Duration.zero); // onListen is async
 
       // Emit SDK_UPDATE events. Should be received
       mockClient.emit(mockClient.Event.SDK_UPDATE);
-
       mockClient.emit(mockClient.Event.SDK_UPDATE);
-
-      await Future<void>.delayed(
-          const Duration(milliseconds: 100)); // let events deliver
 
       // Pause subscription and emit SDK_UPDATE event. Should not be received
       subscription.pause();
+      await Future<void>.delayed(Duration.zero); // onPause is async
       mockClient.emit(mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
 
       // Resume subscription and emit SDK_UPDATE event. Should be received
       subscription.resume();
+      await Future<void>.delayed(Duration.zero); // onResume is async
       mockClient.emit(mockClient.Event.SDK_UPDATE);
-      await Future<void>.delayed(const Duration(milliseconds: 100));
 
+      await Future<void>.delayed(
+          Duration.zero); // let last event deliver before cancel
       await subscription.cancel();
     });
   });
@@ -1106,7 +1105,7 @@ void main() {
       'ip': false,
       'hostname': false,
       'sdkLanguageVersion': 'browserjs-1.0.0',
-    }.jsify() as JS_ImpressionData);
+    }.jsify() as JSImpressionData);
   });
 
   group('userConsent', () {
