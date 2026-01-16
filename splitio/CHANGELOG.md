@@ -1,5 +1,5 @@
 # 1.1.0 (Jan 16, 2026)
-- Added Web support via the `splitio_web` package, the Web implementation of `splitio` based on the Split Browser SDK v1.6.0.
+- Added Web support via the `splitio_web` package, the Web implementation of `splitio` based on the Split Browser SDK `1.6.0`.
 
 # 1.1.0-rc.1 (Jan 15, 2026)
 
