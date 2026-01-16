@@ -2,7 +2,7 @@ import 'dart:js_interop';
 import 'package:splitio_web/src/js_interop.dart';
 
 @JS('Promise.resolve')
-external JSPromise<Null> _promiseResolve();
+external JSPromise _promiseResolve();
 
 @JS('Object.assign')
 external JSObject _objectAssign(JSObject target, JSObject source);
@@ -168,7 +168,7 @@ class SplitioMock {
         'on'.toJS,
         (JSString event, JSFunction listener) {
           calls.add((methodName: 'on', methodArguments: [event, listener]));
-          _eventListeners[event] ??= Set();
+          _eventListeners[event] ??= <JSFunction>{};
           _eventListeners[event]!.add(listener);
         }.toJS);
     reflectSet(
@@ -176,7 +176,7 @@ class SplitioMock {
         'off'.toJS,
         (JSString event, JSFunction listener) {
           calls.add((methodName: 'off', methodArguments: [event, listener]));
-          _eventListeners[event] ??= Set();
+          _eventListeners[event] ??= <JSFunction>{};
           _eventListeners[event]!.remove(listener);
         }.toJS);
     reflectSet(

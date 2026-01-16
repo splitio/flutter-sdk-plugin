@@ -202,7 +202,7 @@ void main() {
           bucketingKey: 'bucketing-key',
           splitName: 'split1');
 
-      expect(result.toString(), SplitResult('on', 'some-config').toString());
+      expect(result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(
           mock.calls.last.methodArguments.map(jsAnyToDart), ['split1', {}, {}]);
@@ -217,7 +217,7 @@ void main() {
           attributes: {'attr1': true},
           evaluationOptions: EvaluationOptions({'prop1': true}));
 
-      expect(result.toString(), SplitResult('on', 'some-config').toString());
+      expect(result.toString(), const SplitResult('on', 'some-config').toString());
       expect(mock.calls.last.methodName, 'getTreatmentWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
         'split1',
@@ -237,9 +237,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -261,9 +261,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfig');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -351,9 +351,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
       expect(
@@ -373,9 +373,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSet');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -396,9 +396,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -421,9 +421,9 @@ void main() {
       expect(result, predicate<Map<String, SplitResult>>((result) {
         return result.length == 2 &&
             result['split1'].toString() ==
-                SplitResult('on', 'some-config').toString() &&
+                const SplitResult('on', 'some-config').toString() &&
             result['split2'].toString() ==
-                SplitResult('on', 'some-config').toString();
+                const SplitResult('on', 'some-config').toString();
       }));
       expect(mock.calls.last.methodName, 'getTreatmentsWithConfigByFlagSets');
       expect(mock.calls.last.methodArguments.map(jsAnyToDart), [
@@ -692,6 +692,7 @@ void main() {
               eventFlushInterval: 7,
               eventsPerPush: 8, // unsupported in Web
               trafficType: 'user',
+              // ignore: deprecated_member_use
               enableDebug: false, // deprecated, logLevel has precedence
               streamingEnabled: false,
               persistentAttributesEnabled: true, // unsupported in Web
