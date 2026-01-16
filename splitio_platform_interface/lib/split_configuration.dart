@@ -1,5 +1,5 @@
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
-import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 
@@ -52,7 +52,7 @@ class SplitConfiguration {
   ///
   /// [rolloutCacheConfiguration] Rollout cache configuration.
   ///
-  /// [fallbackTreatmentsConfiguration] Fallback treatments configuration.
+  /// [fallbackTreatments] Fallback treatments configuration.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -81,7 +81,7 @@ class SplitConfiguration {
     int? readyTimeout = 10,
     CertificatePinningConfiguration? certificatePinningConfiguration,
     RolloutCacheConfiguration? rolloutCacheConfiguration,
-    FallbackTreatmentsConfiguration? fallbackTreatmentsConfiguration,
+    FallbackTreatments? fallbackTreatments,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -202,10 +202,10 @@ class SplitConfiguration {
       };
     }
 
-    if (fallbackTreatmentsConfiguration != null) {
-      configurationMap['fallbackTreatmentsConfiguration'] = {
-        'global': fallbackTreatmentsConfiguration.global,
-        'byFlag': fallbackTreatmentsConfiguration.byFlag
+    if (fallbackTreatments != null) {
+      configurationMap['fallbackTreatments'] = {
+        'global': fallbackTreatments.global,
+        'byFlag': fallbackTreatments.byFlag
       };
     }
   }

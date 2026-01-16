@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
-import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments.dart';
 import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
@@ -39,7 +39,7 @@ void main() {
             .addPin('host2', 'pin3')
             .addPin('host1', 'pin2'),
         rolloutCacheConfiguration: RolloutCacheConfiguration(expirationDays: 15, clearOnInit: true),
-        fallbackTreatmentsConfiguration: FallbackTreatmentsConfiguration(global: const SplitResult('custom-treatment', null)));
+        fallbackTreatments: FallbackTreatments(global: const SplitResult('custom-treatment', null)));
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
