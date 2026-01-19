@@ -1,5 +1,5 @@
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
-import 'package:splitio_platform_interface/split_fallback_treatments.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 
@@ -81,7 +81,7 @@ class SplitConfiguration {
     int? readyTimeout = 10,
     CertificatePinningConfiguration? certificatePinningConfiguration,
     RolloutCacheConfiguration? rolloutCacheConfiguration,
-    FallbackTreatments? fallbackTreatments,
+    FallbackTreatmentsConfiguration? fallbackTreatments,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
