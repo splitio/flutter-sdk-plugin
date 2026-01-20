@@ -1,4 +1,4 @@
-import 'package:splitio_platform_interface/split_result.dart';
+import 'package:splitio_platform_interface/split_fallback_treatment.dart';
 
 class FallbackTreatmentsConfiguration {
   Map<String, String?>? _global;
@@ -8,7 +8,7 @@ class FallbackTreatmentsConfiguration {
   Map<String, Map<String, String?>>? get byFlag => _byFlag;
 
   FallbackTreatmentsConfiguration(
-      {SplitResult? global, Map<String, SplitResult>? byFlag}) {
+      {FallbackTreatment? global, Map<String, FallbackTreatment>? byFlag}) {
     _global = global != null
         ? {'treatment': global.treatment, 'config': global.config}
         : null;

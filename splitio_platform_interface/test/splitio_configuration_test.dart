@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatment.dart';
 import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
-import 'package:splitio_platform_interface/split_result.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
@@ -41,11 +41,11 @@ void main() {
         rolloutCacheConfiguration:
             RolloutCacheConfiguration(expirationDays: 15, clearOnInit: true),
         fallbackTreatments: FallbackTreatmentsConfiguration(
-          global: const SplitResult('custom-treatment', null),
+          global: const FallbackTreatment('custom-treatment'),
           byFlag: {
-            'flag1':
-                const SplitResult('custom-treatment-flag1', 'config-flag1'),
-            'flag2': const SplitResult('custom-treatment-flag2', null),
+            'flag1': const FallbackTreatment(
+                'custom-treatment-flag1', 'config-flag1'),
+            'flag2': const FallbackTreatment('custom-treatment-flag2'),
           },
         ));
 
