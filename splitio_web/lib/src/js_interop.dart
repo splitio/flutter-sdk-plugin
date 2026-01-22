@@ -4,7 +4,7 @@ import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 // JS SDK types
 
 @JS()
-extension type JS_ImpressionDTO._(JSObject _) implements JSObject {
+extension type JSImpressionDTO._(JSObject _) implements JSObject {
   external JSString feature;
   external JSString keyName;
   external JSString treatment;
@@ -17,8 +17,8 @@ extension type JS_ImpressionDTO._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_ImpressionData._(JSObject _) implements JSObject {
-  external JS_ImpressionDTO impression;
+extension type JSImpressionData._(JSObject _) implements JSObject {
+  external JSImpressionDTO impression;
   external JSObject? attributes;
   external JSAny ip; // string | false
   external JSAny hostname; // string | false
@@ -26,7 +26,7 @@ extension type JS_ImpressionData._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_ILogger._(JSObject _) implements JSObject {
+extension type JSILogger._(JSObject _) implements JSObject {
   external JSAny? debug(JSString message);
   external JSAny? info(JSString message);
   external JSAny? warn(JSString message);
@@ -34,23 +34,23 @@ extension type JS_ILogger._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_IImpressionListener._(JSObject _) implements JSObject {
-  external JSVoid logImpression(JS_ImpressionData impression);
+extension type JSImpressionListener._(JSObject _) implements JSObject {
+  external JSVoid logImpression(JSImpressionData impression);
 }
 
 @JS()
-extension type JS_ConfigurationCore._(JSObject _) implements JSObject {
+extension type JSConfigurationCore._(JSObject _) implements JSObject {
   external JSString authorizationKey;
   external JSAny key; // string | SplitKey
 }
 
 @JS()
-extension type JS_ConfigurationStartup._(JSObject _) implements JSObject {
+extension type JSConfigurationStartup._(JSObject _) implements JSObject {
   external JSNumber? readyTimeout;
 }
 
 @JS()
-extension type JS_ConfigurationScheduler._(JSObject _) implements JSObject {
+extension type JSConfigurationScheduler._(JSObject _) implements JSObject {
   external JSNumber? featuresRefreshRate;
   external JSNumber? segmentsRefreshRate;
   external JSNumber? impressionsRefreshRate;
@@ -62,7 +62,7 @@ extension type JS_ConfigurationScheduler._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_ConfigurationUrls._(JSObject _) implements JSObject {
+extension type JSConfigurationUrls._(JSObject _) implements JSObject {
   external JSString? sdk;
   external JSString? events;
   external JSString? auth;
@@ -71,80 +71,84 @@ extension type JS_ConfigurationUrls._(JSObject _) implements JSObject {
 }
 
 @JS()
-extension type JS_SplitFilter._(JSObject _) implements JSObject {
+extension type JSSplitFilter._(JSObject _) implements JSObject {
   external JSString type;
   external JSArray<JSString> values;
 }
 
 @JS()
-extension type JS_ConfigurationSync._(JSObject _) implements JSObject {
+extension type JSConfigurationSync._(JSObject _) implements JSObject {
   external JSString? impressionsMode;
   external JSBoolean? enabled;
-  external JSArray<JS_SplitFilter>? splitFilters;
+  external JSArray<JSSplitFilter>? splitFilters;
 }
 
 @JS()
-extension type JS_ConfigurationStorage._(JSObject _) implements JSObject {
+extension type JSConfigurationStorage._(JSObject _) implements JSObject {
   external JSString? type;
   external JSNumber? expirationDays;
   external JSBoolean? clearOnInit;
 }
 
 @JS()
-extension type JS_Configuration._(JSObject _) implements JSObject {
-  external JS_ConfigurationCore core;
-  external JS_ConfigurationStartup? startup;
-  external JS_ConfigurationScheduler? scheduler;
-  external JS_ConfigurationUrls? urls;
-  external JS_ConfigurationSync? sync;
+extension type JSConfiguration._(JSObject _) implements JSObject {
+  external JSConfigurationCore core;
+  external JSConfigurationStartup? startup;
+  external JSConfigurationScheduler? scheduler;
+  external JSConfigurationUrls? urls;
+  external JSConfigurationSync? sync;
   external JSBoolean? streamingEnabled;
   external JSString? userConsent;
-  external JS_IImpressionListener? impressionListener;
+  external JSImpressionListener? impressionListener;
   external JSAny? debug;
   external JSAny? storage;
 }
 
 @JS()
-extension type JS_ISettings._(JSObject _) implements JS_Configuration {
-  external JS_ILogger log;
-  external JS_IImpressionListener? impressionListener;
+extension type JSISettings._(JSObject _) implements JSConfiguration {
+  external JSILogger log;
+  external JSImpressionListener? impressionListener;
 }
 
 @JS()
-extension type JS_IUserConsentAPI._(JSObject _) implements JSObject {
+extension type JSIUserConsentAPI._(JSObject _) implements JSObject {
   external JSBoolean setStatus(JSBoolean userConsent);
   external JSString getStatus();
 }
 
 @JS()
-extension type JS_EventConsts._(JSObject _) implements JSObject {
+extension type JSEventConsts._(JSObject _) implements JSObject {
+  // ignore: non_constant_identifier_names
   external JSString SDK_READY;
+  // ignore: non_constant_identifier_names
   external JSString SDK_READY_FROM_CACHE;
+  // ignore: non_constant_identifier_names
   external JSString SDK_READY_TIMED_OUT;
+  // ignore: non_constant_identifier_names
   external JSString SDK_UPDATE;
 }
 
 @JS()
-extension type JS_ReadinessStatus._(JSObject _) implements JSObject {
+extension type JSReadinessStatus._(JSObject _) implements JSObject {
   external JSBoolean isReady;
   external JSBoolean isReadyFromCache;
   external JSBoolean hasTimedout;
 }
 
 @JS()
-extension type JS_TreatmentWithConfig._(JSObject _) implements JSObject {
+extension type JSTreatmentWithConfig._(JSObject _) implements JSObject {
   external JSString treatment;
   external JSString? config;
 }
 
 @JS()
-extension type JS_Prerequisite._(JSObject _) implements JSObject {
+extension type JSPrerequisite._(JSObject _) implements JSObject {
   external JSString flagName;
   external JSArray<JSString> treatments;
 }
 
 @JS()
-extension type JS_SplitView._(JSObject _) implements JSObject {
+extension type JSSplitView._(JSObject _) implements JSObject {
   external JSString name;
   external JSString trafficType;
   external JSBoolean killed;
@@ -154,34 +158,34 @@ extension type JS_SplitView._(JSObject _) implements JSObject {
   external JSArray<JSString> sets;
   external JSString defaultTreatment;
   external JSBoolean impressionsDisabled;
-  external JSArray<JS_Prerequisite> prerequisites;
+  external JSArray<JSPrerequisite> prerequisites;
 }
 
 @JS()
-extension type JS_EvaluationOptions._(JSObject _) implements JSObject {
+extension type JSEvaluationOptions._(JSObject _) implements JSObject {
   external JSObject properties;
 }
 
 @JS()
-extension type JS_IBrowserClient._(JSObject _) implements JSObject {
+extension type JSIBrowserClient._(JSObject _) implements JSObject {
   external JSString getTreatment(JSString flagName, JSObject attributes,
-      JS_EvaluationOptions evaluationOptions);
+      JSEvaluationOptions evaluationOptions);
   external JSObject getTreatments(JSArray<JSString> flagNames,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
-  external JS_TreatmentWithConfig getTreatmentWithConfig(JSString flagName,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
+  external JSTreatmentWithConfig getTreatmentWithConfig(JSString flagName,
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfig(JSArray<JSString> flagNames,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
   external JSObject getTreatmentsByFlagSet(JSString flagSetName,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
   external JSObject getTreatmentsByFlagSets(JSArray<JSString> flagSetNames,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfigByFlagSet(JSString flagSetName,
-      JSObject attributes, JS_EvaluationOptions evaluationOptions);
+      JSObject attributes, JSEvaluationOptions evaluationOptions);
   external JSObject getTreatmentsWithConfigByFlagSets(
       JSArray<JSString> flagSetNames,
       JSObject attributes,
-      JS_EvaluationOptions evaluationOptions);
+      JSEvaluationOptions evaluationOptions);
   external JSBoolean track(JSString? trafficType, JSString eventType,
       JSNumber? value, JSObject? attributes);
   external JSBoolean setAttribute(
@@ -191,43 +195,51 @@ extension type JS_IBrowserClient._(JSObject _) implements JSObject {
   external JSBoolean setAttributes(JSObject attributes);
   external JSObject getAttributes();
   external JSBoolean clearAttributes();
-  external JSPromise<Null> flush();
-  external JSPromise<Null> destroy();
+  external JSPromise flush();
+  external JSPromise destroy();
   external JSVoid on(JSString event, JSFunction listener);
   external JSVoid off(JSString event, JSFunction listener);
   external JSVoid emit(JSString event);
-  external JS_EventConsts Event;
-  external JS_ReadinessStatus getStatus();
+  // ignore: non_constant_identifier_names
+  external JSEventConsts Event;
+  external JSReadinessStatus getStatus();
 }
 
 @JS()
-extension type JS_IManager._(JSObject _) implements JSObject {
+extension type JSIManager._(JSObject _) implements JSObject {
   external JSArray<JSString> names();
-  external JS_SplitView? split(JSString name);
-  external JSArray<JS_SplitView> splits();
+  external JSSplitView? split(JSString name);
+  external JSArray<JSSplitView> splits();
 }
 
 @JS()
-extension type JS_IBrowserSDK._(JSObject _) implements JSObject {
-  external JS_IBrowserClient client(JSAny? key);
-  external JS_IManager manager();
-  external JS_ISettings settings;
-  external JS_IUserConsentAPI UserConsent;
+extension type JSIBrowserSDK._(JSObject _) implements JSObject {
+  external JSIBrowserClient client(JSAny? key);
+  external JSIManager manager();
+  external JSISettings settings;
+  // ignore: non_constant_identifier_names
+  external JSIUserConsentAPI UserConsent;
 }
 
 @JS()
-extension type JS_LoggerFactory._(JSFunction _) implements JSFunction {
+extension type JSLoggerFactory._(JSFunction _) implements JSFunction {
   external JSObject call();
 }
 
 @JS()
-extension type JS_BrowserSDKPackage._(JSObject _) implements JSObject {
-  external JS_IBrowserSDK SplitFactory(JS_Configuration config);
+extension type JSBrowserSDKPackage._(JSObject _) implements JSObject {
+  // ignore: non_constant_identifier_names
+  external JSIBrowserSDK SplitFactory(JSConfiguration config);
+  // ignore: non_constant_identifier_names
   external JSFunction? InLocalStorage;
-  external JS_LoggerFactory? DebugLogger;
-  external JS_LoggerFactory? InfoLogger;
-  external JS_LoggerFactory? WarnLogger;
-  external JS_LoggerFactory? ErrorLogger;
+  // ignore: non_constant_identifier_names
+  external JSLoggerFactory? DebugLogger;
+  // ignore: non_constant_identifier_names
+  external JSLoggerFactory? InfoLogger;
+  // ignore: non_constant_identifier_names
+  external JSLoggerFactory? WarnLogger;
+  // ignore: non_constant_identifier_names
+  external JSLoggerFactory? ErrorLogger;
 }
 
 // Conversion utils: JS to Dart types
@@ -263,18 +275,18 @@ Map<String, SplitResult> jsTreatmentsWithConfigToMap(JSObject obj) {
       k, SplitResult(v['treatment'] as String, v['config'] as String?)));
 }
 
-SplitResult jsTreatmentWithConfigToSplitResult(JS_TreatmentWithConfig obj) {
+SplitResult jsTreatmentWithConfigToSplitResult(JSTreatmentWithConfig obj) {
   return SplitResult(obj.treatment.toDart, obj.config?.toDart);
 }
 
-Prerequisite jsPrerequisiteToPrerequisite(JS_Prerequisite obj) {
+Prerequisite jsPrerequisiteToPrerequisite(JSPrerequisite obj) {
   return Prerequisite(
     obj.flagName.toDart,
     jsArrayToList(obj.treatments).toSet().cast<String>(),
   );
 }
 
-SplitView jsSplitViewToSplitView(JS_SplitView obj) {
+SplitView jsSplitViewToSplitView(JSSplitView obj) {
   return SplitView(
       obj.name.toDart,
       obj.trafficType.toDart,
@@ -288,12 +300,10 @@ SplitView jsSplitViewToSplitView(JS_SplitView obj) {
       obj.prerequisites.toDart.map(jsPrerequisiteToPrerequisite).toSet());
 }
 
-Impression jsImpressionDataToImpression(JS_ImpressionData obj) {
+Impression jsImpressionDataToImpression(JSImpressionData obj) {
   return Impression(
     obj.impression.keyName.toDart,
-    obj.impression.bucketingKey != null
-        ? obj.impression.bucketingKey!.toDart
-        : null,
+    obj.impression.bucketingKey?.toDart,
     obj.impression.feature.toDart,
     obj.impression.treatment.toDart,
     obj.impression.time.toDartInt,
