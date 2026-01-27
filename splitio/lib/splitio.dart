@@ -12,6 +12,8 @@ export 'package:splitio_platform_interface/split_view.dart';
 export 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 export 'package:splitio_platform_interface/split_evaluation_options.dart';
 export 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
+export 'package:splitio_platform_interface/split_fallback_treatment.dart';
+export 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 

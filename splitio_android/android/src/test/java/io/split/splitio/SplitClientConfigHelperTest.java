@@ -27,6 +27,8 @@ import io.split.android.client.shared.UserConsent;
 import io.split.android.client.utils.logger.LogPrinter;
 import io.split.android.client.utils.logger.Logger;
 import io.split.android.client.utils.logger.SplitLogLevel;
+import io.split.android.client.fallback.FallbackTreatmentsConfiguration;
+import io.split.android.client.fallback.FallbackTreatment;
 
 public class SplitClientConfigHelperTest {
 
@@ -234,5 +236,34 @@ public class SplitClientConfigHelperTest {
 
         assertEquals(5, splitClientConfig.rolloutCacheConfiguration().getExpirationDays());
         assertTrue(splitClientConfig.rolloutCacheConfiguration().isClearOnInit());
+    }
+
+    @Test
+    public void fallbackTreatmentsValuesAreMappedCorrectly() {
+        Map<String, Object> globalFallbackTreatment = new HashMap<>();
+        globalFallbackTreatment.put("treatment", "global-control");
+        globalFallbackTreatment.put("config", "global-config");
+
+        Map<String, Object> feature1FallbackTreatment = new HashMap<>();
+        feature1FallbackTreatment.put("treatment", "feature1-control");
+        feature1FallbackTreatment.put("config", null);
+
+        Map<String, Object> byFlagFallbackTreatments = new HashMap<>();
+        byFlagFallbackTreatments.put("feature1", feature1FallbackTreatment);
+
+        Map<String, Object> fallbackTreatmentsValues = new HashMap<>();
+        fallbackTreatmentsValues.put("global", globalFallbackTreatment);
+        fallbackTreatmentsValues.put("byFlag", byFlagFallbackTreatments);
+
+        Map<String, Object> configValues = new HashMap<>();
+        configValues.put("fallbackTreatments", fallbackTreatmentsValues);
+
+        SplitClientConfig splitClientConfig = SplitClientConfigHelper
+                .fromMap(configValues, mock(ImpressionListener.class));
+
+        FallbackTreatmentsConfiguration fallbackTreatmentsConfiguration = splitClientConfig.fallbackTreatments();
+
+        assertEquals(new FallbackTreatment("global-control", "global-config"), fallbackTreatmentsConfiguration.getGlobal());
+        assertEquals(Map.of("feature1", new FallbackTreatment("feature1-control", null)), fallbackTreatmentsConfiguration.getByFlag());
     }
 }

@@ -154,4 +154,29 @@ class SplitClientConfigHelperTests: XCTestCase {
         XCTAssertEqual(5, actualConfig.expirationDays)
         XCTAssertTrue(actualConfig.clearOnInit)
     }
+
+    func testFallbackTreatmentsConfigurationValuesAreMappedCorrectly() {
+        let configValues = [
+            "fallbackTreatments": [
+                "global": [
+                    "treatment": "on",
+                    "config": "{\"key\": \"value\"}"
+                ],
+                "byFlag": [
+                    "feature1": [
+                        "treatment": "off",
+                        "config": nil
+                    ]
+                ]
+            ]
+        ]
+
+        let splitClientConfig: SplitClientConfig = SplitClientConfigHelper.fromMap(configurationMap: configValues, impressionListener: nil)
+        let actualConfig = splitClientConfig.fallbackTreatments
+
+        XCTAssertEqual("on", actualConfig.global?.treatment)
+        XCTAssertEqual("{\"key\": \"value\"}", actualConfig.global?.config)
+        XCTAssertEqual("off", actualConfig.byFlag["feature1"]?.treatment)
+        XCTAssertNil(actualConfig.byFlag["feature1"]?.config)
+    }
 }
