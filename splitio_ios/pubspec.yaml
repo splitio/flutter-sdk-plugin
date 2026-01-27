@@ -18,7 +18,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  splitio_platform_interface: ^2.0.0
+  splitio_platform_interface: # ^2.0.0
+    path: ../splitio_platform_interface
 
 dev_dependencies:
   flutter_test:
