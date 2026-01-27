@@ -26,6 +26,10 @@ Run unit tests in Android & iOS packages with `flutter test`.
 
 Run unit tests in Web package with `flutter test --platform chrome`.
 
+### Linting and other useful checks
+
+Run the static code analyzer (`flutter analyze`) to fix any errors, warnings, lints, or formatting issues.
+
 # Contact
 
 If you have any other questions or need to contact us directly in a private manner send us a note at sdks@split.io
