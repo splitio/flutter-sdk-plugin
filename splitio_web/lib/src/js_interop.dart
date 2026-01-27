@@ -91,6 +91,12 @@ extension type JSConfigurationStorage._(JSObject _) implements JSObject {
 }
 
 @JS()
+extension type JSFallbackTreatmentsConfiguration._(JSObject _) implements JSObject {
+  external JSTreatmentWithConfig? global;
+  external JSObject? byFlag;
+}
+
+@JS()
 extension type JSConfiguration._(JSObject _) implements JSObject {
   external JSConfigurationCore core;
   external JSConfigurationStartup? startup;
@@ -102,6 +108,7 @@ extension type JSConfiguration._(JSObject _) implements JSObject {
   external JSImpressionListener? impressionListener;
   external JSAny? debug;
   external JSAny? storage;
+  external JSFallbackTreatmentsConfiguration? fallbackTreatments;
 }
 
 @JS()

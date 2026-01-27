@@ -7,6 +7,8 @@ import 'package:splitio_web/src/js_interop.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatment.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 import 'utils/js_interop_test_utils.dart';
 
 extension on web.Window {
@@ -685,39 +687,47 @@ void main() {
           matchingKey: 'matching-key',
           bucketingKey: 'bucketing-key',
           sdkConfiguration: SplitConfiguration(
-              featuresRefreshRate: 1,
-              segmentsRefreshRate: 2,
-              impressionsRefreshRate: 3,
-              telemetryRefreshRate: 4,
-              eventsQueueSize: 5,
-              impressionsQueueSize: 6,
-              eventFlushInterval: 7,
-              eventsPerPush: 8, // unsupported in Web
-              trafficType: 'user',
-              // ignore: deprecated_member_use
-              enableDebug: false, // deprecated, logLevel has precedence
-              streamingEnabled: false,
-              persistentAttributesEnabled: true, // unsupported in Web
-              impressionListener: true,
-              sdkEndpoint: 'https://sdk.domain/api',
-              eventsEndpoint: 'https://events.domain/api',
-              authServiceEndpoint: 'https://auth.domain/api/v2',
-              streamingServiceEndpoint: 'https://streaming.domain/sse',
-              telemetryServiceEndpoint: 'https://telemetry.domain/api/v1',
-              syncConfig: SyncConfig(
-                  names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
-              impressionsMode: ImpressionsMode.none,
-              syncEnabled: true,
-              userConsent: UserConsent.granted,
-              encryptionEnabled: true, // unsupported in Web
-              logLevel: SplitLogLevel.info,
-              readyTimeout: 1,
-              certificatePinningConfiguration: CertificatePinningConfiguration()
-                  .addPin('host', 'pin'), // unsupported in Web
-              rolloutCacheConfiguration: RolloutCacheConfiguration(
-                expirationDays: 100,
-                clearOnInit: true,
-              )));
+            featuresRefreshRate: 1,
+            segmentsRefreshRate: 2,
+            impressionsRefreshRate: 3,
+            telemetryRefreshRate: 4,
+            eventsQueueSize: 5,
+            impressionsQueueSize: 6,
+            eventFlushInterval: 7,
+            eventsPerPush: 8, // unsupported in Web
+            trafficType: 'user',
+            // ignore: deprecated_member_use
+            enableDebug: false, // deprecated, logLevel has precedence
+            streamingEnabled: false,
+            persistentAttributesEnabled: true, // unsupported in Web
+            impressionListener: true,
+            sdkEndpoint: 'https://sdk.domain/api',
+            eventsEndpoint: 'https://events.domain/api',
+            authServiceEndpoint: 'https://auth.domain/api/v2',
+            streamingServiceEndpoint: 'https://streaming.domain/sse',
+            telemetryServiceEndpoint: 'https://telemetry.domain/api/v1',
+            syncConfig:
+                SyncConfig(names: ['flag_1', 'flag_2'], prefixes: ['prefix_1']),
+            impressionsMode: ImpressionsMode.none,
+            syncEnabled: true,
+            userConsent: UserConsent.granted,
+            encryptionEnabled: true, // unsupported in Web
+            logLevel: SplitLogLevel.info,
+            readyTimeout: 1,
+            certificatePinningConfiguration: CertificatePinningConfiguration()
+                .addPin('host', 'pin'), // unsupported in Web
+            rolloutCacheConfiguration: RolloutCacheConfiguration(
+              expirationDays: 100,
+              clearOnInit: true,
+            ),
+            fallbackTreatments: FallbackTreatmentsConfiguration(
+              global: const FallbackTreatment('global-treatment'),
+              byFlag: {
+                'flag_1': const FallbackTreatment('fallback_1', 'config_1'),
+                'flag_2': const FallbackTreatment('fallback_2', null)
+              },
+            ),
+          ));
 
       expect(mock.calls[mock.calls.length - 5].methodName, 'SplitFactory');
       final actual =
@@ -776,6 +786,13 @@ void main() {
             'impressionListener': {
               'logImpression': (actual as Map)['impressionListener']
                   ['logImpression']
+            },
+            'fallbackTreatments': {
+              'global': {'treatment': 'global-treatment', 'config': null},
+              'byFlag': {
+                'flag_1': {'treatment': 'fallback_1', 'config': 'config_1'},
+                'flag_2': {'treatment': 'fallback_2', 'config': null}
+              }
             }
           }));
 

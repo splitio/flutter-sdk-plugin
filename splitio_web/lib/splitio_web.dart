@@ -321,6 +321,12 @@ class SplitioWeb extends SplitioPlatform {
 
         config.impressionListener = impressionListener;
       }
+
+      if (configuration.configurationMap['fallbackTreatments'] != null) {
+        final fallbackTreatments = configuration.configurationMap['fallbackTreatments'] as Map<String, dynamic>;
+        // FallbackTreatmentsConfiguration has a compatible structure with JSFallbackTreatmentsConfiguration
+        config.fallbackTreatments = fallbackTreatments.jsify() as JSFallbackTreatmentsConfiguration;
+      }
     }
 
     return config;
