@@ -2,6 +2,7 @@ import 'dart:core';
 
 import 'package:splitio_platform_interface/split_prerequisite.dart';
 
+/// Represents a feature flag
 class SplitView {
   static const String _keyName = 'name';
   static const String _keyTrafficType = 'trafficType';
@@ -14,17 +15,37 @@ class SplitView {
   static const String _keyImpressionsDisabled = 'impressionsDisabled';
   static const String _keyPrerequisites = 'prerequisites';
 
+  /// The name of the feature flag.
   String name;
+
+  /// The traffic type of the feature flag.
   String trafficType;
+
+  /// Whether the feature flag is killed.
   bool killed = false;
+
+  /// The treatments of the feature flag.
   List<String> treatments = [];
+
+  /// The change number of the feature flag.
   int? changeNumber;
+
+  /// The configurations per treatment of the feature flag.
   Map<String, String> configs = {};
+
+  /// The default treatment of the feature flag.
   String defaultTreatment;
+
+  /// The sets of the feature flag.
   List<String> sets = [];
+
+  /// Whether impressions are disabled for the feature flag.
   bool impressionsDisabled = false;
+
+  /// The prerequisites of the feature flag.
   Set<Prerequisite> prerequisites = <Prerequisite>{};
 
+  /// Creates a new SplitView instance.
   SplitView(this.name, this.trafficType, this.killed, this.treatments,
       this.changeNumber, this.configs,
       [this.defaultTreatment = '',
@@ -32,6 +53,7 @@ class SplitView {
       this.impressionsDisabled = false,
       this.prerequisites = const <Prerequisite>{}]);
 
+  /// Creates a SplitView instance from a map entry.
   static SplitView? fromEntry(Map<dynamic, dynamic>? entry) {
     if (entry == null || entry.isEmpty) {
       return null;

@@ -6,7 +6,9 @@ const String _controlTreatment = 'control';
 const SplitResult _controlResult = SplitResult(_controlTreatment, null);
 const MethodChannel _methodChannel = MethodChannel('splitio');
 
+/// Method channel platform implementation.
 class MethodChannelPlatform extends SplitioPlatform {
+  /// Returns the method channel.
   MethodChannel get methodChannel => _methodChannel;
 
   final Map<String, SplitEventMethodCallHandler> _handlers = {};
@@ -15,6 +17,8 @@ class MethodChannelPlatform extends SplitioPlatform {
       ImpressionsMethodCallHandler();
 
   @visibleForTesting
+
+  /// Handles method calls from the platform.
   Future<void> handle(MethodCall call) async {
     _impressionsMethodCallHandler.handle(call.method, call.arguments);
     for (MethodCallHandler handler in _handlers.values) {

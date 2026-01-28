@@ -1,8 +1,11 @@
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 
+/// Split configuration.
 class SplitConfiguration {
+  /// The configuration map.
   final Map<String, dynamic> configurationMap = {};
 
   /// Initializes the Split configuration.
@@ -48,6 +51,10 @@ class SplitConfiguration {
   /// [readyTimeout] Maximum amount of time in seconds to wait before firing the SDK_READY_TIMED_OUT event. Defaults to 10 seconds.
   ///
   /// [certificatePinningConfiguration] Certificate pinning configuration. Pins need to have the format of a base64 SHA-256 or base64 SHA-1 hashes of the SPKI (ex.: "sha256/7HIpactkIAq2Y49orFOOQKurWxmmSFZhBCoQYcRhJ3Y="). Not supported in Web.
+  ///
+  /// [rolloutCacheConfiguration] Rollout cache configuration.
+  ///
+  /// [fallbackTreatments] Fallback treatments configuration.
   SplitConfiguration({
     int? featuresRefreshRate,
     int? segmentsRefreshRate,
@@ -76,6 +83,7 @@ class SplitConfiguration {
     int? readyTimeout = 10,
     CertificatePinningConfiguration? certificatePinningConfiguration,
     RolloutCacheConfiguration? rolloutCacheConfiguration,
+    FallbackTreatmentsConfiguration? fallbackTreatments,
   }) {
     if (featuresRefreshRate != null) {
       configurationMap['featuresRefreshRate'] = featuresRefreshRate;
@@ -195,19 +203,59 @@ class SplitConfiguration {
         'clearOnInit': rolloutCacheConfiguration.clearOnInit
       };
     }
+
+    if (fallbackTreatments != null) {
+      configurationMap['fallbackTreatments'] = {
+        'global': fallbackTreatments.global,
+        'byFlag': fallbackTreatments.byFlag
+      };
+    }
   }
 }
 
+/// Impressions mode.
 enum ImpressionsMode {
+  /// Debug impressions mode.
   debug,
+
+  /// Optimized impressions mode.
   optimized,
+
+  /// None impressions mode.
   none,
 }
 
+/// User consent.
 enum UserConsent {
+  /// The user grants consent for tracking events and impressions. The SDK sends them to Split cloud.
   granted,
+
+  /// The user declines consent for tracking events and impressions. The SDK does not send them to Split cloud.
   declined,
+
+  /// The user neither grants nor declines consent for tracking events and impressions. The SDK tracks them in its
+  /// internal storage, and eventually either sends them or not if the consent status is updated to 'GRANTED' or
+  /// 'DECLINED' respectively. The status can be updated at any time with the `UserConsent.setStatus` factory method.
   unknown,
 }
 
-enum SplitLogLevel { verbose, debug, info, warning, error, none }
+/// Split log level.
+enum SplitLogLevel {
+  /// Verbose log level.
+  verbose,
+
+  /// Debug log level.
+  debug,
+
+  /// Info log level.
+  info,
+
+  /// Warning log level.
+  warning,
+
+  /// Error log level.
+  error,
+
+  /// None log level.
+  none
+}
