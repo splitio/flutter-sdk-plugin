@@ -222,12 +222,14 @@ abstract class _ClientPlatform {
 /// [SplitioPlatform] methods.
 abstract class SplitioPlatform extends PlatformInterface
     with _FactoryPlatform, _ClientPlatform {
+  /// Creates a new SplitioPlatform instance.
   SplitioPlatform() : super(token: _token);
 
   static SplitioPlatform _instance = MethodChannelPlatform();
 
   static final Object _token = Object();
 
+  /// The instance of SplitioPlatform that is used to communicate with the native platform.
   static SplitioPlatform get instance => _instance;
 
   /// Platform-specific plugins should set this with their own platform-specific

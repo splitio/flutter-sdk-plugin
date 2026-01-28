@@ -15,8 +15,10 @@ export 'package:splitio_platform_interface/split_rollout_cache_configuration.dar
 export 'package:splitio_platform_interface/split_fallback_treatment.dart';
 export 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 
+/// Callback function type for client readiness events.
 typedef ClientReadinessCallback = void Function(SplitClient splitClient);
 
+/// Main class for interacting with the Split Flutter SDK.
 class Splitio {
   final String _sdkKey;
 
@@ -114,12 +116,14 @@ class Splitio {
     return client;
   }
 
+  /// Gets the list of all feature flag names.
   Future<List<String>> splitNames() async {
     List<String> splitNames = await _platform.splitNames();
 
     return splitNames;
   }
 
+  /// Gets the list of all feature flag views.
   Future<List<SplitView>> splits() async {
     return _platform.splits();
   }
@@ -130,14 +134,22 @@ class Splitio {
     return _platform.impressionsStream();
   }
 
+  /// Gets a specific feature flag view.
+  ///
+  /// Returns null if the provided feature flag name is not found.
   Future<SplitView?> split(String splitName) async {
     return _platform.split(splitName: splitName);
   }
 
+  /// Gets the user consent status.
   Future<UserConsent> getUserConsent() async {
     return _platform.getUserConsent();
   }
 
+  /// Sets the user consent status.
+  ///
+  /// [enabled] is a boolean that enables (`UserConsent.granted`)
+  /// or disables (`UserConsent.declined`) data collection.
   Future<void> setUserConsent(bool enabled) async {
     return _platform.setUserConsent(enabled);
   }
