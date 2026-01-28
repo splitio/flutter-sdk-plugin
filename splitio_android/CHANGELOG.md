@@ -1,3 +1,5 @@
+# 1.1.0-rc.1 (Jan 28, 2026)
+
 # 1.0.0 (Aug 14, 2025)
 - Updated Android SDK to `5.3.1`.
 

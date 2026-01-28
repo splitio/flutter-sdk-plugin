@@ -1,7 +1,7 @@
 name: splitio_web
 description: The official Web implementation of splitio Flutter plugin.
 repository: https://github.com/splitio/flutter-sdk-plugin/tree/main/splitio_web
-version: 1.0.0
+version: 1.1.0-rc.1
 
 environment:
   sdk: ">=3.3.0 <4.0.0" # using Dart 3.3+ extension types for JS interop
@@ -20,8 +20,7 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  splitio_platform_interface: # ^2.0.0
-    path: ../splitio_platform_interface
+  splitio_platform_interface: ^2.1.0-rc.1
   flutter_web_plugins:
     sdk: flutter
   web: ">=0.5.0 <2.0.0"
