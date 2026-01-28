@@ -1,17 +1,26 @@
+# 1.2.1 (Jan 28, 2026)
+* Bug fix: corrected asset path for loading the Browser SDK.
+
+# 1.2.1-rc.1 (Jan 28, 2026)
+
+# 1.2.0 (Jan 28, 2026)
+* Added new configuration for Fallback Treatments, which allows setting a treatment value and optional config to be returned in place of "control", either globally or by flag. Read more in our docs.
+* Updated Android SDK to `5.4.2`, iOS SDK to `3.6.0`, and Browser SDK to `1.6.1`
+
 # 1.2.0-rc.1 (Jan 28, 2026)
 
 # 1.1.0 (Jan 16, 2026)
-- Added Web support via the `splitio_web` package, the Web implementation of `splitio` based on the Split Browser SDK `1.6.0`.
+* Added Web support via the `splitio_web` package, the Web implementation of `splitio` based on the Split Browser SDK `1.6.0`.
 
 # 1.1.0-rc.1 (Jan 15, 2026)
 
 # 1.0.0 (Aug 14, 2025)
-- Updated Android SDK to `5.3.1` & iOS SDK to `3.3.2`
-- Added support for rule-based segments. These segments determine membership at runtime by evaluating their configured rules against the user attributes provided to the SDK.
-- Added support for feature flag prerequisites. This allows customers to define dependency conditions between flags, which are evaluated before any allowlists or targeting rules.
-- Added two new configuration options to control the behavior of the persisted rollout plan cache. Use `rolloutCacheConfiguration` in the config.
-- Added a new optional argument to the client `getTreatment` methods to allow passing additional evaluation options, such as a map of properties to append to the generated impressions sent to Split backend. Read more in our docs.
-- Added support for the new impressions tracking toggle available on feature flags, both respecting the setting and including the new field being returned on SplitView type objects. Read more in our docs.
+* Updated Android SDK to `5.3.1` & iOS SDK to `3.3.2`
+* Added support for rule-based segments. These segments determine membership at runtime by evaluating their configured rules against the user attributes provided to the SDK.
+* Added support for feature flag prerequisites. This allows customers to define dependency conditions between flags, which are evaluated before any allowlists or targeting rules.
+* Added two new configuration options to control the behavior of the persisted rollout plan cache. Use `rolloutCacheConfiguration` in the config.
+* Added a new optional argument to the client `getTreatment` methods to allow passing additional evaluation options, such as a map of properties to append to the generated impressions sent to Split backend. Read more in our docs.
+* Added support for the new impressions tracking toggle available on feature flags, both respecting the setting and including the new field being returned on SplitView type objects. Read more in our docs.
 
 # 1.0.0-rc.1 (Aug 14, 2025)
 

@@ -1,3 +1,6 @@
+# 2.1.0 (Jan 28, 2026)
+* Added new configuration for Fallback Treatments, which allows setting a treatment value and optional config to be returned in place of "control", either globally or by flag. Read more in our docs.
+
 # 2.1.0-rc.1 (Jan 28, 2026)
 
 # 2.0.0 (Aug 14, 2025)

@@ -14,7 +14,7 @@ class Prerequisite {
   Prerequisite(this._name, this._treatments);
 
   /// Creates a Prerequisite instance from a map.
-  static Prerequisite fromEntry(el) {
+  static Prerequisite fromEntry(Map<String, dynamic> el) {
     final String name = (el['n'] ?? el['n:'] ?? '').toString();
     final List<dynamic> rawTreatments = (el['t'] as List<dynamic>?) ?? [];
     final Set<String> treatments =
@@ -32,7 +32,7 @@ class Prerequisite {
   }
 
   /// Checks if this Prerequisite is equal to another Prerequisite.
-  equals(Prerequisite other) {
+  bool equals(Prerequisite other) {
     return name == other.name && treatments == other.treatments;
   }
 
