@@ -36,6 +36,11 @@ class SplitClientConfigHelper {
     static private let ROLLOUT_CACHE_CONFIGURATION = "rolloutCacheConfiguration"
     static private let ROLLOUT_CACHE_CONFIGURATION_EXPIRATION = "expirationDays"
     static private let ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT = "clearOnInit"
+    static private let FALLBACK_TREATMENTS = "fallbackTreatments";
+    static private let FALLBACK_TREATMENTS_GLOBAL = "global";
+    static private let FALLBACK_TREATMENTS_BY_FLAG = "byFlag";
+    static private let FALLBACK_TREATMENT_VALUE = "treatment";
+    static private let FALLBACK_TREATMENT_CONFIG = "config";
 
     static func fromMap(configurationMap: [String: Any?], impressionListener: SplitImpressionListener?) -> SplitClientConfig {
         let config = SplitClientConfig()
@@ -251,6 +256,30 @@ class SplitClientConfigHelper {
                 }
             }
             config.rolloutCacheConfiguration = rolloutCacheConfigurationBuilder.build()
+        }
+
+        if let fallbackTreatmentConfig = configurationMap[FALLBACK_TREATMENTS] as? [String: Any?] {
+            let fallbackTreatmentConfiguration = FallbackTreatmentsConfig.builder()
+
+            if let globalTreatment = fallbackTreatmentConfig[FALLBACK_TREATMENTS_GLOBAL] as? [String: Any?] {
+                fallbackTreatmentConfiguration.global(FallbackTreatment(
+                    treatment: globalTreatment[FALLBACK_TREATMENT_VALUE] as! String,
+                    config: globalTreatment[FALLBACK_TREATMENT_CONFIG] as? String
+                ))
+            }
+
+            if let byFlagTreatments = fallbackTreatmentConfig[FALLBACK_TREATMENTS_BY_FLAG] as? [String: [String: Any?]] {
+                var byFlag: [String: FallbackTreatment] = [:]
+                for (key, value) in byFlagTreatments {
+                    byFlag[key] = FallbackTreatment(
+                        treatment: value[FALLBACK_TREATMENT_VALUE] as! String,
+                        config: value[FALLBACK_TREATMENT_CONFIG] as? String
+                    )
+                }
+                fallbackTreatmentConfiguration.byFlag(byFlag)
+            }
+
+            config.fallbackTreatments = fallbackTreatmentConfiguration.build()
         }
 
         return config

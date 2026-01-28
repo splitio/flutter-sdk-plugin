@@ -171,39 +171,39 @@ packages:
       path: ".."
       relative: true
     source: path
-    version: "1.1.0"
+    version: "1.2.1"
   splitio_android:
     dependency: transitive
     description:
       name: splitio_android
-      sha256: "344bf82de6694cffb8dd80a96ee734e31bb838d2b4693fb046e0fc98e31512ca"
+      sha256: "7c0e5ad4ccdf4990120a7a6a2f067d274c107ab9830fd20b1d54bf3f0392ac02"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   splitio_ios:
     dependency: transitive
     description:
       name: splitio_ios
-      sha256: "1c078bc49bf7b30df6ca50accb6a9eecf592ec607e20e77b1c6ecdabc7a44dc9"
+      sha256: c15cd7dfd195df107ae07c030fd742dcabb0610c769466d6d7e3890d22a91bc2
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.0"
   splitio_platform_interface:
     dependency: transitive
     description:
       name: splitio_platform_interface
-      sha256: "8bcb1cab9f5fffb7b79cfeeaf6c80d82f8ede55c8d6ca7578ec78653f3f9e499"
+      sha256: faa022814c7b2fc7b5f68b80b088e1638e06783419075176d1adadcf787897db
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.1.0"
   splitio_web:
     dependency: transitive
     description:
       name: splitio_web
-      sha256: "29dc1a55d80c026afb0f0bad378c81e44ee1e9da5faaf9e931f35b5dfd3ff5f3"
+      sha256: "656cf71d4ec900cf1ad1b9eae20bbabe797de5c99f49584672161de9fe133afb"
       url: "https://pub.dev"
     source: hosted
-    version: "1.0.0"
+    version: "1.1.1"
   stack_trace:
     dependency: transitive
     description:

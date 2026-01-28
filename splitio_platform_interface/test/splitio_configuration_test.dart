@@ -1,6 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:splitio_platform_interface/split_certificate_pinning_configuration.dart';
 import 'package:splitio_platform_interface/split_configuration.dart';
+import 'package:splitio_platform_interface/split_fallback_treatment.dart';
+import 'package:splitio_platform_interface/split_fallback_treatments_configuration.dart';
 import 'package:splitio_platform_interface/split_rollout_cache_configuration.dart';
 import 'package:splitio_platform_interface/split_sync_config.dart';
 
@@ -36,7 +38,16 @@ void main() {
             .addPin('host1', 'pin1')
             .addPin('host2', 'pin3')
             .addPin('host1', 'pin2'),
-        rolloutCacheConfiguration: RolloutCacheConfiguration(expirationDays: 15, clearOnInit: true));
+        rolloutCacheConfiguration:
+            RolloutCacheConfiguration(expirationDays: 15, clearOnInit: true),
+        fallbackTreatments: FallbackTreatmentsConfiguration(
+          global: const FallbackTreatment('custom-treatment'),
+          byFlag: {
+            'flag1': const FallbackTreatment(
+                'custom-treatment-flag1', 'config-flag1'),
+            'flag2': const FallbackTreatment('custom-treatment-flag2'),
+          },
+        ));
 
     expect(config.configurationMap['eventFlushInterval'], 2000);
     expect(config.configurationMap['eventsPerPush'], 300);
@@ -73,8 +84,22 @@ void main() {
       'host1': ['pin1', 'pin2'],
       'host2': ['pin3']
     });
-    expect(config.configurationMap['rolloutCacheConfiguration']['expirationDays'], 15);
-    expect(config.configurationMap['rolloutCacheConfiguration']['clearOnInit'], true);
+    expect(
+        config.configurationMap['rolloutCacheConfiguration']['expirationDays'],
+        15);
+    expect(config.configurationMap['rolloutCacheConfiguration']['clearOnInit'],
+        true);
+    expect(config.configurationMap['fallbackTreatments']['global'],
+        equals({'treatment': 'custom-treatment', 'config': null}));
+    expect(
+        config.configurationMap['fallbackTreatments']['byFlag'],
+        equals({
+          'flag1': {
+            'treatment': 'custom-treatment-flag1',
+            'config': 'config-flag1'
+          },
+          'flag2': {'treatment': 'custom-treatment-flag2', 'config': null}
+        }));
   });
 
   test('no special values leaves map empty', () async {

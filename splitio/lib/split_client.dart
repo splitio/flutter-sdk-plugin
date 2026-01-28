@@ -1,5 +1,6 @@
 import 'package:splitio_platform_interface/splitio_platform_interface.dart';
 
+/// Abstract class representing a Split client.
 abstract class SplitClient {
   /// Performs an evaluation for the [featureFlagName] feature flag.
   ///
@@ -187,11 +188,13 @@ abstract class SplitClient {
   Future<SplitClient> whenTimeout();
 }
 
+/// Default implementation of the Split client.
 class DefaultSplitClient implements SplitClient {
   final SplitioPlatform _platform;
   final String _matchingKey;
   final String? _bucketingKey;
 
+  /// Creates a new instance of the Split client.
   DefaultSplitClient(this._platform, this._matchingKey, this._bucketingKey);
 
   @override

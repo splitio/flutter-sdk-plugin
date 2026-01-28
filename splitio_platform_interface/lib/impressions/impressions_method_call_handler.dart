@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:splitio_platform_interface/method_call_handler.dart';
 import 'package:splitio_platform_interface/split_impression.dart';
 
+/// Handles impressions method calls.
 class ImpressionsMethodCallHandler extends StreamMethodCallHandler<Impression> {
   final _streamController = StreamController<Impression>();
 

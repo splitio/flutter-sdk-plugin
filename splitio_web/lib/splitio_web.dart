@@ -91,7 +91,7 @@ class SplitioWeb extends SplitioPlatform {
     final script = document.createElement('script') as HTMLScriptElement;
     script.type = 'text/javascript';
     script.src =
-        'assets/packages/splitio_web/web/split-browser-1.6.0.full.min.js';
+        'assets/packages/splitio_web/web/split-browser.full.min.js';
 
     // Wait for script to load
     final completer = Completer<void>();
@@ -320,6 +320,12 @@ class SplitioWeb extends SplitioPlatform {
         reflectSet(impressionListener, 'logImpression'.toJS, logImpression);
 
         config.impressionListener = impressionListener;
+      }
+
+      if (configuration.configurationMap['fallbackTreatments'] != null) {
+        final fallbackTreatments = configuration.configurationMap['fallbackTreatments'] as Map<String, dynamic>;
+        // FallbackTreatmentsConfiguration has a compatible structure with JSFallbackTreatmentsConfiguration
+        config.fallbackTreatments = fallbackTreatments.jsify() as JSFallbackTreatmentsConfiguration;
       }
     }
 

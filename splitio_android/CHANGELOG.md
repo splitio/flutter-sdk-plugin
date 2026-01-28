@@ -1,5 +1,11 @@
+# 1.1.0 (Jan 28, 2026)
+* Added new configuration for Fallback Treatments, which allows setting a treatment value and optional config to be returned in place of "control", either globally or by flag. Read more in our docs.
+* Updated Android SDK to `5.4.2`.
+
+# 1.1.0-rc.1 (Jan 28, 2026)
+
 # 1.0.0 (Aug 14, 2025)
-- Updated Android SDK to `5.3.1`.
+* Updated Android SDK to `5.3.1`.
 
 # 1.0.0-rc.1 (Aug 14, 2025)
 
