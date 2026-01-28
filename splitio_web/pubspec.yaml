@@ -20,7 +20,8 @@ flutter:
 dependencies:
   flutter:
     sdk: flutter
-  splitio_platform_interface: ^2.0.0
+  splitio_platform_interface: # ^2.0.0
+    path: ../splitio_platform_interface
   flutter_web_plugins:
     sdk: flutter
   web: ">=0.5.0 <2.0.0"

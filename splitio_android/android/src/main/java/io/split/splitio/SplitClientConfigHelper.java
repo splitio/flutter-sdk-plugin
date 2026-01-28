@@ -19,6 +19,8 @@ import io.split.android.client.impressions.ImpressionListener;
 import io.split.android.client.network.CertificatePinningConfiguration;
 import io.split.android.client.shared.UserConsent;
 import io.split.android.client.utils.logger.SplitLogLevel;
+import io.split.android.client.fallback.FallbackTreatmentsConfiguration;
+import io.split.android.client.fallback.FallbackTreatment;
 
 class SplitClientConfigHelper {
 
@@ -55,6 +57,11 @@ class SplitClientConfigHelper {
     private static final String ROLLOUT_CACHE_CONFIGURATION = "rolloutCacheConfiguration";
     private static final String ROLLOUT_CACHE_CONFIGURATION_EXPIRATION = "expirationDays";
     private static final String ROLLOUT_CACHE_CONFIGURATION_CLEAR_ON_INIT = "clearOnInit";
+    private static final String FALLBACK_TREATMENTS = "fallbackTreatments";
+    private static final String FALLBACK_TREATMENTS_GLOBAL = "global";
+    private static final String FALLBACK_TREATMENTS_BY_FLAG = "byFlag";
+    private static final String FALLBACK_TREATMENT_VALUE = "treatment";
+    private static final String FALLBACK_TREATMENT_CONFIG = "config";
 
     /**
      * Creates a {@link SplitClientConfig} object from a map.
@@ -259,6 +266,29 @@ class SplitClientConfigHelper {
                     cacheConfigBuilder.clearOnInit(clearOnInit);
                 }
                 builder.rolloutCacheConfiguration(cacheConfigBuilder.build());
+            }
+        }
+
+        Map<String, Object> fallbackTreatments = getObjectMap(configurationMap, FALLBACK_TREATMENTS);
+        if (fallbackTreatments != null) {
+            Map<String, Object> global = getObjectMap(fallbackTreatments, FALLBACK_TREATMENTS_GLOBAL);
+            Map<String, Object> byFlag = getObjectMap(fallbackTreatments, FALLBACK_TREATMENTS_BY_FLAG);
+            if (global != null || byFlag != null) {
+                FallbackTreatmentsConfiguration.Builder fallbackTreatmentsBuilder = FallbackTreatmentsConfiguration.builder();
+                if (global != null) {
+                    fallbackTreatmentsBuilder.global(new FallbackTreatment(getString(global, FALLBACK_TREATMENT_VALUE), getString(global, FALLBACK_TREATMENT_CONFIG)));
+                }
+                if (byFlag != null) {
+                    Map<String, FallbackTreatment> byFlagMap = new HashMap<>();
+                    for (Map.Entry<String, Object> entry : byFlag.entrySet()) {
+                        Map<String, Object> byFlagFallbackTreatment = getObjectMap(byFlag, entry.getKey());
+                        if (byFlagFallbackTreatment != null) {
+                            byFlagMap.put(entry.getKey(), new FallbackTreatment(getString(byFlagFallbackTreatment, FALLBACK_TREATMENT_VALUE), getString(byFlagFallbackTreatment, FALLBACK_TREATMENT_CONFIG)));
+                        }
+                    }
+                    fallbackTreatmentsBuilder.byFlag(byFlagMap);
+                }
+                builder.fallbackTreatments(fallbackTreatmentsBuilder.build());
             }
         }
 
