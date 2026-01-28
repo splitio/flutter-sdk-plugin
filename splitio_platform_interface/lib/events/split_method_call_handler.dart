@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:splitio_platform_interface/method_call_handler.dart';
 
+/// Handler for Split SDK events
 class SplitEventMethodCallHandler implements MethodCallHandler {
   static const String _eventClientReady = 'clientReady';
   static const String _eventClientReadyFromCache = 'clientReadyFromCache';
@@ -24,6 +25,7 @@ class SplitEventMethodCallHandler implements MethodCallHandler {
     _eventClientTimeout: false,
   };
 
+  /// Creates a new instance of the Split event method call handler.
   SplitEventMethodCallHandler(this._matchingKey, this._bucketingKey);
 
   @override
@@ -48,26 +50,32 @@ class SplitEventMethodCallHandler implements MethodCallHandler {
     }
   }
 
+  /// Returns Future that is completed when the SDK client is ready.
   Future<void> onReady() {
     return _onEvent(_eventClientReady);
   }
 
+  /// Returns Future that is completed when the SDK client is ready from cache.
   Future<void> onReadyFromCache() {
     return _onEvent(_eventClientReadyFromCache);
   }
 
+  /// Returns Stream that emits when the SDK client is updated.
   Stream<void> onUpdated() {
     return _updateStreamCompleter.stream;
   }
 
+  /// Returns Future that is completed when the SDK client times out.
   Future<void> onTimeout() {
     return _onEvent(_eventClientTimeout);
   }
 
+  /// Cleans up resources.
   void destroy() {
     _updateStreamCompleter.close();
   }
 
+  /// Returns Future that is completed when the specified SDK event occurs.
   Future<void> _onEvent(String sdkEvent) {
     if (_triggeredClientEvents.containsKey(sdkEvent) &&
         _triggeredClientEvents[sdkEvent] == true) {
