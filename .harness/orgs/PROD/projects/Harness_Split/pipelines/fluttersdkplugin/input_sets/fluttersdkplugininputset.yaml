@@ -9,6 +9,6 @@ inputSet:
       ci:
         codebase:
           build:
-            type: PR
+            type: branch
             spec:
-              number: <+trigger.prNumber>
+              branch: <+trigger.sourceBranch>
