@@ -1,0 +1,14 @@
+inputSet:
+  name: flutter-sdk-plugin-inputset
+  identifier: fluttersdkplugininputset
+  orgIdentifier: PROD
+  projectIdentifier: Harness_Split
+  pipeline:
+    identifier: fluttersdkplugin
+    properties:
+      ci:
+        codebase:
+          build:
+            type: PR
+            spec:
+              number: <+trigger.prNumber>
