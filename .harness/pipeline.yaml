@@ -116,8 +116,8 @@ pipeline:
                       apt-get install -y openjdk-17-jdk -qq
                       sonar-scanner \
                         -Dsonar.projectKey=flutter-sdk-plugin \
-                        -Dsonar.sources=lib \
-                        -Dsonar.tests=test \
+                        -Dsonar.sources=splitio/lib,splitio_android/lib,splitio_ios/lib,splitio_web/lib,splitio_platform_interface/lib \
+                        -Dsonar.tests=splitio/test,splitio_android/test,splitio_ios/test,splitio_web/test,splitio_platform_interface/test \
                         -Dsonar.host.url=https://sonar.harness.io \
                         -Dsonar.token=<+secrets.getValue("sonarqube-token")> \
                         -Dsonar.exclusions="**/example/**,**/.dart_tool/**,**/build/**"
