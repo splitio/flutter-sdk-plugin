@@ -1,5 +1,6 @@
 import Foundation
 import Split
+import Flutter
 import UIKit
 
 protocol SplitMethodParser {
