@@ -1,4 +1,5 @@
 import XCTest
+import Flutter
 @testable import splitio_ios
 @testable import Split
 
