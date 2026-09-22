@@ -12,13 +12,14 @@ let package = Package(
     .library(name: "splitio-ios", targets: ["splitio_ios"])
   ],
   dependencies: [
-    // Mirrors the `~> 3.6.0` constraint in splitio_ios.podspec.
+    .package(name: "FlutterFramework", path: "../FlutterFramework"),
     .package(url: "https://github.com/splitio/ios-client", "3.6.0" ..< "3.7.0")
   ],
   targets: [
     .target(
       name: "splitio_ios",
       dependencies: [
+        .product(name: "FlutterFramework", package: "FlutterFramework"),
         .product(name: "Split", package: "ios-client")
       ]
     )
