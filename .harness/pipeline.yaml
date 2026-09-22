@@ -40,6 +40,7 @@ pipeline:
                   spec:
                     shell: Sh
                     command: |-
+                      apt-get update -qq
                       apt-get install -y openjdk-17-jdk -qq
                       java -version
               - step:
@@ -113,6 +114,7 @@ pipeline:
                         "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip"
                       unzip -q sonar-scanner.zip
                       export PATH="$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin:$PATH"
+                      apt-get update -qq
                       apt-get install -y openjdk-17-jdk -qq
                       sonar-scanner \
                         -Dsonar.projectKey=flutter-sdk-plugin \
@@ -167,4 +169,4 @@ pipeline:
         strategy:
           matrix:
             sdkVersion:
-              - "stable"
+              - stable
