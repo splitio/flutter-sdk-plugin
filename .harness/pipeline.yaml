@@ -38,11 +38,17 @@ pipeline:
                   name: Install Java
                   identifier: Install_Java
                   spec:
-                    shell: Sh
+                    shell: Bash
                     command: |-
-                      apt-get update -qq
-                      apt-get install -y openjdk-17-jdk -qq
+                      set -e
+                      JDK_DIR="$HOME/jdk-17"
+                      curl -fsSL "https://api.adoptium.net/v3/binary/latest/17/ga/linux/x64/jdk/hotspot/normal/eclipse?project=jdk" -o /tmp/jdk17.tar.gz
+                      mkdir -p "$JDK_DIR"
+                      tar -xzf /tmp/jdk17.tar.gz -C "$JDK_DIR" --strip-components=1
+                      export JAVA_HOME="$JDK_DIR"
+                      export PATH="$JAVA_HOME/bin:$PATH"
                       java -version
+                      printf 'export JAVA_HOME=%s\nexport PATH="$JAVA_HOME/bin:$PATH"\n' "$JDK_DIR" > "$HOME/java.env"
               - step:
                   type: Run
                   name: Install Flutter
@@ -107,15 +113,15 @@ pipeline:
                     stageStatus: Success
                     condition: <+matrix.sdkVersion> == "stable"
                   spec:
-                    shell: Sh
+                    shell: Bash
                     command: |-
+                      set -e
+                      . "$HOME/java.env"
                       export SONAR_SCANNER_VERSION=5.0.1.3006
                       curl -sSLo sonar-scanner.zip \
                         "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${SONAR_SCANNER_VERSION}-linux.zip"
                       unzip -q sonar-scanner.zip
                       export PATH="$PWD/sonar-scanner-${SONAR_SCANNER_VERSION}-linux/bin:$PATH"
-                      apt-get update -qq
-                      apt-get install -y openjdk-17-jdk -qq
                       sonar-scanner \
                         -Dsonar.projectKey=flutter-sdk-plugin \
                         -Dsonar.sources=splitio/lib,splitio_android/lib,splitio_ios/lib,splitio_web/lib,splitio_platform_interface/lib \
