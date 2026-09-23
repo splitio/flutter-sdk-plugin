@@ -1,7 +1,9 @@
 
-# 1.3.0-rc.1 (Sep 23, 2026)
+# 1.3.0 (Sep 23, 2026)
 * Added Swift Package Manager support, which becomes the default package manager for Flutter apps in Flutter 3.44. CocoaPods remains fully supported.
 * Updated the minimum supported iOS version to 12.
+
+# 1.3.0-rc.1 (Sep 23, 2026)
 
 # 1.2.1 (Jan 28, 2026)
 * Bug fix: corrected asset path for loading the Browser SDK.
