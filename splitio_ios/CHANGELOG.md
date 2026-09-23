@@ -1,7 +1,9 @@
 
-# 1.2.0-rc.1 (Sep 23, 2026)
+# 1.2.0 (Sep 24, 2026)
 * Added Swift Package Manager support, which becomes the default package manager for Flutter apps in Flutter 3.44. CocoaPods remains fully supported.
 * Updated the minimum supported iOS version to 12.
+
+# 1.2.0-rc.1 (Sep 23, 2026)
 
 # 1.1.0 (Jan 28, 2026)
 * Added new configuration for Fallback Treatments, which allows setting a treatment value and optional config to be returned in place of "control", either globally or by flag. Read more in our docs.
