@@ -1,4 +1,5 @@
 import XCTest
+import Flutter
 @testable import splitio_ios
 @testable import Split
 
@@ -593,12 +594,29 @@ class SplitManagerStub: SplitManager, Destroyable {
     }
 }
 
+private final class BinaryMessengerStub: NSObject, FlutterBinaryMessenger {
+    func send(onChannel channel: String, message: Data?) {}
+    func send(onChannel channel: String, message: Data?, binaryReply callback: FlutterBinaryReply?) {}
+    func setMessageHandlerOnChannel(_ channel: String, binaryMessageHandler handler: FlutterBinaryMessageHandler?) -> FlutterBinaryMessengerConnection { 0 }
+    func cleanUpConnection(_ connection: FlutterBinaryMessengerConnection) {}
+}
+
 class MethodChannelStub: FlutterMethodChannel {
     var methodName: String = ""
     var arguments: Any?
 
+    init(name: String = "splitio.test") {
+        super.init(name: name, binaryMessenger: BinaryMessengerStub(), codec: FlutterStandardMethodCodec.sharedInstance(), taskQueue: nil)
+    }
+
     override func invokeMethod(_ method: String, arguments: Any?) {
         self.methodName = method
         self.arguments = arguments
+    }
+
+    override func invokeMethod(_ method: String, arguments: Any?, result callback: FlutterResult?) {
+        self.methodName = method
+        self.arguments = arguments
+        callback?(nil)
     }
 }

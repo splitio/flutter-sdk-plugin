@@ -19,6 +19,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Build example app APK
         run: cd splitio/example; flutter build apk
 
@@ -34,12 +35,13 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Run Pub Get
         run: cd splitio/; flutter pub get
       - name: Build Android
-        run: cd splitio/example/android/; flutter build apk
-      - name: Run Android test
-        run: cd splitio/example/android/; ./gradlew :splitio:testReleaseUnitTest;
+        run: cd splitio/example; flutter build apk
+      - name: Run Android unit tests
+        run: cd splitio_android; flutter test
 
   build-ios:
     name: Build iOS
@@ -50,8 +52,9 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Run Build iOS
-        run: cd splitio/example/ios; flutter build ios --no-codesign;
+        run: cd splitio/example; flutter build ios --no-codesign;
 
   test-ios:
     name: Test iOS
@@ -62,6 +65,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Run Build iOS
         run: cd splitio_ios/example/; flutter build ios --no-codesign;
 
@@ -81,6 +85,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Build Web
         run: cd splitio/example; flutter build web
 
@@ -92,6 +97,7 @@ jobs:
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
+          cache: true
       - name: Build Web
         run: cd splitio/example; flutter build web
       - name: Run Web test
