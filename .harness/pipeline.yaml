@@ -21,6 +21,8 @@ pipeline:
         type: CI
         spec:
           cloneCodebase: true
+          envVariables:
+            CI_ENABLE_HCLI_FOR_TESTS: "true"
           caching:
             enabled: true
             override: true
@@ -64,7 +66,7 @@ pipeline:
                       export PATH="$HOME/flutter/bin:$PATH"
                       cd splitio
                       flutter pub get
-                      flutter test
+                      flutter test --coverage
               - step:
                   type: Run
                   name: Test splitio_android
@@ -75,7 +77,7 @@ pipeline:
                       export PATH="$HOME/flutter/bin:$PATH"
                       cd splitio_android
                       flutter pub get
-                      flutter test
+                      flutter test --coverage
               - step:
                   type: Run
                   name: Test splitio_ios
@@ -86,7 +88,7 @@ pipeline:
                       export PATH="$HOME/flutter/bin:$PATH"
                       cd splitio_ios
                       flutter pub get
-                      flutter test
+                      flutter test --coverage
               - step:
                   type: Run
                   name: Test splitio_web
@@ -97,7 +99,41 @@ pipeline:
                       export PATH="$HOME/flutter/bin:$PATH"
                       cd splitio_web
                       flutter pub get
-                      flutter test --platform=chrome
+                      flutter test --coverage --platform=chrome
+              - step:
+                  type: Run
+                  name: Merge lcov
+                  identifier: Merge_lcov
+                  when:
+                    stageStatus: Success
+                    condition: <+matrix.sdkVersion> == "stable"
+                  spec:
+                    shell: Bash
+                    command: |-
+                      mkdir -p coverage
+                      : > coverage/lcov.info
+                      for f in splitio/coverage/lcov.info splitio_android/coverage/lcov.info splitio_ios/coverage/lcov.info splitio_web/coverage/lcov.info; do
+                        if [ -s "$f" ]; then cat "$f" >> coverage/lcov.info; fi
+                      done
+                      test -s coverage/lcov.info
+              - step:
+                  name: harnessCoverage
+                  identifier: harnessCoverage
+                  when:
+                    stageStatus: Success
+                    condition: <+matrix.sdkVersion> == "stable"
+                  template:
+                    templateRef: account.codeCoverage
+                    versionLabel: v1
+                    templateInputs:
+                      type: Run
+                      spec:
+                        envVariables:
+                          patch_coverage_percent: "80"
+                          file_path: "coverage/lcov.info"
+                          overall_coverage_percent: ""
+                          ignore_failure: "true"
+                          exclude: "**/.dart_tool/**,**/test/**,**/*_test.dart"
               - step:
                   type: Run
                   name: SonarQube Scan
